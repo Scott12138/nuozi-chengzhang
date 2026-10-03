@@ -1,0 +1,198 @@
+==> 静态服务器就绪（HTTP 200）
+==> 产物自检通过（含标记「挪字成章」）
+==> 启动无头 Chrome 打开 http://127.0.0.1:8123/index.html
+    窗口 600×1380（外框）· profile /tmp/cocos-cdp-profile-41659
+==> CDP 已连接
+==> 等待游戏加载渲染（9 秒）…
+    视口/画布/引擎可见尺寸： {"inner":[600,1260],"canvas":{"cssW":600,"cssH":1260,"left":0,"top":0,"attrW":600,"attrH":1260},"visible":[720,1512]}
+    ✅ 引擎可见尺寸 720×1512 设计单位 = 372×781 设计px（窗口 600×1260）
+    （点击换算中心：300,630　设计单位→屏幕px 缩放 PS=0.8333）
+    已截图：/tmp/s18-tools2/00-before.png
+==> 直写存档：标记第 1..1 关已通关（每关 0 星），然后重载页面
+==> 等待游戏加载渲染（9 秒） · unlock 后重载…
+    视口/画布/引擎可见尺寸： {"inner":[600,1260],"canvas":{"cssW":600,"cssH":1260,"left":0,"top":0,"attrW":600,"attrH":1260},"visible":[720,1512]}
+    ✅ 引擎可见尺寸 720×1512 设计单位 = 372×781 设计px（窗口 600×1260）
+    已截图：/tmp/s18-tools2/01-unlock.png
+==> 等待 2200ms → 截图 /tmp/s18-tools2/02-wait-2200.png
+==> 固定发牌种子：globalThis.__CHA_SEED__ = 403464159（进入对局页时生效；"开局就绪"那行日志会以「种子=force:…」回显）
+==> 点击 设计坐标(0, -534) → 屏幕(300, 1075)
+    已截图：/tmp/s18-tools2/04-click-d_0,-534.png
+==> 点击 设计坐标(0, 335) → 屏幕(300, 351)
+    已截图：/tmp/s18-tools2/05-click-d_0,335.png
+==> 点击 设计坐标(255, 131) → 屏幕(513, 521)
+    已截图：/tmp/s18-tools2/06-click-d_255,131.png
+==> ✅ 页面断言通过：确在「game」页
+    已截图：/tmp/s18-tools2/07-p_game.png
+==> 等待 3200ms → 截图 /tmp/s18-tools2/08-wait-3200.png
+==> ✅ 坐标基准自检通过：格(0,0) 游戏(66.7,440.4) vs 工装(66.7,440.0)，差 (0.0,0.4)px
+==> 点击 设计坐标(-254, -668) → 屏幕(88, 1187)
+    已截图：/tmp/s18-tools2/10-click-d_-254,-668.png
+==> 等待 1200ms → 截图 /tmp/s18-tools2/11-wait-1200.png
+==> 点击 设计坐标(-78, -668) → 屏幕(235, 1187)
+    已截图：/tmp/s18-tools2/12-click-d_-78,-668.png
+==> 等待 1800ms → 截图 /tmp/s18-tools2/13-wait-1800.png
+==> 点击 设计坐标(97, -668) → 屏幕(381, 1187)
+    已截图：/tmp/s18-tools2/14-click-d_97,-668.png
+==> 等待 1600ms → 截图 /tmp/s18-tools2/15-wait-1600.png
+==> 点击 设计坐标(274, -668) → 屏幕(528, 1187)
+    已截图：/tmp/s18-tools2/16-click-d_274,-668.png
+==> 等待 1400ms → 截图 /tmp/s18-tools2/17-wait-1400.png
+==> ✅ 提示断言通过（历史）：本局弹过包含「已经对齐了」的提示
+==> ✅ 提示断言通过（历史）：本局弹过包含「盘面已重排」的提示
+==> ✅ 提示断言通过（历史）：本局弹过包含「时间」的提示
+==> ✅ 页面断言通过：确在「game」页
+    已截图：/tmp/s18-tools2/21-p_game.png
+    性能：峰值 draw call 77 / 平均帧 16.57ms → 约 60 FPS
+
+===== 页面控制台输出 =====
+  [timeEnd] Init Base: 6.736083984375 ms
+  [timeEnd] Init Infrastructure: 14.054931640625 ms
+  [timeEnd] Init SubSystem: 34.98291015625 ms
+  [log] Cocos Creator v3.8.8
+  [log] Using custom pipeline: Builtin
+  [timeEnd] Init Project: 45.241943359375 ms
+  [timeEnd] LoadScene db://assets/scenes/Main.scene: 16.93408203125 ms
+  [timeEnd] InitScene: 0.129150390625 ms
+  [timeEnd] AttachPersist: 0.0029296875 ms
+  [timeEnd] AutoRelease: 0.059814453125 ms
+  [timeEnd] Destroy: 0.08203125 ms
+  [timeEnd] Activate: 2.366943359375 ms
+  [log] Success to load scene: db://assets/scenes/Main.scene
+  [log] [Bootstrap] GameRoot 已挂载到 Canvas
+  [log] [AdService] 广告位自检：非微信环境（web / 本地预览），跳过
+  [log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 boot
+  [log] [GameRoot] 启动完成，可见尺寸 720×1512
+  [log] [AudioService] 音效就绪 13/13
+  [log] [AudioService] BGM 就绪：audio/bgm（35.2s）
+  [log] [AudioService] BGM 起播（35.2s 循环）
+  [log:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+  [log] [AudioService] BGM 首播未生效（多半被 autoplay 拦了）—— 已复位，等下一次触摸重试
+  [log] [PageManager] 进入页面 home
+  [timeEnd] Init Base: 1.50390625 ms
+  [timeEnd] Init Infrastructure: 9.4951171875 ms
+  [timeEnd] Init SubSystem: 29.785888671875 ms
+  [log] Cocos Creator v3.8.8
+  [log] Using custom pipeline: Builtin
+  [timeEnd] Init Project: 21 ms
+  [timeEnd] LoadScene db://assets/scenes/Main.scene: 16.892822265625 ms
+  [timeEnd] InitScene: 0.031005859375 ms
+  [timeEnd] AttachPersist: 0.001953125 ms
+  [timeEnd] AutoRelease: 0.009033203125 ms
+  [timeEnd] Destroy: 0.028076171875 ms
+  [timeEnd] Activate: 0.739013671875 ms
+  [log] Success to load scene: db://assets/scenes/Main.scene
+  [log] [Bootstrap] GameRoot 已挂载到 Canvas
+  [log] [AdService] 广告位自检：非微信环境（web / 本地预览），跳过
+  [log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 boot
+  [log] [GameRoot] 启动完成，可见尺寸 720×1512
+  [log] [AudioService] 音效就绪 13/13
+  [log] [AudioService] BGM 就绪：audio/bgm（35.2s）
+  [log] [AudioService] BGM 起播（35.2s 循环）
+  [log:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+  [log] [AudioService] BGM 首播未生效（多半被 autoplay 拦了）—— 已复位，等下一次触摸重试
+  [log] [PageManager] 进入页面 home
+  [log] [AudioService] BGM 起播（35.2s 循环）
+  [log] [Layout] chap .topbar x=0.0 y=0.0 w=372.0 h=123.5 db=657.7
+  [log] [Layout] chap .btn-back x=16.0 y=55.8 w=32.0 h=32.0 db=693.4
+  [log] [Layout] chap .chap-list x=0.0 y=163.8 w=372.0 h=577.1 db=40.3
+  [log] [Layout] chap .chap[0] x=16.0 y=163.8 w=340.0 h=135.4 db=482.1 r=17
+  [log] [Layout] chap .chap[1] x=16.0 y=311.0 w=340.0 h=135.4 db=334.8 r=17
+  [log] [Layout] chap .chap[2] x=16.0 y=458.3 w=340.0 h=135.4 db=187.5 r=17
+  [log] [Layout] chap .chap[3] x=16.0 y=605.5 w=340.0 h=135.4 db=40.3 r=17
+  [log] [PageManager] 进入页面 chap
+  [log] [Layout] map .topbar x=0.0 y=0.0 w=372.0 h=123.5 db=657.7
+  [log] [Layout] map .btn-back x=16.0 y=55.8 w=32.0 h=32.0 db=693.4
+  [log] [Layout] map .map-info x=0.0 y=123.5 w=372.0 h=31.0 db=626.7
+  [log] [Layout] map .map-wrap x=0.0 y=154.5 w=372.0 h=626.7 db=0.0
+  [log] [Layout] map .map-content x=0.0 y=154.5 w=372.0 h=660.3 db=-33.6
+  [log] [Layout] map .node-row[0] x=0.0 y=160.7 w=372.0 h=68.2 db=552.3
+  [log] [Layout] map .node[0] x=20.2 y=160.7 w=68.2 h=68.2 db=552.3 L1
+  [log] [Layout] map .node-row[1] x=0.0 y=238.7 w=372.0 h=68.2 db=474.3
+  [log] [Layout] map .node[1] x=151.9 y=238.7 w=68.2 h=68.2 db=474.3 L2
+  [log] [Layout] map .node-row[2] x=0.0 y=316.7 w=372.0 h=68.2 db=396.3
+  [log] [Layout] map .node[2] x=283.7 y=316.7 w=68.2 h=68.2 db=396.3 L3
+  [log] [Layout] map .node-row[3] x=0.0 y=394.7 w=372.0 h=68.2 db=318.3
+  [log] [Layout] map .node[3] x=20.2 y=394.7 w=68.2 h=68.2 db=318.3 L4
+  [log] [Layout] map .node-row[4] x=0.0 y=472.8 w=372.0 h=68.2 db=240.3
+  [log] [Layout] map .node[4] x=151.9 y=472.8 w=68.2 h=68.2 db=240.3 L5
+  [log] [Layout] map .node-row[5] x=0.0 y=550.8 w=372.0 h=68.2 db=162.2
+  [log] [Layout] map .node[5] x=283.7 y=550.8 w=68.2 h=68.2 db=162.2 L6
+  [log] [Layout] map .node-row[6] x=0.0 y=628.8 w=372.0 h=68.2 db=84.2
+  [log] [Layout] map .node[6] x=20.2 y=628.8 w=68.2 h=68.2 db=84.2 L7
+  [log] [Layout] map .node-row[7] x=0.0 y=706.8 w=372.0 h=68.2 db=6.2
+  [log] [Layout] map .node[7] x=151.9 y=706.8 w=68.2 h=68.2 db=6.2 L8
+  [log] [PageManager] 进入页面 map
+  [log] [PageManager] 进入页面 game
+  [log] [Layout] game .play-top x=0.0 y=0.0 w=372.0 h=92.0 db=689.2
+  [log] [Layout] game .btn-back x=14.0 y=55.8 w=32.0 h=32.0 db=693.4
+  [log] [Layout] game .play-title x=54.8 y=61.2 w=160.2 h=21.2 db=698.8
+  [log] [Layout] game .timer x=311.4 y=60.7 w=46.6 h=22.2 db=698.3
+  [log] [Layout] game .goal-bar x=0.0 y=92.0 w=372.0 h=74.9 db=614.3
+  [log] [Layout] game .goal-chip[0] x=18.3 y=96.1 w=61.3 h=27.9 db=657.2 杵
+  [log] [Layout] game .goal-chip[1] x=86.8 y=96.1 w=61.3 h=27.9 db=657.2 鞭
+  [log] [Layout] game .goal-chip[2] x=155.3 y=96.1 w=61.3 h=27.9 db=657.2 箭
+  [log] [Layout] game .goal-chip[3] x=223.9 y=96.1 w=61.3 h=27.9 db=657.2 斧
+  [log] [Layout] game .goal-chip[4] x=292.4 y=96.1 w=61.3 h=27.9 db=657.2 弩
+  [log] [Layout] game .goal-chip[0] x=86.8 y=131.2 w=61.3 h=27.9 db=622.1 剑
+  [log] [Layout] game .goal-chip[1] x=155.3 y=131.2 w=61.3 h=27.9 db=622.1 弦
+  [log] [Layout] game .goal-chip[2] x=223.9 y=131.2 w=61.3 h=27.9 db=622.1 炮
+  [log] [Layout] game .tips x=14.0 y=166.9 w=344.1 h=35.7 db=578.7
+  [log] [Layout] game .board-wrap x=0.0 y=206.7 w=372.0 h=422.1 db=152.4
+  [log] [Layout] game #board x=11.9 y=243.6 w=348.2 h=348.2 db=189.4
+  [log] [Layout] game .tile x=15.0 y=246.7 w=52.7 h=52.7 db=481.8 pitch=112 gap=10
+  [log] [Layout] game .made-strip x=14.0 y=628.8 w=344.1 h=62.0 db=90.4
+  [log] [Layout] game .tool-bar x=0.0 y=698.5 w=372.0 h=82.7 db=0.0
+  [log] [Layout] game .tool[0] x=14.0 y=706.3 w=81.1 h=58.9 db=16.0
+  [log] [Layout] game .tool[1] x=104.9 y=706.3 w=81.1 h=58.9 db=16.0
+  [log] [Layout] game .tool[2] x=195.8 y=706.3 w=81.1 h=58.9 db=16.0
+  [log] [Layout] game .tool[3] x=286.8 y=706.3 w=81.1 h=58.9 db=16.0
+  [log] [Diag] XFORM cell=0,0 screen=66.67,440.42 win=600×1260 scale=0.8333
+  [log] [GamePage] L3 开局就绪：32 张牌，棋盘 6×6（关卡表 6×7，密铺后行数收紧），格距 112px / 牌 102px，棋盘 674×674，限时 155s · 种子=force:403464159
+  [log] [Diag] BOARD cols=6 rows=6 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 玄@0,0,part 弓@0,1,radical 便@0,2,part 父@0,3,radical 奴@0,4,radical 弓@0,5,part 刂@1,0,part 革@1,1,radical 革@1,2,radical 便@1,3,part 火@1,4,radical 玄@1,5,part 午@2,0,part 前@2,1,part 包@2,2,part 父@2,3,radical 斤@2,4,part 木@2,5,radical 午@3,0,part 竹@3,1,radical 佥@3,2,radical 竹@3,3,radical 弓@3,4,part 刂@3,5,part 铁砧@4,0,treasure 木@4,1,radical 前@4,2,part 铁砧@4,3,treasure 佥@4,4,radical 奴@4,5,radical 弓@5,0,radical 斤@5,1,part
+  [log] [Diag] STATE seq=1 开局 步=0 已消=0/15 剩牌=32
+  [log] [Diag] SUGGEST 从=便@0,2 到=1,2 命中=革
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] DIRECT 从=玄@0,0 到=0,1 命中=弓
+  [log] [Diag] NONMATCH 从=斤@2,4 到=3,4
+  [log] [Diag] PUSH 从=便@0,2 到=1,2 推=革@1,2->2,2|包@2,2->3,2|佥@3,2->4,2|前@4,2->5,2 命中=革@1,1
+  [log] [Diag] PUSHNM 从=木@2,5 到=3,5 推=刂@3,5->4,5|奴@4,5->5,5
+  [log] [Diag] TREASURE none
+  [log] [Diag] FLASH seq=1 中心=革@1,2 搭档数=2 便@1,3 便@0,2
+  [log] [Toast] 本关有 1 对宝牌「铁砧」
+凑成一对，会额外替你消掉一对字牌
+  [log] [Toast] 「玄」和「弓」已经对齐了
+点一下就能拼成「弦」
+  [log] [GamePage] 提示（已对齐）：玄+弓=弦
+  [log] [GamePage] 消除：玄+弓=弦
+  [log] [Diag] BOARD cols=6 rows=6 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 便@0,2,part 父@0,3,radical 奴@0,4,radical 弓@0,5,part 刂@1,0,part 革@1,1,radical 革@1,2,radical 便@1,3,part 火@1,4,radical 玄@1,5,part 午@2,0,part 前@2,1,part 包@2,2,part 父@2,3,radical 斤@2,4,part 木@2,5,radical 午@3,0,part 竹@3,1,radical 佥@3,2,radical 竹@3,3,radical 弓@3,4,part 刂@3,5,part 铁砧@4,0,treasure 木@4,1,radical 前@4,2,part 铁砧@4,3,treasure 佥@4,4,radical 奴@4,5,radical 弓@5,0,radical 斤@5,1,part
+  [log] [Diag] STATE seq=2 合成 步=0 已消=1/15 剩牌=30
+  [log] [Diag] SUGGEST 从=竹@3,3 到=4,3 命中=前
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] DIRECT 从=便@0,2 到=1,2 命中=革
+  [log] [Diag] NONMATCH 从=斤@2,4 到=3,4
+  [log] [Diag] PUSH 从=弓@3,4 到=4,4 推=佥@4,4->5,4 命中=奴@4,5
+  [log] [Diag] PUSHNM 从=佥@3,2 到=4,2 推=前@4,2->5,2
+  [log] [Diag] TREASURE none
+  [log] [Diag] FLASH seq=2 中心=革@1,2 搭档数=2 便@1,3 便@0,2
+  [log] [GamePage] 重排第 1 轮 → 可解（greedy，15 手）
+  [log] [Diag] BOARD cols=6 rows=6 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 弓@0,2,radical 铁砧@0,3,treasure 革@0,4,radical 奴@0,5,radical 火@1,0,radical 刂@1,1,part 斤@1,2,part 弓@1,3,part 木@1,4,radical 革@1,5,radical 竹@2,0,radical 父@2,1,radical 父@2,2,radical 便@2,3,part 木@2,4,radical 斤@2,5,part 包@3,0,part 午@3,1,part 佥@3,2,radical 奴@3,3,radical 午@3,4,part 玄@3,5,part 佥@4,0,radical 弓@4,1,part 刂@4,2,part 前@4,3,part 铁砧@4,4,treasure 便@4,5,part 前@5,0,part 竹@5,1,radical
+  [log] [Diag] STATE seq=3 洗牌 步=0 已消=1/15 剩牌=30
+  [log] [Diag] SUGGEST 从=刂@4,2 到=5,2 命中=佥
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] DIRECT 从=斤@1,2 到=2,2 命中=父
+  [log] [Diag] NONMATCH 从=便@2,3 到=3,3
+  [log] [Diag] PUSH 从=父@2,1 到=1,1 推=刂@1,1->0,1 命中=斤@1,2
+  [log] [Diag] PUSHNM 从=革@1,5 到=2,5 推=斤@2,5->3,5|玄@3,5->4,5|便@4,5->5,5
+  [log] [Diag] TREASURE none
+  [log] [Diag] FLASH seq=3 none
+  [log] [Toast] 盘面已重排
+  [log] [GamePage] 洗牌（玩家使用）→ 有解
+  [log] [GamePage] 延长时间：+30s（剩 169s，还有 0 次）
+  [log] [Toast] 时间 +30 秒
+
+✅ 冒烟测试完成，全部硬断言通过，产物目录：/tmp/s18-tools2

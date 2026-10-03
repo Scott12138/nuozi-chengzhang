@@ -1,0 +1,199 @@
+[timeEnd] Init Base: 2.9599609375 ms
+[timeEnd] Init Infrastructure: 16.197998046875 ms
+[timeEnd] Init Base: 1.533203125 ms
+[timeEnd] Init Infrastructure: 12.823974609375 ms
+[timeEnd] Init SubSystem: 37.7109375 ms
+[log] Cocos Creator v3.8.8
+[log] Using custom pipeline: Builtin
+[timeEnd] Init Project: 30.166015625 ms
+[timeEnd] LoadScene db://assets/scenes/Main.scene: 16.992919921875 ms
+[timeEnd] InitScene: 0.1298828125 ms
+[timeEnd] AttachPersist: 0.001953125 ms
+[timeEnd] AutoRelease: 0.057861328125 ms
+[timeEnd] Destroy: 0.080810546875 ms
+[timeEnd] Activate: 2.389892578125 ms
+[log] Success to load scene: db://assets/scenes/Main.scene
+[log] [Bootstrap] GameRoot 已挂载到 Canvas
+[log] [AdService] 广告位自检：非微信环境（web / 本地预览），跳过
+[log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1512
+[log] [PageManager] 进入页面 boot
+[log] [GameRoot] 启动完成，可见尺寸 720×1512
+[log] [AudioService] 音效就绪 13/13
+[log] [AudioService] BGM 就绪：audio/bgm（35.2s）
+[log] [AudioService] BGM 起播（35.2s 循环）
+[log:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[log] [AudioService] BGM 首播未生效（多半被 autoplay 拦了）—— 已复位，等下一次触摸重试
+[log] [PageManager] 进入页面 home
+[timeEnd] Init Base: 2.31298828125 ms
+[timeEnd] Init Infrastructure: 10.73193359375 ms
+[timeEnd] Init SubSystem: 21.155029296875 ms
+[log] Cocos Creator v3.8.8
+[log] Using custom pipeline: Builtin
+[timeEnd] Init Project: 20.31201171875 ms
+[timeEnd] LoadScene db://assets/scenes/Main.scene: 16.43017578125 ms
+[timeEnd] InitScene: 0.03076171875 ms
+[timeEnd] AttachPersist: 0.002197265625 ms
+[timeEnd] AutoRelease: 0.006103515625 ms
+[timeEnd] Destroy: 0.02392578125 ms
+[timeEnd] Activate: 0.718017578125 ms
+[log] Success to load scene: db://assets/scenes/Main.scene
+[log] [Bootstrap] GameRoot 已挂载到 Canvas
+[log] [AdService] 广告位自检：非微信环境（web / 本地预览），跳过
+[log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1512
+[log] [PageManager] 进入页面 boot
+[log] [GameRoot] 启动完成，可见尺寸 720×1512
+[log] [AudioService] 音效就绪 13/13
+[log] [AudioService] BGM 就绪：audio/bgm（35.2s）
+[log] [AudioService] BGM 起播（35.2s 循环）
+[log:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[log] [AudioService] BGM 首播未生效（多半被 autoplay 拦了）—— 已复位，等下一次触摸重试
+[log] [PageManager] 进入页面 home
+[log] [AudioService] BGM 起播（35.2s 循环）
+[log] [Layout] chap .topbar x=0.0 y=0.0 w=372.0 h=123.5 db=657.7
+[log] [Layout] chap .btn-back x=16.0 y=55.8 w=32.0 h=32.0 db=693.4
+[log] [Layout] chap .chap-list x=0.0 y=163.8 w=372.0 h=577.1 db=40.3
+[log] [Layout] chap .chap[0] x=16.0 y=163.8 w=340.0 h=135.4 db=482.1 r=17
+[log] [Layout] chap .chap[1] x=16.0 y=311.0 w=340.0 h=135.4 db=334.8 r=17
+[log] [Layout] chap .chap[2] x=16.0 y=458.3 w=340.0 h=135.4 db=187.5 r=17
+[log] [Layout] chap .chap[3] x=16.0 y=605.5 w=340.0 h=135.4 db=40.3 r=17
+[log] [PageManager] 进入页面 chap
+[log] [Layout] map .topbar x=0.0 y=0.0 w=372.0 h=123.5 db=657.7
+[log] [Layout] map .btn-back x=16.0 y=55.8 w=32.0 h=32.0 db=693.4
+[log] [Layout] map .map-info x=0.0 y=123.5 w=372.0 h=31.0 db=626.7
+[log] [Layout] map .map-wrap x=0.0 y=154.5 w=372.0 h=626.7 db=0.0
+[log] [Layout] map .map-content x=0.0 y=154.5 w=372.0 h=660.3 db=-33.6
+[log] [Layout] map .node-row[0] x=0.0 y=160.7 w=372.0 h=68.2 db=552.3
+[log] [Layout] map .node[0] x=20.2 y=160.7 w=68.2 h=68.2 db=552.3 L1
+[log] [Layout] map .node-row[1] x=0.0 y=238.7 w=372.0 h=68.2 db=474.3
+[log] [Layout] map .node[1] x=151.9 y=238.7 w=68.2 h=68.2 db=474.3 L2
+[log] [Layout] map .node-row[2] x=0.0 y=316.7 w=372.0 h=68.2 db=396.3
+[log] [Layout] map .node[2] x=283.7 y=316.7 w=68.2 h=68.2 db=396.3 L3
+[log] [Layout] map .node-row[3] x=0.0 y=394.7 w=372.0 h=68.2 db=318.3
+[log] [Layout] map .node[3] x=20.2 y=394.7 w=68.2 h=68.2 db=318.3 L4
+[log] [Layout] map .node-row[4] x=0.0 y=472.8 w=372.0 h=68.2 db=240.3
+[log] [Layout] map .node[4] x=151.9 y=472.8 w=68.2 h=68.2 db=240.3 L5
+[log] [Layout] map .node-row[5] x=0.0 y=550.8 w=372.0 h=68.2 db=162.2
+[log] [Layout] map .node[5] x=283.7 y=550.8 w=68.2 h=68.2 db=162.2 L6
+[log] [Layout] map .node-row[6] x=0.0 y=628.8 w=372.0 h=68.2 db=84.2
+[log] [Layout] map .node[6] x=20.2 y=628.8 w=68.2 h=68.2 db=84.2 L7
+[log] [Layout] map .node-row[7] x=0.0 y=706.8 w=372.0 h=68.2 db=6.2
+[log] [Layout] map .node[7] x=151.9 y=706.8 w=68.2 h=68.2 db=6.2 L8
+[log] [PageManager] 进入页面 map
+[log] [GamePage] ⚠️ 工装指定关卡：__CHA_LEVEL__ = 1（覆盖 goto 传进来的 1）
+[log] [PageManager] 进入页面 game
+[log] [Layout] game .play-top x=0.0 y=64.1 w=372.0 h=92.0 db=625.2
+[log] [Layout] game .btn-back x=14.0 y=119.9 w=32.0 h=32.0 db=629.3
+[log] [Layout] game .play-title x=54.8 y=125.3 w=160.2 h=21.2 db=634.7
+[log] [Layout] game .timer x=311.4 y=124.8 w=46.6 h=22.2 db=634.2
+[log] [Layout] game .goal-bar x=0.0 y=156.0 w=372.0 h=74.9 db=550.3
+[log] [Layout] game .goal-chip[0] x=18.3 y=160.2 w=61.3 h=27.9 db=593.1 枪
+[log] [Layout] game .goal-chip[1] x=86.8 y=160.2 w=61.3 h=27.9 db=593.1 锤
+[log] [Layout] game .goal-chip[2] x=155.3 y=160.2 w=61.3 h=27.9 db=593.1 鞭
+[log] [Layout] game .goal-chip[3] x=223.9 y=160.2 w=61.3 h=27.9 db=593.1 箭
+[log] [Layout] game .goal-chip[4] x=292.4 y=160.2 w=61.3 h=27.9 db=593.1 斧
+[log] [Layout] game .goal-chip[0] x=86.8 y=195.3 w=61.3 h=27.9 db=558.0 弩
+[log] [Layout] game .goal-chip[1] x=155.3 y=195.3 w=61.3 h=27.9 db=558.0 剑
+[log] [Layout] game .goal-chip[2] x=223.9 y=195.3 w=61.3 h=27.9 db=558.0 炮
+[log] [Layout] game .tips x=14.0 y=231.0 w=344.1 h=35.7 db=514.6
+[log] [Layout] game .board-wrap x=0.0 y=270.7 w=372.0 h=294.0 db=216.5
+[log] [Layout] game #board x=11.9 y=272.8 w=348.2 h=289.8 db=218.6
+[log] [Layout] game .tile x=15.0 y=275.6 w=52.7 h=52.7 db=452.9 pitch=112 gap=10
+[log] [Layout] game .made-strip x=14.0 y=564.7 w=344.1 h=62.0 db=154.5
+[log] [Layout] game .tool-bar x=0.0 y=634.5 w=372.0 h=82.7 db=64.1
+[log] [Layout] game .tool[0] x=14.0 y=642.2 w=81.1 h=58.9 db=80.1
+[log] [Layout] game .tool[1] x=104.9 y=642.2 w=81.1 h=58.9 db=80.1
+[log] [Layout] game .tool[2] x=195.8 y=642.2 w=81.1 h=58.9 db=80.1
+[log] [Layout] game .tool[3] x=286.8 y=642.2 w=81.1 h=58.9 db=80.1
+[log] [Diag] XFORM cell=0,0 screen=66.67,487.08 win=600×1260 scale=0.8333
+[log] [GamePage] L1 开局就绪：30 张牌，棋盘 6×5（关卡表 6×5，密铺后行数收紧），格距 112px / 牌 102px，棋盘 674×561，限时 175s · 种子=seed:1331007445
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-52
+[log] [Diag] FRAME headY=400 ct=124 wrapTop=524 wrapH=569 boardH=561 boardTop=528 room=8 slack=248
+[log] [Diag] TILES 父@0,0,radical 斤@0,1,part 刂@0,2,part 奴@0,3,radical 前@0,4,part 前@0,5,part 竹@1,0,radical 父@1,1,radical 奴@1,2,radical 木@1,3,radical 钅@1,4,radical 包@1,5,part 木@2,0,radical 弓@2,1,part 便@2,2,part 革@2,3,radical 佥@2,4,radical 仓@2,5,part 钅@3,0,radical 佥@3,1,radical 刂@3,2,part 革@3,3,radical 弓@3,4,part 仓@3,5,part 垂@4,0,part 垂@4,1,part 火@4,2,radical 竹@4,3,radical 斤@4,4,part 便@4,5,part
+[log] [Diag] STATE seq=1 开局 步=0 已消=0/15 剩牌=30
+[log] [Diag] SUGGEST none
+[log] [Diag] REACH direct=1 suggest=0 → 只能点掉已对齐的一对
+[log] [Diag] DIRECT 从=父@0,0 到=0,1 命中=斤
+[log] [Diag] NONMATCH none
+[log] [Diag] PUSH none
+[log] [Diag] PUSHNM none
+[log] [Diag] FLASH seq=1 中心=斤@0,1 搭档数=2 父@0,0 父@1,1
+[log] [Layout] map .topbar x=0.0 y=0.0 w=372.0 h=123.5 db=657.7
+[log] [Layout] map .btn-back x=16.0 y=55.8 w=32.0 h=32.0 db=693.4
+[log] [Layout] map .map-info x=0.0 y=123.5 w=372.0 h=31.0 db=626.7
+[log] [Layout] map .map-wrap x=0.0 y=154.5 w=372.0 h=626.7 db=0.0
+[log] [Layout] map .map-content x=0.0 y=154.5 w=372.0 h=660.3 db=-33.6
+[log] [Layout] map .node-row[0] x=0.0 y=160.7 w=372.0 h=68.2 db=552.3
+[log] [Layout] map .node[0] x=20.2 y=160.7 w=68.2 h=68.2 db=552.3 L1
+[log] [Layout] map .node-row[1] x=0.0 y=238.7 w=372.0 h=68.2 db=474.3
+[log] [Layout] map .node[1] x=151.9 y=238.7 w=68.2 h=68.2 db=474.3 L2
+[log] [Layout] map .node-row[2] x=0.0 y=316.7 w=372.0 h=68.2 db=396.3
+[log] [Layout] map .node[2] x=283.7 y=316.7 w=68.2 h=68.2 db=396.3 L3
+[log] [Layout] map .node-row[3] x=0.0 y=394.7 w=372.0 h=68.2 db=318.3
+[log] [Layout] map .node[3] x=20.2 y=394.7 w=68.2 h=68.2 db=318.3 L4
+[log] [Layout] map .node-row[4] x=0.0 y=472.8 w=372.0 h=68.2 db=240.3
+[log] [Layout] map .node[4] x=151.9 y=472.8 w=68.2 h=68.2 db=240.3 L5
+[log] [Layout] map .node-row[5] x=0.0 y=550.8 w=372.0 h=68.2 db=162.2
+[log] [Layout] map .node[5] x=283.7 y=550.8 w=68.2 h=68.2 db=162.2 L6
+[log] [Layout] map .node-row[6] x=0.0 y=628.8 w=372.0 h=68.2 db=84.2
+[log] [Layout] map .node[6] x=20.2 y=628.8 w=68.2 h=68.2 db=84.2 L7
+[log] [Layout] map .node-row[7] x=0.0 y=706.8 w=372.0 h=68.2 db=6.2
+[log] [Layout] map .node[7] x=151.9 y=706.8 w=68.2 h=68.2 db=6.2 L8
+[log] [PageManager] 进入页面 map
+[log] [GamePage] ⚠️ 工装指定关卡：__CHA_LEVEL__ = 34（覆盖 goto 传进来的 1）
+[log] [PageManager] 进入页面 game
+[log] [Layout] game .play-top x=0.0 y=74.9 w=372.0 h=92.0 db=614.3
+[log] [Layout] game .btn-back x=14.0 y=130.7 w=32.0 h=32.0 db=618.4
+[log] [Layout] game .play-title x=54.8 y=136.1 w=160.2 h=21.2 db=623.9
+[log] [Layout] game .timer x=311.4 y=135.6 w=46.6 h=22.2 db=623.4
+[log] [Layout] game .goal-bar x=0.0 y=166.9 w=372.0 h=145.2 db=469.1
+[log] [Layout] game .goal-chip[0] x=18.3 y=171.0 w=61.3 h=27.9 db=582.3 坊
+[log] [Layout] game .goal-chip[1] x=86.8 y=171.0 w=61.3 h=27.9 db=582.3 扇
+[log] [Layout] game .goal-chip[2] x=155.3 y=171.0 w=61.3 h=27.9 db=582.3 室
+[log] [Layout] game .goal-chip[3] x=223.9 y=171.0 w=61.3 h=27.9 db=582.3 铜
+[log] [Layout] game .goal-chip[4] x=292.4 y=171.0 w=61.3 h=27.9 db=582.3 灯
+[log] [Layout] game .goal-chip[0] x=18.3 y=206.2 w=61.3 h=27.9 db=547.2 箱
+[log] [Layout] game .goal-chip[1] x=86.8 y=206.2 w=61.3 h=27.9 db=547.2 纸
+[log] [Layout] game .goal-chip[2] x=155.3 y=206.2 w=61.3 h=27.9 db=547.2 柜
+[log] [Layout] game .goal-chip[3] x=223.9 y=206.2 w=61.3 h=27.9 db=547.2 帐
+[log] [Layout] game .goal-chip[4] x=292.4 y=206.2 w=61.3 h=27.9 db=547.2 盆
+[log] [Layout] game .goal-chip[0] x=18.3 y=241.3 w=61.3 h=27.9 db=512.0 碗
+[log] [Layout] game .goal-chip[1] x=86.8 y=241.3 w=61.3 h=27.9 db=512.0 坎
+[log] [Layout] game .goal-chip[2] x=155.3 y=241.3 w=61.3 h=27.9 db=512.0 房
+[log] [Layout] game .goal-chip[3] x=223.9 y=241.3 w=61.3 h=27.9 db=512.0 宫
+[log] [Layout] game .goal-chip[4] x=292.4 y=241.3 w=61.3 h=27.9 db=512.0 铁
+[log] [Layout] game .goal-chip[0] x=155.3 y=276.4 w=61.3 h=27.9 db=476.9 炉
+[log] [Layout] game .board-wrap x=0.0 y=312.1 w=372.0 h=242.3 db=226.8
+[log] [Layout] game #board x=16.0 y=314.1 w=340.0 h=238.2 db=228.9
+[log] [Layout] game .tile x=17.1 y=315.4 w=31.0 h=31.0 db=434.8 pitch=66 gap=6
+[log] [Layout] game .made-strip x=14.0 y=553.9 w=344.1 h=62.0 db=165.3
+[log] [Layout] game .tool-bar x=0.0 y=623.6 w=372.0 h=82.7 db=74.9
+[log] [Layout] game .tool[0] x=14.0 y=631.4 w=81.1 h=58.9 db=90.9
+[log] [Layout] game .tool[1] x=104.9 y=631.4 w=81.1 h=58.9 db=90.9
+[log] [Layout] game .tool[2] x=195.8 y=631.4 w=81.1 h=58.9 db=90.9
+[log] [Layout] game .tool[3] x=286.8 y=631.4 w=81.1 h=58.9 db=90.9
+[log] [Diag] XFORM cell=0,0 screen=52.50,533.75 win=600×1260 scale=0.8333
+[log] [GamePage] L34 开局就绪：70 张牌，棋盘 10×7（关卡表 10×7，密铺后行数收紧），格距 66px / 牌 60px，棋盘 658×461，限时 365s · 种子=seed:291974843
+[log] [Diag] BOARD cols=10 rows=7 pitch=66 gap=6 cell=60 cx=0 cy=-82
+[log] [Diag] FRAME headY=459 ct=145 wrapTop=604 wrapH=469 boardH=461 boardTop=608 room=8 slack=289
+[log] [Diag] TILES 皿@0,0,part 分@0,1,radical 火@0,2,radical 氏@0,3,part 户@0,4,radical 钅@0,5,radical 宀@0,6,radical 火@0,7,radical 方@0,8,part 羽@0,9,part 灯盏@1,0,treasure 户@1,1,radical 户@1,2,radical 丁@1,3,part 至@1,4,part 竹@1,5,radical 羽@1,6,part 陶罐@1,7,treasure 欠@1,8,part 巾@1,9,radical 同@2,0,part 相@2,1,part 欠@2,2,part 火@2,3,radical 竹@2,4,radical 灯盏@2,5,treasure 相@2,6,part 钅@2,7,radical 宀@2,8,radical 纟@2,9,radical 失@3,0,part 宀@3,1,radical 石@3,2,radical 同@3,3,part 宛@3,4,part 石@3,5,radical 墨斗@3,6,treasure 吕@3,7,part 钅@3,8,radical 墨斗@3,9,treasure 皿@4,0,part 吕@4,1,part 户@4,2,part 长@4,3,part 纟@4,4,radical 陶罐@4,5,treasure 钅@4,6,radical 土@4,7,radical 氏@4,8,part 户@4,9,radical 分@5,0,radical 失@5,1,part 长@5,2,part 至@5,3,part 宀@5,4,radical 土@5,5,radical 木@5,6,radical 土@5,7,radical 方@5,8,part 巨@5,9,part 巨@6,0,part 宛@6,1,part 方@6,2,part 巾@6,3,radical 丁@6,4,part 火@6,5,radical 方@6,6,part 木@6,7,radical 土@6,8,radical 户@6,9,part
+[log] [Diag] STATE seq=1 开局 步=0 已消=0/32 剩牌=70
+[log] [Diag] SUGGEST none
+[log] [Diag] REACH direct=1 suggest=0 → 只能点掉已对齐的一对
+[log] [Diag] DIRECT 从=皿@0,0 到=0,1 命中=分
+[log] [Diag] NONMATCH none
+[log] [Diag] PUSH none
+[log] [Diag] PUSHNM none
+[log] [Diag] TREASURE none
+[log] [Diag] FLASH seq=1 中心=方@5,8 搭档数=2 土@5,7 土@6,8
+[log] [Toast] 本关有 3 对宝牌「陶罐」「灯盏」「墨斗」
+凑成一对，会额外替你消掉一对字牌
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime

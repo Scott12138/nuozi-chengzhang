@@ -1,0 +1,882 @@
+{
+  "generatedAt": "2026-10-03T15:00:31.764Z",
+  "per": 4,
+  "levels": {
+    "1": {
+      "cols": 6,
+      "rows": 6,
+      "pairs": 14,
+      "tr": 0,
+      "tiles": 28,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 12,
+      "seeds": [
+        1904974944,
+        1331007445,
+        1884689672,
+        2144115192
+      ],
+      "fps": [
+        "fc3a9221",
+        "87ad12d3",
+        "0ede4989",
+        "965d7869"
+      ]
+    },
+    "2": {
+      "cols": 6,
+      "rows": 6,
+      "pairs": 14,
+      "tr": 0,
+      "tiles": 28,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 5,
+      "seeds": [
+        736188019,
+        878330672,
+        1420103664,
+        1818896488
+      ],
+      "fps": [
+        "d6ad72af",
+        "9e6f4d29",
+        "fc448229",
+        "a66c0eed"
+      ]
+    },
+    "3": {
+      "cols": 6,
+      "rows": 7,
+      "pairs": 15,
+      "tr": 1,
+      "tiles": 32,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 12,
+      "seeds": [
+        730614068,
+        8734529,
+        1945428225,
+        403464159
+      ],
+      "fps": [
+        "09bfb9b1",
+        "72a97e0d",
+        "1215634f",
+        "2d376a3b"
+      ]
+    },
+    "4": {
+      "cols": 6,
+      "rows": 7,
+      "pairs": 15,
+      "tr": 1,
+      "tiles": 32,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 10,
+      "seeds": [
+        1403314377,
+        748044549,
+        369490022,
+        1688188449
+      ],
+      "fps": [
+        "0fc643e3",
+        "d0a4897f",
+        "51053d8d",
+        "98d36e8f"
+      ]
+    },
+    "5": {
+      "cols": 7,
+      "rows": 7,
+      "pairs": 17,
+      "tr": 1,
+      "tiles": 36,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 5,
+      "seeds": [
+        2068623918,
+        959849629,
+        1423973279,
+        1238616240
+      ],
+      "fps": [
+        "dbce5049",
+        "68f690c9",
+        "1ab6f8b9",
+        "a7c7b031"
+      ]
+    },
+    "6": {
+      "cols": 7,
+      "rows": 7,
+      "pairs": 17,
+      "tr": 1,
+      "tiles": 36,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 5,
+      "seeds": [
+        1885822675,
+        1064891481,
+        1051220165,
+        1784898698
+      ],
+      "fps": [
+        "3355ab9b",
+        "f97513ab",
+        "c8eeb9cd",
+        "d80e9bcd"
+      ]
+    },
+    "7": {
+      "cols": 7,
+      "rows": 8,
+      "pairs": 19,
+      "tr": 1,
+      "tiles": 40,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 7,
+      "seeds": [
+        1293609269,
+        1431581313,
+        778300819,
+        852345898
+      ],
+      "fps": [
+        "28097a09",
+        "2090bf6d",
+        "62a17077",
+        "4d1851ff"
+      ]
+    },
+    "8": {
+      "cols": 7,
+      "rows": 8,
+      "pairs": 19,
+      "tr": 1,
+      "tiles": 40,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 8,
+      "seeds": [
+        1975738391,
+        1808352482,
+        678420535,
+        209883698
+      ],
+      "fps": [
+        "e4c6e291",
+        "214aced7",
+        "6ed12537",
+        "e63e2f81"
+      ]
+    },
+    "9": {
+      "cols": 6,
+      "rows": 6,
+      "pairs": 14,
+      "tr": 0,
+      "tiles": 28,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 2,
+      "seeds": [
+        1805746801,
+        1715953227,
+        2051131481,
+        981161658
+      ],
+      "fps": [
+        "6e907df3",
+        "fd133a39",
+        "b1f735bf",
+        "5849e57f"
+      ]
+    },
+    "10": {
+      "cols": 8,
+      "rows": 8,
+      "pairs": 21,
+      "tr": 1,
+      "tiles": 44,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 9,
+      "seeds": [
+        27097592,
+        1373292290,
+        689671522,
+        196186075
+      ],
+      "fps": [
+        "97bd497b",
+        "c1d4c705",
+        "8ae14de3",
+        "8d88df8b"
+      ]
+    },
+    "11": {
+      "cols": 8,
+      "rows": 8,
+      "pairs": 21,
+      "tr": 1,
+      "tiles": 44,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 12,
+      "seeds": [
+        1504636778,
+        1895114971,
+        29848034,
+        1480904416
+      ],
+      "fps": [
+        "7f6ac82d",
+        "0b62aaff",
+        "7e9233db",
+        "8595264d"
+      ]
+    },
+    "12": {
+      "cols": 8,
+      "rows": 9,
+      "pairs": 23,
+      "tr": 1,
+      "tiles": 48,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 22,
+      "seeds": [
+        1555771340,
+        1263961398,
+        1425949405,
+        2036050413
+      ],
+      "fps": [
+        "880bb01b",
+        "be4b03ff",
+        "0c9f4553",
+        "59def2b9"
+      ]
+    },
+    "13": {
+      "cols": 8,
+      "rows": 9,
+      "pairs": 23,
+      "tr": 1,
+      "tiles": 48,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 18,
+      "seeds": [
+        1988869420,
+        877548474,
+        211310867,
+        984280522
+      ],
+      "fps": [
+        "f14d49e9",
+        "f0a41b6b",
+        "26bc8805",
+        "a5c5f56b"
+      ]
+    },
+    "14": {
+      "cols": 9,
+      "rows": 9,
+      "pairs": 24,
+      "tr": 2,
+      "tiles": 52,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 20,
+      "seeds": [
+        1815757598,
+        1654914464,
+        2092549106,
+        1644047813
+      ],
+      "fps": [
+        "edbf574b",
+        "a89fa571",
+        "d400f8a3",
+        "060e8de5"
+      ]
+    },
+    "15": {
+      "cols": 9,
+      "rows": 9,
+      "pairs": 24,
+      "tr": 2,
+      "tiles": 52,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 9,
+      "seeds": [
+        539701715,
+        1942076357,
+        347450192,
+        1951039959
+      ],
+      "fps": [
+        "e81f0a87",
+        "c386fee7",
+        "2a318f09",
+        "5ba73dcf"
+      ]
+    },
+    "16": {
+      "cols": 9,
+      "rows": 9,
+      "pairs": 24,
+      "tr": 2,
+      "tiles": 52,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 9,
+      "seeds": [
+        1674361382,
+        218763082,
+        1935002750,
+        1796996073
+      ],
+      "fps": [
+        "f3424a9f",
+        "553361b3",
+        "5bbcc2db",
+        "26d83f1d"
+      ]
+    },
+    "17": {
+      "cols": 6,
+      "rows": 6,
+      "pairs": 14,
+      "tr": 0,
+      "tiles": 28,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 2,
+      "seeds": [
+        1885079085,
+        453529151,
+        1476996490,
+        482775274
+      ],
+      "fps": [
+        "1eb64ccd",
+        "f464e6c1",
+        "332c214d",
+        "9eca1177"
+      ]
+    },
+    "18": {
+      "cols": 9,
+      "rows": 9,
+      "pairs": 24,
+      "tr": 2,
+      "tiles": 52,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 12,
+      "seeds": [
+        1997726213,
+        1975104859,
+        240235123,
+        1391881121
+      ],
+      "fps": [
+        "0514efb3",
+        "2b4dcd3f",
+        "b868e77f",
+        "905c2d07"
+      ]
+    },
+    "19": {
+      "cols": 9,
+      "rows": 9,
+      "pairs": 24,
+      "tr": 2,
+      "tiles": 52,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 10,
+      "seeds": [
+        408249086,
+        1126519873,
+        1568665038,
+        1407666672
+      ],
+      "fps": [
+        "4f34ddcd",
+        "611f577d",
+        "f548429f",
+        "49643d09"
+      ]
+    },
+    "20": {
+      "cols": 9,
+      "rows": 10,
+      "pairs": 26,
+      "tr": 2,
+      "tiles": 56,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 12,
+      "seeds": [
+        149089292,
+        247597651,
+        22932164,
+        420047104
+      ],
+      "fps": [
+        "f51f4a63",
+        "7463751b",
+        "75e3ae75",
+        "12fbc7b1"
+      ]
+    },
+    "21": {
+      "cols": 9,
+      "rows": 10,
+      "pairs": 26,
+      "tr": 2,
+      "tiles": 56,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 12,
+      "seeds": [
+        1427214128,
+        1340218521,
+        1209388349,
+        1994610825
+      ],
+      "fps": [
+        "f7bf3955",
+        "4d2a4d73",
+        "f0233bdd",
+        "50968ddf"
+      ]
+    },
+    "22": {
+      "cols": 9,
+      "rows": 10,
+      "pairs": 26,
+      "tr": 2,
+      "tiles": 56,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 11,
+      "seeds": [
+        1234592047,
+        1664855992,
+        461904309,
+        1741031106
+      ],
+      "fps": [
+        "bbdf96fd",
+        "694b5a79",
+        "bda939c5",
+        "2bcd111d"
+      ]
+    },
+    "23": {
+      "cols": 10,
+      "rows": 10,
+      "pairs": 28,
+      "tr": 2,
+      "tiles": 60,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 28,
+      "seeds": [
+        1391834308,
+        84435715,
+        1996820657,
+        821007588
+      ],
+      "fps": [
+        "e37e5fb9",
+        "5f8aeee5",
+        "28f944cf",
+        "84ad8081"
+      ]
+    },
+    "24": {
+      "cols": 10,
+      "rows": 10,
+      "pairs": 28,
+      "tr": 2,
+      "tiles": 60,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 13,
+      "seeds": [
+        1862613005,
+        572596154,
+        571465721,
+        1547701030
+      ],
+      "fps": [
+        "7d7fd059",
+        "a3592e2f",
+        "03299e91",
+        "379a1699"
+      ]
+    },
+    "25": {
+      "cols": 10,
+      "rows": 10,
+      "pairs": 28,
+      "tr": 2,
+      "tiles": 60,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 15,
+      "seeds": [
+        1039985278,
+        1872151525,
+        152987813,
+        401128414
+      ],
+      "fps": [
+        "b9ea09c3",
+        "14f3ebf9",
+        "8979b317",
+        "923e030d"
+      ]
+    },
+    "26": {
+      "cols": 10,
+      "rows": 11,
+      "pairs": 30,
+      "tr": 2,
+      "tiles": 64,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 23,
+      "seeds": [
+        2034398466,
+        1903895274,
+        113557889,
+        1332268945
+      ],
+      "fps": [
+        "d58cf3db",
+        "38ab3773",
+        "e5fb9727",
+        "e31c043f"
+      ]
+    },
+    "27": {
+      "cols": 10,
+      "rows": 11,
+      "pairs": 30,
+      "tr": 2,
+      "tiles": 64,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 20,
+      "seeds": [
+        1378574539,
+        1648642687,
+        1284944605,
+        755917967
+      ],
+      "fps": [
+        "28018e07",
+        "79f0aa9b",
+        "3d4c0be1",
+        "fcb84d9b"
+      ]
+    },
+    "28": {
+      "cols": 10,
+      "rows": 11,
+      "pairs": 30,
+      "tr": 2,
+      "tiles": 64,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 23,
+      "seeds": [
+        1794493587,
+        2120995239,
+        1195929377,
+        2046449890
+      ],
+      "fps": [
+        "0cc26123",
+        "64b35701",
+        "a7f9a7e5",
+        "85025451"
+      ]
+    },
+    "29": {
+      "cols": 6,
+      "rows": 6,
+      "pairs": 14,
+      "tr": 0,
+      "tiles": 28,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 3,
+      "seeds": [
+        106564533,
+        1585713682,
+        838620827,
+        235514195
+      ],
+      "fps": [
+        "a6b70da7",
+        "71b81be1",
+        "bb7f9325",
+        "ddbb647b"
+      ]
+    },
+    "30": {
+      "cols": 10,
+      "rows": 11,
+      "pairs": 30,
+      "tr": 2,
+      "tiles": 64,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 23,
+      "seeds": [
+        64446473,
+        1415847935,
+        269681156,
+        1445329519
+      ],
+      "fps": [
+        "8e02c91b",
+        "a9a03b77",
+        "9504247b",
+        "c9a993bf"
+      ]
+    },
+    "31": {
+      "cols": 10,
+      "rows": 11,
+      "pairs": 30,
+      "tr": 2,
+      "tiles": 64,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 36,
+      "seeds": [
+        1346486258,
+        1891964708,
+        1579816297,
+        510545193
+      ],
+      "fps": [
+        "799f9ccb",
+        "778a38c9",
+        "83259ded",
+        "e8ecdc47"
+      ]
+    },
+    "32": {
+      "cols": 10,
+      "rows": 11,
+      "pairs": 30,
+      "tr": 2,
+      "tiles": 64,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 22,
+      "seeds": [
+        125022603,
+        1927594074,
+        1791729568,
+        28754368
+      ],
+      "fps": [
+        "43f6e971",
+        "978f577f",
+        "355e5b81",
+        "612f9a03"
+      ]
+    },
+    "33": {
+      "cols": 10,
+      "rows": 11,
+      "pairs": 30,
+      "tr": 2,
+      "tiles": 64,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 26,
+      "seeds": [
+        15471330,
+        1953750989,
+        1971723820,
+        745110028
+      ],
+      "fps": [
+        "e5bb42b9",
+        "d2201155",
+        "269639d3",
+        "851e4bb1"
+      ]
+    },
+    "34": {
+      "cols": 10,
+      "rows": 12,
+      "pairs": 31,
+      "tr": 3,
+      "tiles": 68,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 50,
+      "seeds": [
+        1141290130,
+        1500319404,
+        773078122,
+        291974843
+      ],
+      "fps": [
+        "2c2ccb77",
+        "2030f059",
+        "8a335747",
+        "62033771"
+      ]
+    },
+    "35": {
+      "cols": 10,
+      "rows": 12,
+      "pairs": 31,
+      "tr": 3,
+      "tiles": 68,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 53,
+      "seeds": [
+        2125795071,
+        1315018750,
+        531720888,
+        1784411497
+      ],
+      "fps": [
+        "e47b80bd",
+        "f9eeede3",
+        "74f4acad",
+        "a26b50ed"
+      ]
+    },
+    "36": {
+      "cols": 10,
+      "rows": 12,
+      "pairs": 31,
+      "tr": 3,
+      "tiles": 68,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 55,
+      "seeds": [
+        413505301,
+        1212410540,
+        466862663,
+        1747508635
+      ],
+      "fps": [
+        "2036de01",
+        "731b059b",
+        "311d1723",
+        "323b520f"
+      ]
+    },
+    "37": {
+      "cols": 10,
+      "rows": 12,
+      "pairs": 31,
+      "tr": 3,
+      "tiles": 68,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 19,
+      "seeds": [
+        1340145141,
+        837641422,
+        1651700799,
+        1527038073
+      ],
+      "fps": [
+        "09662561",
+        "f8fd3bad",
+        "c79f1bbf",
+        "e75d4975"
+      ]
+    },
+    "38": {
+      "cols": 10,
+      "rows": 12,
+      "pairs": 31,
+      "tr": 3,
+      "tiles": 68,
+      "candidatesTried": 4,
+      "rejectedNoSol": 0,
+      "rejectedDup": 0,
+      "ms": 20,
+      "seeds": [
+        26797921,
+        1293480343,
+        1549680853,
+        1195096870
+      ],
+      "fps": [
+        "31ddd9e9",
+        "97527cd3",
+        "d78aef41",
+        "907dd25f"
+      ]
+    }
+  },
+  "ok": true,
+  "elapsedMs": 691
+}

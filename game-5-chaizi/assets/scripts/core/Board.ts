@@ -696,46 +696,157 @@ function buildDeck(lv: LevelDef, rng: Rng, firstId: number): Tile[] {
     return rng.shuffle(deck);
 }
 
-/** 造一个空棋盘，把牌堆随机撒上去 */
-export function generateBoard(lv: LevelDef, pair: PairTable, rng: Rng): Board {
-    const bd = new Board(lv.cols, lv.rows);
-    const deck = buildDeck(lv, rng, 0);
-    const total = lv.cols * lv.rows;
-    if (deck.length > total) {
-        // 数据错（生成期已自检）时的兜底：宁可少放牌也不要死循环
-        deck.length = total;
-    }
-    const slots = rng.shuffled(Array.from({ length: total }, (_, i) => i)).slice(0, deck.length);
-    deck.forEach((d, i) => {
-        const idx = slots[i];
-        bd.setCell(Math.floor(idx / lv.cols), idx % lv.cols, d);
-    });
+/**
+ * 开局保底的「**紧挨着**、点一下就能消」的对数。
+ *
+ * 用户 2026-10-03 原话：「初始时要把格子铺满，不能空，**而且开局时要有一些
+ * 相邻可以直接消除的**」—— 后半句是前半句能成立的前提：盘面铺满之后
+ * **一张牌也滑不动**（没有空格可以滑进去），玩家的第一步只能靠"两张已经挨在
+ * 一起、且能配对的牌点一下消掉"。没有这个保底，铺满的开局就是**死局**。
+ *
+ * 取 2 的理由：「一些」的最小诚实实现；再多会在盘面上留下肉眼可见的人为痕迹。
+ * 想调开局难度，改这一个常量即可。
+ */
+export const OPEN_PAIRS = 2;
 
-    // 教学关保证「一上来就有一对能直接消」：否则玩家第一步无从下手。
-    // ★ 必须有重试上限 —— 无上限的 while 在"怎么撒都凑不出"的极端情况下会卡死主线程。
-    if (lv.n <= 3 && !bd.hasDirectMatch(pair)) {
-        for (let k = 0; k < 24; k++) {
-            const bd2 = generateBoardShuffled(lv, rng);
-            if (bd2.hasDirectMatch(pair)) return bd2;
-        }
+/**
+ * 盘面上「**四方向紧挨**且能配对」的牌对（右、下两个方向扫，每对只数一次）。
+ *
+ * ⚠️ 与 `hasDirectMatch` 的口径不同，别混用：
+ *   · `hasDirectMatch` 走 `lineClear` —— 同行/同列**中间无牌**即可，**允许隔着空格**；
+ *   · 这里只认**紧邻**（中间连一个空格都没有）。
+ *   闪烁提示（用户原话「与左/右/上/下的格子」）用紧邻口径，是因为紧邻必然满足
+ *   `lineClear` ⇒ 一定能点得掉，不会出现"闪了却消不掉"。
+ */
+export function adjacentPairs(bd: Board, pair: PairTable): Array<[Tile, Tile]> {
+    const out: Array<[Tile, Tile]> = [];
+    for (const t of bd.allTiles()) {
+        const right = bd.at(t.r, t.c + 1);
+        if (right && pair.canPair(t, right)) out.push([t, right]);
+        const down = bd.at(t.r + 1, t.c);
+        if (down && pair.canPair(t, down)) out.push([t, down]);
     }
-    return bd;
+    return out;
 }
 
 /**
- * 只重排、不重试（generateBoard 的重试用它，避免递归里再套重试 → 递归爆栈）。
- * ★ 上一版把重试写在 generateBoard 自身里并递归调用自己，25 层嵌套；
- *   虽然没炸，但一旦"怎么排都无解"就会一路递归到爆。这里分成两个函数根治。
+ * 某张牌**四方向紧邻**的、能与它配对的搭档。
+ *
+ * 闪烁提示用：只有 ≥2 个搭档时才算"玩家有得选"（用户原话
+ * 「两个都可以消除的时候，闪烁一下提示用户，让用户来选择消除哪个配对」）。
+ * 顺序固定为 右→左→下→上，保证同一盘面每次得到同一个数组（可复现）。
  */
-function generateBoardShuffled(lv: LevelDef, rng: Rng): Board {
-    const bd = new Board(lv.cols, lv.rows);
-    const deck = buildDeck(lv, rng, 0);
-    const total = lv.cols * lv.rows;
-    const slots = rng.shuffled(Array.from({ length: total }, (_, i) => i)).slice(0, deck.length);
-    deck.forEach((d, i) => {
-        const idx = slots[i];
-        bd.setCell(Math.floor(idx / lv.cols), idx % lv.cols, d);
-    });
+export function pairedNeighbors(bd: Board, pair: PairTable, t: Tile): Tile[] {
+    const out: Tile[] = [];
+    const dirs: Array<[number, number]> = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+    for (const [dr, dc] of dirs) {
+        const o = bd.at(t.r + dr, t.c + dc);
+        if (o && pair.canPair(t, o)) out.push(o);
+    }
+    return out;
+}
+
+/**
+ * 挑 `OPEN_PAIRS` 个「横向相邻的两格」的下标，作为保底对的落点。
+ *
+ * 只用**横排**（`(i, i+1)` 同一行内）：竖排要跨行，遇到最后一行不满时容易贴到空洞边上。
+ * 落点尽量铺开（均匀取点），两对挤在一个角落会显得刻意。
+ */
+function anchorCells(n: number, cols: number): number[] {
+    const cand: number[] = [];
+    for (let i = 0; i + 1 < n; i++) if (i % cols !== cols - 1) cand.push(i);
+    const out: number[] = [];
+    if (!cand.length) return out;
+    const stride = Math.max(1, Math.floor(cand.length / OPEN_PAIRS));
+    for (let k = 0; k < OPEN_PAIRS; k++) {
+        for (let p = k * stride; p < cand.length; p++) {
+            // 与已选落点至少隔一格，否则两对会共用一张牌
+            if (out.every((q) => Math.abs(q - cand[p]) >= 2)) { out.push(cand[p]); break; }
+        }
+    }
+    return out;
+}
+
+/**
+ * ★★ 发牌：**密铺**（2026-10-03 用户拍板「初始时要把格子铺满，不能空」）★★
+ *
+ * 【改之前的做法与它的问题】
+ * 旧版把牌**随机撒**在 `lv.cols × lv.rows` 的格子里（`rng.shuffled(range)` 取前 N 个）。
+ * 于是 38 关的盘面到处是洞：L4（6×7 = 42 格）只有 32 张牌、**空 10 格**，
+ * 而且空格散落在棋盘中央。用户真机截图里那一片"东一张西一张"就是它。
+ *
+ * 【现在怎么做】
+ *   ① 牌堆按行优先**连续**填：`(0,0) → (0,1) → …`，中间不留任何洞；
+ *   ② 棋盘**行数按需收缩**：`rows = ceil(牌数 / cols)`，不再是关卡表里的 rows。
+ *      于是"空"只剩**最后一行可能不满**这一种（最多 `cols−1` 格），而棋盘边框
+ *      也跟着收紧 ⇒ 视觉上就是一整块铺满的牌阵（见 `GamePage.computeGeometry`）。
+ *   ③ 再保证开局至少有 `OPEN_PAIRS` 对「紧挨着且能配对」的牌（见下）。
+ *
+ * 【为什么做不到 100% 零空格 —— 数学上就不行，别再试】
+ * 牌数恒为偶数（普通对与宝牌对都是 2 张），所以**格数为奇数**的棋盘（7×7、9×9）
+ * 永远差一格。更要紧的是「字频三条」（用户 2026-10-03 拍板）里那条
+ * **「同偏旁 ≤4 组」把每关的普通对封了顶**：
+ *     可铺满的对数上限 = 4 × 该关用到的偏旁种类数
+ *   ch3 的偏旁只有 6~11 种、ch4 是 11 种，而铺满 10×11 / 10×12 分别需要
+ *   **53 / 57 对**（上限 24~44 对）—— 差得远。所以"完全零空格"要么放宽那条约束、
+ *   要么加字/改棋盘尺寸，**两条都是设计决策，不在这里私自决定**。
+ *
+ * 【为什么"保底相邻对"是**先定点摆好**，而不是"摆完再整体重撒"】
+ * 旧版是「撒完 → `hasDirectMatch` 不成立就整体重撒，最多 24 次」，且只对 n≤3 生效。
+ * 两个毛病：一是整体重撒会把已经摆对的部分一起丢掉（极端情况下 24 次都不成，
+ * 前 3 关仍可能没有可消的一对）；二是它走 `lineClear` 口径，**隔着空格也算**
+ * —— 而铺满的盘面没有空格，隔空的那种对在这一步根本走不了。
+ * 现在改成"先给保底对占好相邻两格，剩下的牌再按行优先补满其余格子"：
+ * 一次成功、没有重试预算、不引入递归、对全部 38 关一律生效。
+ *
+ * ⚠️ 全程只做**置换**（用的仍是同一副牌堆），绝不增减任何一张牌 ——
+ *    牌堆的偏旁/部件平衡是"本关能不能凑满目标"的前提，动一张就可能是死局。
+ */
+export function generateBoard(lv: LevelDef, pair: PairTable, rng: Rng): Board {
+    const deck = buildDeck(lv, rng, 0);              // 内部已 shuffle
+    const rows = Math.max(1, Math.ceil(deck.length / lv.cols));
+    const total = lv.cols * rows;
+    const bd = new Board(lv.cols, rows);
+
+    // ---- ① 挑 OPEN_PAIRS 组"能配对的两张"，并分配好相邻落点 ----
+    const anchors = anchorCells(deck.length, lv.cols);
+    const want = Math.min(OPEN_PAIRS, anchors.length);
+    const picks: Array<{ a: Tile; b: Tile; at: number }> = [];
+    const takenTile = new Set<number>();
+    const usedWords = new Set<string>();
+    // 第一轮要求每组是**不同字**（重复感最小），凑不满再放宽
+    for (const strict of [true, false]) {
+        for (let i = 0; i < deck.length && picks.length < want; i++) {
+            if (takenTile.has(i)) continue;
+            for (let j = i + 1; j < deck.length; j++) {
+                if (takenTile.has(j)) continue;
+                if (!pair.canPair(deck[i], deck[j])) continue;
+                const w = pair.word(deck[i], deck[j]);
+                if (strict && usedWords.has(w)) continue;
+                picks.push({ a: deck[i], b: deck[j], at: anchors[picks.length] });
+                takenTile.add(i); takenTile.add(j); usedWords.add(w);
+                break;
+            }
+        }
+        if (picks.length >= want) break;
+    }
+
+    // ---- ② 落格：保底对先占住自己的两格，其余牌按行优先补满 ----
+    //   `slot` 以格为单位：被保底对占掉的格不再参与"补满"，
+    //   所以牌数一定恰好用完，最后一行之外的那几格自然留空。
+    const slot: Array<Tile | null> = new Array(total).fill(null);
+    for (const p of picks) { slot[p.at] = p.a; slot[p.at + 1] = p.b; }
+    let k = 0;
+    for (let i = 0; i < total; i++) {
+        if (slot[i]) continue;
+        while (k < deck.length && takenTile.has(k)) k++;
+        if (k >= deck.length) break;
+        slot[i] = deck[k++];
+    }
+    for (let i = 0; i < total; i++) {
+        const t = slot[i];
+        if (t) bd.setCell(Math.floor(i / lv.cols), i % lv.cols, t);
+    }
     return bd;
 }
 

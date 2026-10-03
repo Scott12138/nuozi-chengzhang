@@ -28,17 +28,27 @@
  *  三、产出
  *  ------------------------------------------------------------------
  *    game-5-chaizi/assets/scripts/core/LevelSeeds.ts   ← 生成物，勿手改
- *    docs/verify/S14/level-seeds.json                  ← 归档（含每颗种子当时的有解证据）
+ *    docs/verify/level-seeds.json                      ← 归档（含每颗种子当时的有解证据）
  *
  *  LevelSeeds.ts 里同时存下每颗种子**当时**的发牌指纹（`Board.fingerprint()`）。
  *  `tools/core-selftest.js` 会在每次自检时重算指纹并比对：
  *  对不上 ⇒ 发牌路径（Board / LevelData / Treasure / Rng）动过了 ⇒
  *  「这四局有解」这个结论已过期 ⇒ 必须重跑本工具。这是那 4 颗种子**不会悄悄失效**的保证。
  *
+ *  ★★ 2026-10-03 修正一处**会丢证据**的旧口径 ★★
+ *  说明：本工具原来把归档**写死在 `docs/verify/S14/level-seeds.json`**。
+ *  意味着以后每一次重挑种子都会**静默覆盖** S14 那一轮的原始证据 ——
+ *  而 S14 那份 JSON 里记的正是"当时那 4 颗种子有解"的一手凭据，
+ *  它被覆盖之后，「S14 的结论是什么」就再也说不清了（与上一版仓库
+ *  `*.log` 被静默排掉是同一类错：证据消失时不报错）。
+ *  现在：默认写**中性路径** `docs/verify/level-seeds.json`（表示"当前状态"），
+ *  每一轮验收要留档时用 `--out docs/verify/S<轮次>/level-seeds.json` 显式指定。
+ *
  *  用法：
  *    node tools/gen-level-seeds.js                 # 挑种子并写文件
  *    node tools/gen-level-seeds.js --verify        # 只复核已入库的种子（逐颗重判）
  *    node tools/gen-level-seeds.js --levels 3-38 --per 4
+ *    node tools/gen-level-seeds.js --out docs/verify/S18/level-seeds.json
  *  退出码：0 = 全部通过
  * ============================================================ */
 'use strict';
@@ -50,7 +60,9 @@ const S = require('./solve-exact.js');
 const ROOT = path.dirname(__dirname);
 const SCRIPTS = path.join(ROOT, 'game-5-chaizi', 'assets', 'scripts');
 const OUT_TS = path.join(SCRIPTS, 'core', 'LevelSeeds.ts');
-const OUT_JSON = path.join(ROOT, 'docs', 'verify', 'S14', 'level-seeds.json');
+/** 默认写**中性路径**（= "当前状态"），避免把某一轮的验收证据覆盖掉。见文件头第三十节 */
+const OUT_JSON_DEF = path.join(ROOT, 'docs', 'verify', 'level-seeds.json');
+let OUT_JSON = OUT_JSON_DEF;
 
 /** 每关要几颗种子（用户拍板：4） */
 const PER_LEVEL_DEF = 4;
@@ -63,13 +75,14 @@ const BUDGET = 800000;
 const BOARD_MS = 6000;
 
 function parseArgs(argv) {
-    const o = { levels: '1-38', per: PER_LEVEL_DEF, verify: false, quiet: false };
+    const o = { levels: '1-38', per: PER_LEVEL_DEF, verify: false, quiet: false, out: null };
     for (let i = 2; i < argv.length; i++) {
         const a = argv[i];
         if (a === '--levels') o.levels = argv[++i];
         else if (a === '--per') o.per = parseInt(argv[++i], 10);
         else if (a === '--verify') o.verify = true;
         else if (a === '--quiet') o.quiet = true;
+        else if (a === '--out') o.out = argv[++i];
         else if (a === '--help' || a === '-h') { console.log('用法见文件头注释'); process.exit(0); }
         else { console.error('未知参数：' + a); process.exit(2); }
     }
@@ -118,6 +131,13 @@ function main() {
     }
 
     const report = { generatedAt: new Date(t0).toISOString(), per: opt.per, levels: {}, ok: true };
+
+    // ★ 归档路径：`--out` 显式指定（**每一轮验收都该这么用，否则会覆盖上一轮的证据**）。
+    //   默认写中性路径 docs/verify/level-seeds.json（= "当前状态"，不冒充某一轮）。
+    if (opt.out) {
+        OUT_JSON = path.isAbsolute(opt.out) ? opt.out : path.join(ROOT, opt.out);
+    }
+    if (!opt.verify) console.log(`  归档：${path.relative(ROOT, OUT_JSON)}`);
 
     // ---------- 模式一：复核已入库的种子 ----------
     if (opt.verify) {

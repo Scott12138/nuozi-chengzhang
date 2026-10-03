@@ -52,7 +52,7 @@ import {
     Vec2, Vec3, log, screen, view,
 } from 'cc';
 import { CFG, px } from '../CFG';
-import { Board, PairTable, generateBoard, makeRunWords } from '../core/Board';
+import { Board, PairTable, generateBoard, makeRunWords, pairedNeighbors } from '../core/Board';
 import { CHAPTERS, LEVELS, WORDS, levelByN } from '../core/LevelData';
 import { seedsOf } from '../core/LevelSeeds';
 import { Rng, seedFrom } from '../core/Rng';
@@ -187,8 +187,52 @@ function forceTimeLimit(lvTime: number): number {
     const v = Number((globalThis as Record<string, unknown>).__CHA_TIME__);
     return Number.isFinite(v) && v > 0 ? Math.floor(v) : lvTime;
 }
+
+/**
+ * 调试用的**指定关卡**（工装往页面里写 `globalThis.__CHA_LEVEL__ = <关号>`）。
+ *
+ * 【为什么需要它 —— 与 seed / time 同构的第三个口子】
+ *   `unlock:<n>` 只把前 n 关标成已通关，**真正进哪一关还得在地图上点**。
+ *   而地图是可滚动的（38 关分 13 行），要进第 34 关得先把地图拖到底、
+ *   再把新位置量出来当 `d:` 用 —— 每次改版式都要重做一遍，且极易点偏。
+ *   有了它，`lvl:34` 就稳定落在 10×7 的大盘面上，与 `lvl:1`（6×5）
+ *   组成"同一套骨架、不同行列数"的对照 —— 这正是版式验收要的东西。
+ *
+ * ⚠️ 只改"进哪一关"，不改任何玩法；没设这个全局变量时返回 0，
+ *   `onCreate` 退回用 `PageManager.goto` 传进来的关号 ⇒ 行为逐字节不变。
+ *   微信小游戏里没有任何地方会设它。
+ */
+function forceLevel(): number {
+    const v = Number((globalThis as Record<string, unknown>).__CHA_LEVEL__);
+    return Number.isFinite(v) && v > 0 ? Math.floor(v) : 0;
+}
 const BACK_D = px(32);
 const TOP_H = TOP_PAD_T + BACK_D + TOP_PAD_B;                 // 49
+
+/**
+ * ★★ 内容块整体下移的比例（2026-10-03 用户第 2 条「页面分割太开」）★★
+ *
+ * 【它在解决什么】
+ *   牌面必须**正方形**，而屏幕是竖长的：6×5 的棋盘占满可视宽度却只用掉
+ *   可用高度的 ~55%，10×7 更矮。旧做法是"棋盘区吃满剩余高度、棋盘在其中居中"，
+ *   于是**顶部块与棋盘之间**、**棋盘与底部块之间**各摊到一大块空白 ——
+ *   用户在真机上看到的就是"页面分割太开"。
+ *
+ * 【改法】
+ *   棋盘面板取**固定内高** `CFG.BOARDGEO.PANEL_INNER_H`（见那里的长注释与
+ *   computeGeometry ③④）。于是
+ *     · 面板本身**不随行列数变** —— 用户原话「地图大小不变，只变格子和字体的大小」；
+ *     · 三段之间**不留缝**（棋盘面板不再吃满剩余高度），省下来的空白
+ *       让整块内容一起下移 `slack × 本比例`：
+ *         · 0.0 = 空白全留在屏幕底部（顶部块顶天）
+ *         · 0.5 = 空白天平（**采用**：上下各一半，视觉上就是正常的页面留白）
+ *      ⚠️ 这个比例**只有 0.5 可行**：三段要"缝为 0"就必须 `2×下移量 == slack`
+ *        （面板下沿 + 下移量 == 底部块上沿 − 下移量），取别的值会在
+ *        面板与「已成字条」之间凭空多出一条缝。
+ *   于是「顶部块 → 目标字条 → 地图面板 → 已成字条 → 道具栏」是**挨着**的、
+ *   且**逐关不动**，空白只出现在屏幕最上/最下 —— 那两处本来就该是留白。
+ */
+const CONTENT_SHARE = 0.5;
 const PTITLE_S = px(15), PTITLE_LS = px(1), PTITLE_LH = px(21), PTITLE_W = px(160);
 const TIMER_S = px(16), TIMER_LS = px(0.5), TIMER_LH = px(22);
 
@@ -217,6 +261,14 @@ const TOOL_LBL_S = px(11.5), TOOL_LBL_LS = px(0.5), TOOL_LBL_LH = px(16);
 const TOOL_IGAP = px(2);
 const TOOL_BORDER = 1, TOOL_R = px(14);
 const TOOL_H = px(59);
+/**
+ * 工具格数。
+ * ★ 2026-10-03 由 3 改为 4（用户拍板"道具更换成四个种类"）。
+ *   收成一个常量是因为它同时被两处消费（`buildTools` 排版、`dumpLayout` 版式 dump），
+ *   两边各写一个 3 的下场是：版式比对工具（tools/layout-diff.py）与真机不一致，
+ *   而它看起来只会像"版式核对差了一点"，很难联想到是常量没同步。
+ */
+const TOOL_COUNT = 4;
 const BAR_H = TOOL_PAD_T + TOOL_H + TOOL_PAD_B;               // 83
 
 /** 文字区（棋盘四周的固定块）总高：棋盘区下沿距屏幕底的距离 */
@@ -224,6 +276,19 @@ const BOTTOM_BLOCKS = BAR_H + MADE_MB + MADE_H;               // 153
 
 /** 工具禁用态 `.tool:disabled{opacity:.42}` */
 const TOOL_OFF_ALPHA = Math.round(255 * 0.42);
+
+// ---- 「多选配对」的呼吸闪烁（2026-10-03 用户拍板）----
+/**
+ * 紧邻（上下左右）的**可配对搭档数**达到这个值才闪。
+ * 取 2 直接来自用户原话「**两个**都可以消除的时候，闪烁一下提示用户，
+ * 让用户来选择消除哪个配对」—— 一个搭档时没有"选择"可言，闪了反而添乱。
+ */
+const FLASH_MIN_PARTNERS = 2;
+/** 呼吸的步数（一个完整往返）与每步时长：8 × 160ms ≈ 1.28s */
+const FLASH_STEPS = 8;
+const FLASH_MS_STEP = 160;
+/** 呼吸的透明度上下限（0~1）。下限不取 0：完全灭掉会读成"偶尔闪一下"而不是"一直在呼吸" */
+const FLASH_HI = 1, FLASH_LO = 0.22;
 /**
  * 拖动中牌的放大（原型 `scale(1.1)`）。
  * ★ 2026-10-03 真机试玩后，**原型的 `rotate(±6deg)` 被去掉了**（用户原话"格子会歪掉"）——
@@ -384,6 +449,13 @@ interface ToolBtn {
     glow: Graphics;
 }
 
+/**
+ * 四个道具的内部键（**顺序 = 工具栏从左到右**）。
+ * ⚠️ `bomb` 这个键名对不上它现在的标签「消除」—— 见 CFG.TOOL 的说明，
+ *    是"改名不值当"的刻意取舍，不是漏改。
+ */
+type ToolKey = 'hint' | 'bomb' | 'shuffle' | 'time';
+
 export class GamePage extends PageBase {
 
     readonly pageName = PAGE_GAME;
@@ -415,6 +487,17 @@ export class GamePage extends PageBase {
     private _tile = 53;
     private _boardW = 0;
     private _boardH = 0;
+    /**
+     * **实际棋盘**的列/行数 —— 不是关卡表里的 `lv.cols × lv.rows`。
+     *
+     * ★ 2026-10-03 起发牌是**密铺**的：行数 = `ceil(牌数 / lv.cols)`，
+     *   比关卡表的 rows 小（L4 是 6×6、关卡表写的是 6×7）。所有几何
+     *   （格距、棋盘宽高、`cellX/cellY`）都必须用这两个数，
+     *   否则牌会按关卡表的行数去居中 → 整盘歪在棋盘上方。
+     *   历来的 `_lv.cols/_lv.rows` 只表示"这一关的**容量上限**"。
+     */
+    private _cols = 0;
+    private _rows = 0;
 
     // ---- 节点 ----
     private _boardNode!: Node;
@@ -425,6 +508,9 @@ export class GamePage extends PageBase {
     private _reachDraw!: Graphics;
     private _linkDraw!: Graphics;
     private _ringDraw!: Graphics;
+    /** 「多选配对」的呼吸闪烁层（画在牌之上）+ 它的定时器 id */
+    private _flashDraw!: Graphics;
+    private _flashId = 0;
     private _views = new Map<number, Node>();
     private _chips = new Map<string, Chip>();
     private _timerLb!: Label;
@@ -434,8 +520,8 @@ export class GamePage extends PageBase {
     private _adGate!: AdGate;
     /** 时间到时的「看视频复活」弹层（常驻、切 active）。理由见 ui/FailGate 文件头 */
     private _failGate!: FailGate;
-    private _tools: Record<'hint' | 'shuffle' | 'bomb', ToolBtn | null>
-        = { hint: null, shuffle: null, bomb: null };
+    private _tools: Record<ToolKey, ToolBtn | null>
+        = { hint: null, shuffle: null, bomb: null, time: null };
     /** 已成字条的**可滚动内容节点**（横向 overflow） */
     private _madeLayer!: Node;
     private _madeInnerW = 0;
@@ -449,7 +535,10 @@ export class GamePage extends PageBase {
     private _blinkId = 0;
     private _hintLeft: number = CFG.TOOL.HINT;
     private _shuffleLeft: number = CFG.TOOL.SHUFFLE;
+    /** 原「凑对」，2026-10-03 起玩家看到的标签是「消除」（字段名保持不变，见 CFG.TOOL 的说明） */
     private _bombLeft: number = CFG.TOOL.BOMB;
+    /** 2026-10-03 新增的第四个道具「延长时间」的剩余次数 */
+    private _timeLeft: number = CFG.TOOL.TIME;
     /** 盘面状态序号（每次 diag 自增），用来判定"这一刻之后状态有没有变" */
     private _seq = 0;
     /**
@@ -468,7 +557,12 @@ export class GamePage extends PageBase {
     //  建页
     // ============================================================
     protected onCreate(param?: { level?: number }): void {
-        const n = (param && param.level) || 1;
+        // ★ 调试口子的优先级：`__CHA_LEVEL__`（工装）> `goto` 传进来的关号。
+        //   与 seed / time 一致：只在被显式设置时才改行为，且**要 log 出声** ——
+        //   静默覆盖会让"我明明点的第 3 关怎么进了第 34 关"变成一个查不出的谜。
+        const forced = forceLevel();
+        if (forced) log(`[GamePage] ⚠️ 工装指定关卡：__CHA_LEVEL__ = ${forced}（覆盖 goto 传进来的 ${(param && param.level) || 1}）`);
+        const n = forced || ((param && param.level) || 1);
         const lv = levelByN(n) || LEVELS[0];
         this._lv = lv;
 
@@ -485,6 +579,9 @@ export class GamePage extends PageBase {
         this._timeLimit = forceTimeLimit(lv.time);
         this._rng = new Rng(this._seed);
         this._board = generateBoard(lv, this._pair, this._rng);
+        // ★ 密铺之后**实际棋盘**比关卡表矮：几何一律以实际棋盘为准（见 _cols/_rows 的说明）
+        this._cols = this._board.cols;
+        this._rows = this._board.rows;
         this._runWords = makeRunWords(lv);
 
         // ★★ BGM 的起播点：必须在**同步栈**里 ★★
@@ -526,11 +623,22 @@ export class GamePage extends PageBase {
             // ★ 坐标基准线：必须**在 Widget 把页面尺寸对齐之后**才准（理由见 dumpXform）
             this.dumpXform();
             log(`[GamePage] L${lv.n} 开局就绪：${this._board.allTiles().length} 张牌，`
-                + `棋盘 ${lv.cols}×${lv.rows}，格距 ${this._pitch}px / 牌 ${this._tile}px，`
+                + `棋盘 ${this._cols}×${this._rows}（关卡表 ${lv.cols}×${lv.rows}，密铺后行数收紧），`
+                + `格距 ${this._pitch}px / 牌 ${this._tile}px，`
                 + `棋盘 ${this._boardW}×${this._boardH}，限时 ${this._timeLimit}s`
                 + `${this._timeLimit === lv.time ? '' : `(force，关卡表是 ${lv.time}s)`} `
                 + `· 种子=${forceSeed() ? `force:${this._seed}` : `seed:${this._seed}`}`);
             this.diag('开局');
+            // ★ 开局就算一次「多选配对」的呼吸闪烁。
+            //   密铺 + `OPEN_PAIRS` 保底对之后，**开局恰恰最容易出现"一张牌同时挨着
+            //   两个能配的搭档"** —— 这正是用户要"让用户来选择消除哪个配对"的场景，
+            //   所以它不能等到玩家动一次手才亮起来。
+            //   ⚠️ 位置必须**紧跟 `diag()` 之后**，与合成/挪牌/宝牌/复活四处一致：
+            //      工装的 `flash:` 断言是按"最后一条 `[Diag] STATE` 之后的那批
+            //      `[Diag] FLASH` 行"来取样本的。放到 diag 之前，这批样本会落进
+            //      **下一个** seq 的区间里 —— 断言于是拿新盘面的 STATE 去配旧盘面的
+            //      闪烁，读起来像"闪烁算错了"，实际只是这两行前后脚站错了位。
+            this.refreshFlash();
             // 开局即无解只记日志、不弹层（理由见 reboundTile 里那段说明）——
             // 严格回弹下这不是错误，但值得在冒烟日志里留痕，便于回归时发现关卡特难。
             // ★ 用 _diagRng 而不是 _rng：findSuggest 会洗牌，公用玩法随机源的话，
@@ -571,8 +679,29 @@ export class GamePage extends PageBase {
     private diag(tag: string): void {
         if (!CFG.DEBUG.LOG_STATE) return;
         const b = this._board;
-        log(`[Diag] BOARD cols=${this._lv.cols} rows=${this._lv.rows} pitch=${this._pitch} `
+        log(`[Diag] BOARD cols=${this._cols} rows=${this._rows} pitch=${this._pitch} `
             + `gap=${this._gap} cell=${this._tile} cx=0 cy=${Math.round(this.boardCy)}`);
+        // ★ 版式三段的位置（2026-10-03 第 2 条"页面分割太开 / 固定住"的机器可读证据）：
+        //   headY  = 头部块下沿（= 棋盘面板上沿，未含下移量）
+        //   ct     = 内容块整体下移量；面板高**固定**（不随行列变），
+        //            wrapTop + wrapH + ct 应当正好等于"已成字条"的上沿
+        //            （slack 全部落在屏幕最上/最下，三段之间不留缝）。
+        //   boardTop/room = 棋盘在面板内的位置与面板余量 —— 判据是
+        //            `room ≥ 0`（棋盘装得进面板）且 `boardTop − wrapTop == room/2`（居中）。
+        //   ★ 工装的 `frame` 动作按这几个键做硬断言：**跨关卡 `wrapH` 必须逐值相同**，
+        //     且各样本的 `boardH` 必须**互不相同**（否则那两个样本行列一样，
+        //     "面板不变"这条断言就是空转的假绿灯）。
+        //   ⚠️ `boardTop` 是**距屏幕顶**的距离：Cocos 的 y 原点在屏幕中心，
+        //      所以是 `visH/2 − (boardCy + boardH/2)`，**不是** `visH − (…)`。
+        //      写成后者会整整偏掉半个屏高，而那种错在"居中"这条判据上只是
+        //      "room 看起来大"，很容易被当成"留白比较多"放过去。
+        const boardTop = Math.round(this._visH / 2 - (this.boardCy + this._boardH / 2));
+        const room = Math.round(this._wrapH - this._boardH);
+        log(`[Diag] FRAME headY=${Math.round(this._wrapTop - this._contentTop)} `
+            + `ct=${this._contentTop} wrapTop=${Math.round(this._wrapTop)} `
+            + `wrapH=${Math.round(this._wrapH)} boardH=${Math.round(this._boardH)} `
+            + `boardTop=${boardTop} room=${room} `
+            + `slack=${Math.round(this._visH - (this._wrapTop - this._contentTop) - this._wrapH - BOTTOM_BLOCKS)}`);
         log('[Diag] TILES ' + b.allTiles()
             .map((t) => `${t.char}@${t.r},${t.c},${t.kind}`).join(' '));
         const matched = this._runWords.reduce((s, x) => s + x.got, 0);
@@ -690,13 +819,19 @@ export class GamePage extends PageBase {
         const box = (n: string, l: number, t: number, w: number, h: number, ex = ''): void =>
             dump(PAGE_GAME, n, l, t, w, h, ex);
 
-        box('.play-top', 0, 0, W, TOP_H);
-        box('.btn-back', TOP_PAD_X, TOP_PAD_T, BACK_D, BACK_D);
+        // ★★ 三段各自跟着"内容块下移量"走（见 CONTENT_SHARE）★★
+        //   顶部块 `+ ct`、底部块 `− ct`。**必须与真实定位用同一个量**，
+        //   否则这份 dump 就不再是"版式的一手证据" —— 工装拿它算点击坐标，
+        //   会整体点偏 ct（表现像"按钮坏了"，而实际只是 dump 没跟着挪）。
+        const ct = this._contentTop;
+
+        box('.play-top', 0, ct, W, TOP_H);
+        box('.btn-back', TOP_PAD_X, TOP_PAD_T + ct, BACK_D, BACK_D);
         box('.play-title', TOP_PAD_X + BACK_D + TOP_GAP,
-            TOP_PAD_T + BACK_D / 2 - PTITLE_LH / 2, PTITLE_W, PTITLE_LH);
+            TOP_PAD_T + BACK_D / 2 - PTITLE_LH / 2 + ct, PTITLE_W, PTITLE_LH);
         const tw = estWidth('02:29', TIMER_S) + TIMER_LS * 5;
-        box('.timer', W - TOP_PAD_X - tw, TOP_PAD_T + BACK_D / 2 - TIMER_LH / 2, tw, TIMER_LH);
-        box('.goal-bar', 0, TOP_H, W, goalH);
+        box('.timer', W - TOP_PAD_X - tw, TOP_PAD_T + BACK_D / 2 - TIMER_LH / 2 + ct, tw, TIMER_LH);
+        box('.goal-bar', 0, TOP_H + ct, W, goalH);
 
         // 目标 chip（逐个）
         const rows = this.layoutGoalChips();
@@ -706,14 +841,14 @@ export class GamePage extends PageBase {
             const total = widths.reduce((a, b) => a + b, 0) + GOAL_GAP * (row.length - 1);
             let x = W / 2 - total / 2;
             for (let i = 0; i < row.length; i++) {
-                box(`.goal-chip[${i}]`, x, rowTop, widths[i], CHIP_H, row[i].w);
+                box(`.goal-chip[${i}]`, x, rowTop + ct, widths[i], CHIP_H, row[i].w);
                 x += widths[i] + GOAL_GAP;
             }
             rowTop += CHIP_H + GOAL_GAP;
         }
 
         const tipsTop = TOP_H + goalH;
-        if (this.hasTips()) box('.tips', TIPS_MX, tipsTop, W - 2 * TIPS_MX, TIPS_H);
+        if (this.hasTips()) box('.tips', TIPS_MX, tipsTop + ct, W - 2 * TIPS_MX, TIPS_H);
         box('.board-wrap', 0, this._wrapTop, W, this._wrapH);
         const boardL = (W - this._boardW) / 2;
         const boardT = this._wrapTop + (this._wrapH - this._boardH) / 2;
@@ -725,13 +860,18 @@ export class GamePage extends PageBase {
         box('.tile', boardL + this._boardW / 2 + this.cellX(0) - this._tile / 2,
             boardT + this._boardH / 2 - this.cellY(0) - this._tile / 2,
             this._tile, this._tile, `pitch=${this._pitch} gap=${this._gap}`);
-        box('.made-strip', MADE_MX, H - BAR_H - MADE_MB - MADE_H,
+        box('.made-strip', MADE_MX, H - BAR_H - MADE_MB - MADE_H - ct,
             W - 2 * MADE_MX, MADE_H);
-        box('.tool-bar', 0, H - BAR_H, W, BAR_H);
-        const toolW = (W - 2 * TOOL_PAD_X - 2 * TOOL_GAP) / 3;
-        for (let i = 0; i < 3; i++) {
+        box('.tool-bar', 0, H - BAR_H - ct, W, BAR_H);
+        const toolW = (W - 2 * TOOL_PAD_X - 2 * TOOL_GAP) / TOOL_COUNT;
+        // ⚠️ 上界必须是 `TOOL_COUNT`，**不能写死 3** ——
+        //    2026-10-03 加第四个道具（延长时间）时就漏了这一处：`toolW` 改成了 /4，
+        //    循环却还在跑 3 次，于是 dump 里只有前三个框 ——
+        //    而这份 dump 正是"道具栏版式"的**唯一机器可读证据**，
+        //    少一个框既看不出布局错、也看不出个数错，等于把第四格的版式验证悄悄抹掉。
+        for (let i = 0; i < TOOL_COUNT; i++) {
             box(`.tool[${i}]`, TOOL_PAD_X + i * (toolW + TOOL_GAP),
-                H - BAR_H + TOOL_PAD_T, toolW, TOOL_H);
+                H - BAR_H + TOOL_PAD_T - ct, toolW, TOOL_H);
         }
     }
 
@@ -787,6 +927,13 @@ export class GamePage extends PageBase {
     private _wrapTop = 0;
     /** 棋盘区高度 */
     private _wrapH = 0;
+    /**
+     * 内容块整体下移量（**实现px**）。见 CONTENT_SHARE 的说明。
+     * · 顶部块（返回键/标题/计时/目标条/提示条）→ 定位时 **加** 它
+     * · 底部块（已成字条/道具栏）→ 定位时 **减** 它
+     * 两处必须成对，否则三段会散开 —— 这正是这条改动要修的病。
+     */
+    private _contentTop = 0;
 
     /**
      * 算棋盘尺寸。**逐条照搬原型 computeCell**（见 CFG.BOARDGEO 的说明）。
@@ -800,7 +947,9 @@ export class GamePage extends PageBase {
      *   上一版就是这么错的（实测 62/56 的格子 vs 设计 58/53，棋盘 372×310 vs 348×290）。
      */
     private computeGeometry(): void {
-        const cols = this._lv.cols;
+        // ★ 用**实际棋盘**的列/行数（密铺后行数比关卡表小），见 _cols/_rows 的说明
+        const cols = this._cols;
+        const rows = this._rows;
         const G = CFG.BOARDGEO;
         const S = CFG.SPEC.SCALE;
 
@@ -808,16 +957,28 @@ export class GamePage extends PageBase {
         const goalRows = this.layoutGoalChips().length;
         const goalH = GOAL_PAD_T + goalRows * CHIP_H + (goalRows - 1) * GOAL_GAP + GOAL_PAD_B;
 
-        // ② 棋盘区上下沿
-        this._wrapTop = TOP_H + goalH + (this.hasTips() ? TIPS_H + TIPS_MB : 0);
-        this._wrapH = Math.max(px(60), this._visH - this._wrapTop - BOTTOM_BLOCKS);
+        // ② 头部块高度 = 屏幕顶 → 棋盘区上沿（标题行 + 目标条 + 可选的拆法提示条）
+        const headTop = TOP_H + goalH + (this.hasTips() ? TIPS_H + TIPS_MB : 0);
 
         // ③ 格距（原型 computeCell 原式，全在设计 px 下算）
+        //    ★★ **高度这一侧改成读「固定面板」，不再读"剩下的屏幕空间"** ★★
+        //      这是"地图大小不变"的必要条件：只要 pitch 还与剩余高度有关，
+        //      它就与 `_contentTop`（= slack 的一半）互相追着跑 ——
+        //      下移量越大 → 剩余高度越大 → pitch 越大 → 面板越高 → 下移量越小 …
+        //      而它**不报错**，只表现为"每关的格子大小飘来飘去"。
+        //      面板固定之后，pitch 只由「面板内宽 ÷ 列数」与「面板内高 ÷ 行数」决定。
+        //    ⚠️ `availH` 仍要夹一道"屏幕真的放得下"：极端窄高机型上
+        //      `PANEL_INNER_H` 会超出可用高度，此时面板只能缩（那个降级是必要的，
+        //      否则面板会压住下面的「已成字条」）。正常机型上这一夹**永不起作用**，
+        //      于是面板逐关恒定。
         const availW = this._visW / S - 2 * G.WRAP_PAD_X;
-        const availH = this._wrapH / S - 2 * G.WRAP_PAD_Y;
+        const availH = Math.min(
+            G.PANEL_INNER_H,
+            (this._visH - headTop - BOTTOM_BLOCKS) / S - 2 * G.WRAP_PAD_Y,
+        );
         const cellD = Math.min(
             Math.floor((availW - 4) / cols),
-            Math.floor((availH - 4) / this._lv.rows),
+            Math.floor((availH - 4) / rows),
         );
         const pitchD = Math.max(G.CELL_MIN, Math.min(cellD, G.CELL_MAX));
         const gapD = Math.max(G.GAP_MIN, Math.round(pitchD * G.GAP_RATIO));
@@ -826,8 +987,49 @@ export class GamePage extends PageBase {
         this._gap = px(gapD);
         this._tile = this._pitch - this._gap;
         this._boardW = px(cols * pitchD);
-        this._boardH = px(this._lv.rows * pitchD);
+        this._boardH = px(rows * pitchD);
+
+        // ④ ★★ 棋盘面板高度**固定**（2026-10-03 用户第 2 条「地图大小不变」）★★
+        //   于是「顶部块 → 目标字条 → 地图面板 → 已成字条 → 道具栏」这一整条骨架
+        //   在**所有关卡**里的位置完全一致；行列变多只是格子与字变小，面板不动。
+        //   棋盘在面板内**居中**（见 boardCy），所以牌少的关卡上下各留一点白 ——
+        //   那点白是「正方形的格距塞进固定面板」的必然结果，不是没对齐。
+        //
+        //   ⚠️ 走过的两次弯路，都写在这里免得被改回去：
+        //     · 最初 `_wrapH = visH − wrapTop − BOTTOM_BLOCKS`（面板吃满剩余高度）
+        //       ⇒ 差额全变成"顶部块与棋盘之间"的空白 = 用户截图里的"页面分割太开"；
+        //     · 中间版 `_wrapH = _boardH + 2×WRAP_PAD_Y`（面板只包住棋盘）
+        //       ⇒ 段间无缝了，但面板随行数变 ⇒ 顶部块逐关浮动 0~51px，
+        //         正是用户说的"要**固定住**"。
+        //     两条要求必须**同时**成立 ⇒ 只有"固定面板 + 棋盘在其中居中"一条路。
+        //   ⚠️ 加 min 兜底：面板不许超过"屏幕真的放得下"的高度（见 ③ 的说明）。
+        const maxWrapH = Math.max(px(60), this._visH - headTop - BOTTOM_BLOCKS);
+        this._wrapH = Math.min(px(availH) + 2 * px(G.WRAP_PAD_Y), maxWrapH);
+        this.checkPanelFit();
+
+        // ⑤ 多余的空白整块下移（分给屏幕最上/最下），不再夹在三段中间
+        const slack = Math.max(0, this._visH - headTop - this._wrapH - BOTTOM_BLOCKS);
+        this._contentTop = Math.round(slack * CONTENT_SHARE);
+        this._wrapTop = headTop + this._contentTop;
+
         this._goalRows = goalRows;
+    }
+
+    /**
+     * `PANEL_INNER_H` 的**自检**：棋盘装得进面板吗？
+     *
+     * `core-selftest` 已按关卡表逐关算过一遍（那条断言盯的是"加了新关卡会不会越界"），
+     * 这里只兜**运行期**才知道的那一半：本局**实际棋盘**的行列数（密铺后可能与关卡表不同）。
+     * 判据：棋盘（含上下各 2 设计px 的内距）不超过面板。
+     * ⚠️ 它不会报错、只会表现为"棋盘压住下面的「已成字条」"，
+     *   所以必须 log 出声 —— 静默的几何越界是这个项目里最难查的一类。
+     */
+    private checkPanelFit(): void {
+        if (this._boardH + 2 * px(CFG.BOARDGEO.WRAP_PAD_Y) > this._wrapH) {
+            log(`[GamePage] ⚠️ L${this._lv.n} 棋盘 ${this._boardH} 比面板 ${this._wrapH} 还高`
+                + `（${this._cols}×${this._rows}，格距被 CELL_MIN=${CFG.BOARDGEO.CELL_MIN} 顶住了？）`
+                + ' —— 会压住「已成字条」');
+        }
     }
 
     private _goalRows = 1;
@@ -868,12 +1070,12 @@ export class GamePage extends PageBase {
 
     /** 列 → 棋盘局部 x（棋盘中心为原点，右为正） */
     private cellX(c: number): number {
-        return (c - (this._lv.cols - 1) / 2) * this._pitch;
+        return (c - (this._cols - 1) / 2) * this._pitch;
     }
 
     /** 行 → 棋盘局部 y（★ 行 0 在最上面，而 Cocos 的 y 朝上，所以是减法） */
     private cellY(r: number): number {
-        return ((this._lv.rows - 1) / 2 - r) * this._pitch;
+        return ((this._rows - 1) / 2 - r) * this._pitch;
     }
 
     /** 棋盘局部坐标 → 格子。落在格距的"热区"里就算这一格（含格间空隙） */
@@ -897,7 +1099,9 @@ export class GamePage extends PageBase {
         const H = this._visH, W = this._visW, C = CFG.COLOR;
 
         // —— 返回键（32×32 在 14,13）——
-        const backY = topY(H, TOP_PAD_T + BACK_D / 2);
+        //   顶栏整条随"内容块下移量"走（见 CONTENT_SHARE）：不跟的话，
+        //   棋盘下移了、顶栏还顶着屏幕边，三段就又散开了。
+        const backY = topY(H, TOP_PAD_T + BACK_D / 2 + this._contentTop);
         const back = mkNode('back', this._root, BACK_D, BACK_D);
         setPos(back, -W / 2 + TOP_PAD_X + BACK_D / 2, backY);
         this.drawBackCircle(back);
@@ -941,7 +1145,7 @@ export class GamePage extends PageBase {
             const tipTop = TOP_H + goalH;
             const tipW = W - 2 * TIPS_MX;
             const box = mkNode('tips', this._root, tipW, TIPS_H);
-            setPos(box, 0, topY(H, tipTop + TIPS_H / 2));
+            setPos(box, 0, topY(H, tipTop + TIPS_H / 2 + this._contentTop));
             const g = box.addComponent(Graphics);
             g.fillColor = hex(C.TIP_BG, C.TIP_BG_A);
             g.roundRect(-tipW / 2, -TIPS_H / 2, tipW, TIPS_H, TIPS_R);
@@ -972,7 +1176,20 @@ export class GamePage extends PageBase {
         // 否则「广告没看完」这类反馈会藏在卡片背后看不见。
         this._adGate = new AdGate(this._root, this._visW, this._visH);
         this._failGate = new FailGate(this._root, this._visW, this._visH);
-        this._toast = new Toast(this._root, this._visW, topY(this._visH, this._visH * 0.52));
+
+        // ★★ 提示条的落点：**棋盘下沿之下**，不再压在棋盘正中（2026-10-03 用户拍板）★★
+        //   用户原话：「提示不要放在中间很影响用户体验和操作，遮住了页面」——
+        //   原实现按设计稿把提示挂在屏幕 52% 高度（= 棋盘中部），两行提示能盖掉一整行牌。
+        //
+        //   取「棋盘下沿再往下一点」而不是一个写死的坐标，是因为棋盘高度**逐关不同**
+        //   （密铺之后行数还随牌数变）：写死的线早晚会落在某一关的棋盘里面。
+        //   再夹一道「不得低于底部区块上沿」：密铺后棋盘总是比可用高度矮（格距受
+        //   屏宽限制），所以正常情况下它有落点；夹具只兜极端机型，避免提示条跑到
+        //   「已成字条」上去。
+        const belowBoard = this.boardCy - this._boardH / 2 - px(10);
+        // ★ 底部区块上沿也要跟着"内容块下移量"上移（三段是一起挪的）
+        const bandTop = topY(this._visH, this._visH - BOTTOM_BLOCKS - px(4) - this._contentTop);
+        this._toast = new Toast(this._root, this._visW, Math.min(belowBoard, bandTop));
     }
 
     /** 圆形返回键的面（设计稿 `.btn-back`：半透明白底 + 米边 + 圆） */
@@ -1074,11 +1291,11 @@ export class GamePage extends PageBase {
                 const w = widths[i];
                 const chip = this._chips.get(rw.w);
                 if (chip) {
-                    setPos(chip.root, x + w / 2, topY(this._visH, rowTop + CHIP_H / 2));
+                    setPos(chip.root, x + w / 2, topY(this._visH, rowTop + CHIP_H / 2 + this._contentTop));
                     chip.w = w;
                     this.paintChip(chip, rw.got >= rw.need);
                 } else {
-                    this.buildChip(rw, w, x + w / 2, topY(this._visH, rowTop + CHIP_H / 2));
+                    this.buildChip(rw, w, x + w / 2, topY(this._visH, rowTop + CHIP_H / 2 + this._contentTop));
                 }
                 x += w + GOAL_GAP;
             }
@@ -1201,6 +1418,10 @@ export class GamePage extends PageBase {
         this._linkDraw = linkLayer.addComponent(Graphics);
         const ringLayer = mkNode('ring', this._boardNode, this._boardW, this._boardH);
         this._ringDraw = ringLayer.addComponent(Graphics);
+        // 「多选配对」的呼吸闪烁（2026-10-03 加）。挂在描边层旁边、牌之上 ——
+        // 它是一圈**画在牌上**的提示，被牌盖住就等于没做。
+        const flashLayer = mkNode('flash', this._boardNode, this._boardW, this._boardH);
+        this._flashDraw = flashLayer.addComponent(Graphics);
         // 波纹层：点击的"叮"与合成的"撞击环"都画在它上面（每个波纹一个自己的节点，
         // 因为每个都要独立改大小/透明度；同期的波纹最多 1~2 个，代价可忽略）。
         this._rippleLayer = mkNode('ripple', this._boardNode, this._boardW, this._boardH);
@@ -1311,7 +1532,16 @@ export class GamePage extends PageBase {
         const ui = e.getUILocation();
         const dx = ui.x - d.startX;
         const dy = ui.y - d.startY;
-        if (!d.moved && Math.sqrt(dx * dx + dy * dy) > CFG.GAME.DRAG_SLOP) d.moved = true;
+        if (!d.moved && Math.sqrt(dx * dx + dy * dy) > CFG.GAME.DRAG_SLOP) {
+            d.moved = true;
+            // ★★ 真的开始拖了，才收掉「多选配对」的呼吸闪烁 ★★
+            //   为什么放在这里而不是 `onDown`：`onDown` 分不清"玩家要点"还是"玩家要拖" ——
+            //   在那里就收掉的话，**单纯点一下**（没移动）也会让闪烁消失，
+            //   而 `tapTile` 的"点到了但没能消"那条路**不会**重算它（见 tapTile 的注释，
+            //   提示文案已删、指路全靠闪烁）⇒ 闪烁会一直黑着，直到下一次盘面变化。
+            //   `onMove` 这个分支只在"位移真的超过 DRAG_SLOP"那一刻进一次，正合适。
+            this.clearFlash();
+        }
         if (!d.moved) return;
 
         // ★ 先定一条轴：横向拖得多就横滑，纵向拖得多就竖滑。
@@ -1488,6 +1718,10 @@ export class GamePage extends PageBase {
                 this.rejectTile(d.tile);
                 this.toast('这张牌上下左右都被挡住了\n先把它旁边的牌挪开');
             }
+            // ★ 盘面一个字节都没变 ⇒ 把拖动开始时收掉的闪烁原样还回去。
+            //   （漏了这句的表现：拖出去又拖回来之后，全场金框全没了，
+            //     而且"没了"和"本来就没有多选局面"长得一模一样，极难发现。）
+            this.refreshFlash();
             return;
         }
 
@@ -1500,6 +1734,10 @@ export class GamePage extends PageBase {
         //   否则会出现"圈亮了、松手却弹回"的错位。
         if (!this.simulateHits(d.tile, p.r, p.c).length) {
             this.reboundTile(d, p);
+            // ★ 回弹 = 盘面没变 ⇒ 把闪烁还回去（同上）。
+            //   金框按**各牌的 home 格**画，也就是牌正在滑回去的那几格 ——
+            //   170ms 后牌到家，框正好落在牌上，观感是"它一直在那儿"。
+            this.refreshFlash();
             return;
         }
         this.applyMove(d.tile, p.r, p.c);
@@ -1613,6 +1851,9 @@ export class GamePage extends PageBase {
                 this._busy = false;
                 this.checkDeadlock();
                 this.diag('挪牌');
+                // 盘面变了 ⇒ 多选局面可能变多/变少，重算闪烁。
+                // （拖动开始时已 clearFlash，这里收尾算一次，整段拖动只算一末尾。）
+                this.refreshFlash();
             }
         }, 130);
     }
@@ -1644,6 +1885,11 @@ export class GamePage extends PageBase {
 
         const word = this._pair.word(a, b);
         if (!word) { this._busy = false; return; }
+
+        // ★ 这两张牌马上要从盘上消失 ⇒ 先把闪烁收掉（理由同 clearFlash 的注释）：
+        //   否则那圈金边会继续画在"牌已经没了"的格子上，读起来像飘着一个空框。
+        //   新盘面的闪烁由下面清理回调里的 refreshFlash() 重算。
+        this.clearFlash();
 
         this._board.removeAt(a);
         this._board.removeAt(b);
@@ -1747,6 +1993,10 @@ export class GamePage extends PageBase {
             this._busy = false;
             this.checkDeadlock();
             this.diag('合成');
+            // 盘面变了（少了两张）⇒ 重算"多选配对"的闪烁。
+            // ★ 放在 diag 之后：这样冒烟日志里 FLASH 那几行**紧跟着**这一手的
+            //   STATE 快照，回放时不用在两个时间点之间来回翻。
+            this.refreshFlash();
         }, CFG.GAME.MATCH_CLEANUP_MS);
     }
 
@@ -1792,6 +2042,11 @@ export class GamePage extends PageBase {
 
         this._board.removeAt(a);
         this._board.removeAt(b);
+
+        // ★ 宝牌这一路整段 1.78s 都锁着输入，盘面在演出的中途就变了 ——
+        //   闪烁必须**在演出开始前**收掉，否则那一圈金边会留在两张已经没了的牌上，
+        //   而且中途玩家也不能操作（本来也没法按 clearFlash 的时机去点）。
+        this.clearFlash();
 
         // 目标条：宝牌自己不占目标；**被送掉的那一对要计入它对应的字** ——
         // 否则那两个字的目标永远差一对，关卡通不了。
@@ -1897,6 +2152,8 @@ export class GamePage extends PageBase {
             this.toast(word
                 ? `「${name}」凑成一对！\n额外消掉「${bonus![0].char}」+「${bonus![1].char}」= ${word}`
                 : `「${name}」凑成一对！`);
+            // 这一手一次少了 4 张牌（宝牌 2 + 赠品 2）⇒ 盘面变化最大，必须重算闪烁。
+            this.refreshFlash();
         }, TREASURE_CLEANUP_MS);
     }
 
@@ -1987,16 +2244,17 @@ export class GamePage extends PageBase {
         if (hits.length) { this.resolveMatch(t, hits[0]); return; }
         const cands = this._board.allTiles().filter((o) => this._pair.canPair(t, o));
         if (cands.length) {
-            // ★ 宝牌与普通牌的文案必须分开：宝牌的搭档是"另一张同款"，
-            //   说成"能拼成字"会让玩家去找它的偏旁（它根本没有）。
-            this.toast(this._pair.isTreasurePair(t, cands[0])
-                ? `它是宝牌「${t.char}」\n要和另一张「${t.char}」凑到同一行或同一列`
-                : `它和「${cands[0].char}」能拼成字\n但要先挪到同一行或同一列`);
-            this.pulseTiles(cands);       // 告诉玩家"该和谁配"
-            this.rejectTile(t);           // 同时承认"这一下没能消"
+            // ★★ 这里原来会弹一条两行长提示（「它和「竹」能拼成字／但要先挪到同一行或同一列」）★
+            //   2026-10-03 用户真机截图里被红圈圈住的就是它 —— 它挂在屏幕 52% 高度，
+            //   正好压在棋盘中部。用户原话：「提示不要放在中间…遮住了页面，可以直接去掉提示」。
+            //   现在删掉这条文案，指路改由**牌面上的闪烁**承担（`refreshFlash`）：
+            //   闪的是"能和它配的那几张"，画在牌上、不占任何空间，而且比一句话更容易看懂。
+            //   `pulseTiles(cands)` 与 `rejectTile(t)` 保留 —— 它们本来就是"该和谁配"与
+            //   "这一下没能消"的即时反馈，且都只动牌本身，不弹任何浮层。
+            this.pulseTiles(cands);
+            this.rejectTile(t);
         } else {
             // 干扰牌（junk）已全线下线，这里只剩"这张牌在本关确实没有搭档"一种情况。
-            // 原本那条 `t.kind === 'junk' → '这是干扰牌，拼不成字'` 的分支随之删除。
             this.rejectTile(t);
         }
     }
@@ -2153,6 +2411,93 @@ export class GamePage extends PageBase {
             g.roundRect(this.cellX(t.c) - s / 2, this.cellY(t.r) - s / 2, s, s, px(CFG.BOARDGEO.REACH_R));
         }
         g.stroke();
+    }
+
+    /**
+     * ★★ 「多选配对」的呼吸闪烁（2026-10-03 用户拍板）★★
+     * 用户原话：「当一个格子与左/右/上/下的格子能满足[凑字]条件，**两个都可以消除的
+     *   时候**，闪烁一下提示用户，**让用户来选择消除哪个配对**」。
+     *
+     * 【判据】某张牌**四方向紧邻**的、能与它配对的搭档 ≥ `FLASH_MIN_PARTNERS` ⇒
+     *   它和这些搭档一起呼吸。
+     *   · 用"紧邻"而不是 `lineClear`（允许隔着空格）：用户说的就是「左/右/上/下」；
+     *     而且紧邻**必然**满足 `lineClear` ⇒ 一定能点消，不会出现"闪了却消不掉"；
+     *   · 只有一个搭档时不闪：没有"选择"可言，闪了反而把注意力从唯一那一步引开。
+     *
+     * 【为什么是"盘面状态的持续表达"而不是一次性提示】
+     * 消掉一对之后，原来的多选可能变成单选、别的格子可能新变成多选 —— 所以每次
+     * 盘面变化都要重算（见各调用点），而不是玩家点一次才闪一下。
+     * 用**呼吸**（而不是常亮）是为了和"拖动时那个实时预判金圈"区分开：
+     * 那个是**结果预览**，这个是**待选**，两者的观感必须能一眼分开。
+     *
+     * 【为什么拖动时要收掉（见 onDown）】
+     * 拖动中棋盘上已经有落点圈、连线和让位牌的淡金圈，再叠一层闪烁会糊成一片，
+     * 玩家分不清哪个圈是"我现在要消的"。松手后再重算。
+     */
+    private refreshFlash(): void {
+        this.clearFlash();
+        if (this._finished || !this._flashDraw || !this._flashDraw.isValid) return;
+        const centers: Array<{ t: Tile; ps: Tile[] }> = [];
+        for (const t of this._board.allTiles()) {
+            const ps = pairedNeighbors(this._board, this._pair, t);
+            if (ps.length >= FLASH_MIN_PARTNERS) centers.push({ t, ps });
+        }
+        // ★ 可测入口：工具链的 `flash:` 动作靠这几行断言"闪的确实是
+        //   '有两个以上紧邻搭档'的格子"。没有它，这条规则只能靠人在真机上
+        //   碰运气撞到一个多选局面才能看见 —— 而"没看见"和"坏了"长得一模一样。
+        // ★★ `seq=` 必须带上，它是这批样本的**盘面归属** ★★
+        //   工装按"seq 等于最后一条 STATE 的 seq"来挑样本。只按"STATE 之后的行"
+        //   挑会跨盘：洗牌那一路盘面整盘换位、但 `_seq` 不会自己变，
+        //   于是旧盘的 FLASH 行会和新盘的一起被收进同一批，断言就该误报了。
+        //   带上 seq 之后，"这批闪烁属于哪个盘面"是**日志里写死的**，不靠推断。
+        // ⚠️ 只把**日志**放进 `LOG_STATE` 开关里，**不能**在那儿 return ——
+        //    下面就是画圈的代码，提前 return 等于"非 debug 构建下闪烁整个不画"，
+        //    而这类"只是不闪了"的坏法在真机上和"这个盘面本来没有多选"一样。
+        const dbg = CFG.DEBUG.LOG_STATE;
+        if (!centers.length) {
+            if (dbg) log(`[Diag] FLASH seq=${this._seq} none`);
+            return;
+        }
+        if (dbg) {
+            for (const c of centers) {
+                log(`[Diag] FLASH seq=${this._seq} 中心=${c.t.char}@${c.t.r},${c.t.c} 搭档数=${c.ps.length} `
+                    + c.ps.map((p) => `${p.char}@${p.r},${p.c}`).join(' '));
+            }
+        }
+        // 去重：同一张牌可能既是中心、又是别人的搭档
+        const tiles: Tile[] = [];
+        const seen = new Set<number>();
+        for (const c of centers) {
+            if (!seen.has(c.t.id)) { seen.add(c.t.id); tiles.push(c.t); }
+            for (const p of c.ps) if (!seen.has(p.id)) { seen.add(p.id); tiles.push(p); }
+        }
+        const paint = (a: number): void => {
+            const g = this._flashDraw;
+            if (!g || !g.isValid) return;
+            g.clear();
+            g.strokeColor = hex(CFG.COLOR.HL_GOLD, Math.round(255 * a));
+            g.lineWidth = px(2.6);
+            const s = this._tile + px(2);
+            for (const t of tiles) {
+                g.roundRect(this.cellX(t.c) - s / 2, this.cellY(t.r) - s / 2, s, s,
+                    px(CFG.BOARDGEO.REACH_R));
+            }
+            g.stroke();
+        };
+        paint(FLASH_HI);
+        let phase = 0;
+        const half = FLASH_STEPS / 2;
+        this._flashId = this.interval(() => {
+            phase = (phase + 1) % FLASH_STEPS;
+            const k = phase < half ? phase / half : (FLASH_STEPS - phase) / half;
+            paint(FLASH_HI - (FLASH_HI - FLASH_LO) * k);
+        }, FLASH_MS_STEP);
+    }
+
+    /** 收掉闪烁（盘面要变 / 拖动开始 / 收局时必须调，否则会闪在已经消掉的格子上） */
+    private clearFlash(): void {
+        if (this._flashId) { this.clearInterval(this._flashId); this._flashId = 0; }
+        if (this._flashDraw && this._flashDraw.isValid) this._flashDraw.clear();
     }
 
     private pulseTiles(ts: Tile[]): void {
@@ -2320,7 +2665,8 @@ export class GamePage extends PageBase {
         const top = H - BAR_H - MADE_MB - MADE_H;
 
         const box = mkNode('made', this._root, stripW, MADE_H);
-        setPos(box, 0, topY(H, top + MADE_H / 2));
+        // ★ 减 _contentTop = 整条**上移**（三段一起挪，见 CONTENT_SHARE）
+        setPos(box, 0, topY(H, top + MADE_H / 2 - this._contentTop));
         // 面：半透明白底（`.made-strip{background:rgba(255,255,255,.5)}`）
         mkFace(box, stripW, MADE_H, MADE_R, C.SURFACE, C.SURFACE_A_STRIP);
         // 1px 内描边：设计稿用 `inset 0 0 0 1px` 画在**内侧**，
@@ -2474,15 +2820,19 @@ export class GamePage extends PageBase {
     private buildTools(): void {
         const H = this._visH, W = this._visW;
         const top = H - BAR_H;
-        const w = (W - 2 * TOOL_PAD_X - 2 * TOOL_GAP) / 3;
+        // ★ 2026-10-03：从 3 格改成 **4 格**（用户拍板"道具更换成四个种类"）。
+        //   宽度按 4 等分重算 —— 这一步不能漏，否则第 4 个道具会画到屏幕外
+        //   （Cocos 不会报错，只是看不见，很容易被当成"没加成功"）。
+        const w = (W - 2 * TOOL_PAD_X - 2 * TOOL_GAP) / TOOL_COUNT;
         this._toolW = w;
-        const y = topY(H, top + TOOL_PAD_T + TOOL_H / 2);
+        const y = topY(H, top + TOOL_PAD_T + TOOL_H / 2 - this._contentTop);
         const x0 = -W / 2 + TOOL_PAD_X + w / 2;
 
-        const items: Array<{ key: 'hint' | 'shuffle' | 'bomb'; label: string; onTap: () => void }> = [
+        const items: Array<{ key: ToolKey; label: string; onTap: () => void }> = [
             { key: 'hint', label: '提示', onTap: () => this.useHint() },
+            { key: 'bomb', label: '消除', onTap: () => this.useBomb() },
             { key: 'shuffle', label: '洗牌', onTap: () => this.useShuffle(false) },
-            { key: 'bomb', label: '凑对', onTap: () => this.useBomb() },
+            { key: 'time', label: '延长时间', onTap: () => this.useTime() },
         ];
         for (let i = 0; i < items.length; i++) {
             const it = items[i];
@@ -2543,8 +2893,9 @@ export class GamePage extends PageBase {
             v.op.opacity = n > 0 ? 255 : TOOL_OFF_ALPHA;
         };
         set(this._tools.hint, this._hintLeft);
-        set(this._tools.shuffle, this._shuffleLeft);
         set(this._tools.bomb, this._bombLeft);
+        set(this._tools.shuffle, this._shuffleLeft);
+        set(this._tools.time, this._timeLeft);
     }
 
     /**
@@ -2634,6 +2985,9 @@ export class GamePage extends PageBase {
         this._finished = true;
         this._busy = true;
         this.clearInterval(this._tickId);
+        // 收局必须收掉「多选配对」的呼吸闪烁：它的 interval 不会自己停，
+        // 结算页/弹层背后会一直有一圈金边在呼吸（且画在马上要被销毁的牌上）。
+        this.clearFlash();
         const left = Math.max(0, (this._deadline - Date.now()) / 1000);
         const ratio = left / this._lv.time;
         // ★ 星级只看剩余时间比例（与原型口径一致）：>50% 三星，>20% 两星，其余一星
@@ -2693,6 +3047,8 @@ export class GamePage extends PageBase {
         this._finished = true;
         this._busy = true;
         this.clearInterval(this._tickId);
+        // 同上：失败弹层背后不能还留着一圈在呼吸的金边。
+        this.clearFlash();
         // 顺带收掉"时间将尽"的闪烁，否则弹层背后会一直闪
         if (this._blinkId) {
             this.clearInterval(this._blinkId);
@@ -2755,6 +3111,10 @@ export class GamePage extends PageBase {
             //   debug 期的人看的，不是给玩家看的，已删。开发者提醒见 AdService.audit()。
             this.toast(`复活成功，时间 +${add} 秒`);
             this.diag('复活');
+            // ★ 复活 = 重新开局（盘面一字未动，但 `finishFail` 已经把闪烁停掉了）。
+            //   不补这一句，玩家复活后就再也看不到"多选配对"的提示，直到他动一次手 ——
+            //   而这恰恰是他最需要它的时候（时间刚被补上，正在重新找路）。
+            this.refreshFlash();
         });
     }
 
@@ -2900,11 +3260,33 @@ export class GamePage extends PageBase {
      * @returns 重排后是否可解（有证据，或无法反驳）
      */
     private reshuffleRemaining(): boolean {
+        // ★ 整盘牌要换位 ⇒ 先把闪烁收掉。
+        //   不在这里收的话，那一圈金边会按**旧牌序**的位置继续画，
+        //   而它的位置取自 `t.cellX(t.c)` —— 重排后那些都成了别人的格子，
+        //   表现是"金框飘在几张不相干的牌上"，比不闪还容易误读。
+        //   新闪烁在下面的成功分支里按新盘面重算（两个 return true 都要覆盖）。
+        this.clearFlash();
         const tiles = this._board.allTiles();
         const spots = tiles.map((t) => ({ r: t.r, c: t.c }));
         // 整轮共享一个 DFS 窗口：活得比这久，玩家点一下就要卡住
         const dfsDeadline = Date.now() + RESHUFFLE_DFS_MS;
         let fallback: Tile[] | null = null;   // 第一个"没被证伪"的盘面（牌序）
+
+        /**
+         * 收尾：给**重排后的新盘面**补一份诊断快照，再按它重算闪烁。
+         *
+         * ★ 为什么要在这里补 `diag()`：重排是**盘面变化**，但它以前一条 `[Diag]`
+         *   都不打 —— 于是日志里最后一份 BOARD/TILES/STATE 还是重排**之前**的。
+         *   两个后果：① 事后回放看不到"重排后到底长什么样"（一手证据缺失）；
+         *   ② `refreshFlash()` 必须报 `seq=`，而这个 seq 就取自最近一次 diag()，
+         *      不补这一下，新盘的 FLASH 行会顶着**旧盘的 seq**，工装的
+         *      `flash:` 断言据此把两盘的样本混成一批。
+         *   所以这一句同时修掉"证据缺失"和"样本串盘"两件事，不是为测试加的。
+         */
+        const settle = (): void => {
+            this.diag('洗牌');
+            this.refreshFlash();
+        };
 
         const layout = (order: Tile[]): void => {
             for (const t of tiles) this._board.removeAt(t);
@@ -2929,6 +3311,7 @@ export class GamePage extends PageBase {
 
             if (v.verdict === 'YES') {
                 log(`[GamePage] 重排第 ${attempt + 1} 轮 → 可解（${v.via}，${v.steps} 手）`);
+                settle();
                 return true;
             }
             if (v.verdict === 'NO') {
@@ -2943,8 +3326,13 @@ export class GamePage extends PageBase {
             // 见函数头：没能证明可解 ≠ 走不动。收下一个"没被证伪"的盘面。
             layout(fallback);
             log(`[GamePage] 重排 ${RESHUFFLE_TRIES} 轮都没能证明可解，回退到第一个未证伪的盘面并放行`);
+            settle();
             return true;
         }
+        // ★ 返回 false（30 个顺序全被证伪）时盘面**也已经换过位**了 ——
+        //   最后一次 `layout()` 的结果留在棋盘上，所以快照与闪烁一样要补，
+        //   否则玩家接下来看到的是一盘"日志里不存在"的牌，闪烁也停在上一盘。
+        settle();
         return false;
     }
 
@@ -3028,13 +3416,15 @@ export class GamePage extends PageBase {
     }
 
     /**
-     * 凑对：**无视滑动限制**，直接把场上任意一对可合成的牌合掉。
-     * 这是三个道具里唯一"改规则"的那个 —— 提示与洗牌都是在帮玩家走规则内的路，
-     * 而凑对是"卡住了就帮你直接成一次"。所以它只有 1 次。
+     * 「消除」：**无视滑动限制**，直接把场上任意一对可合成的牌合掉。
+     * （2026-10-03 之前玩家看到的标签是「凑对」，用户拍板改名；效果一字未动。）
+     *
+     * 这是四个道具里唯一"改规则"的那个 —— 提示 / 洗牌 / 延长时间都是在帮玩家
+     * 走规则内的路，而消除是"卡住了就帮你直接成一次"。所以它只有 1 次。
      */
     private useBomb(): void {
         if (this._busy || this._finished) return;
-        if (this._bombLeft <= 0) { this.toast('凑对用完了'); return; }
+        if (this._bombLeft <= 0) { this.toast('消除用完了'); return; }
         // ★ 宝牌要排除掉：这个道具是"无视滑动限制，直接成一次字"，
         //   拿它去凑一对宝牌等于把道具换成"消一对宝牌" —— 少消一个字，玩家会亏。
         const ts = this._board.allTiles().filter((t) => t.kind !== 'junk' && t.kind !== 'treasure');
@@ -3047,8 +3437,40 @@ export class GamePage extends PageBase {
         if (!found) { this.toast('场上没有可合成的两张牌了'); return; }
         this._bombLeft--;
         this.renderTools();
-        log(`[GamePage] 凑对：${found[0].char}+${found[1].char}=${this._pair.word(found[0], found[1])}`);
+        // ★ 日志里也改成「消除」：它是这个道具唯一的可观测入口，名字与 UI 不一致时，
+        //   查日志的人会以为"消除"和"凑对"是两个不同的功能。
+        log(`[GamePage] 消除：${found[0].char}+${found[1].char}=${this._pair.word(found[0], found[1])}`);
         this.resolveMatch(found[0], found[1]);
+    }
+
+    /**
+     * 「延长时间」：在**现有倒计时**上直接加 `CFG.GAME.REVIVE_SEC`（30）秒。
+     *
+     * 【为什么是"加秒"而不是"重置成 now+30s"】
+     * 重置是「看视频复活」的口径 —— 复活发生在时间**已经归零之后**，重置是唯一
+     * 说得通的做法。而本道具是在时间还没走完时**主动使用**的，玩家心里的账是
+     * "我还剩 20 秒，加 30 秒 ⇒ 50 秒"，加秒才符合预期。
+     * 两者共用同一个常量是刻意的：它们都是"把这一关的可用时间延长 30 秒"，
+     * 只是触发时机不同（一个是用了道具、一个是看了广告）。
+     *
+     * ★ 加完必须**把表重新挂上**：计时到点那一刻 `_tickId` 会被清掉，
+     *   之后再也没有人来读 `_deadline` —— 只改 `_deadline` 而不重挂表，
+     *   表现是"点了没反应"（数字不动），而且不报任何错。
+     */
+    private useTime(): void {
+        if (this._busy || this._finished) return;
+        if (this._timeLeft <= 0) { this.toast('延长时间用完了'); return; }
+        const add = CFG.GAME.REVIVE_SEC;
+        const left = Math.max(0, (this._deadline - Date.now()) / 1000);
+        this._timeLeft--;
+        this.renderTools();
+        AudioService.play('revive');          // 与"看广告复活"同一音色：语义就是同一件事
+        this._deadline += add * 1000;
+        if (this._tickId) this.updateTimerLabel();
+        else this.startTimer(left + add);      // 表已经停了（刚好卡在归零那一帧）→ 重挂
+        log(`[GamePage] 延长时间：+${add}s（剩 ${Math.round((this._deadline - Date.now()) / 1000)}s，`
+            + `还有 ${this._timeLeft} 次）`);
+        this.toast(`时间 +${add} 秒`);
     }
 
     /**

@@ -128,6 +128,27 @@
  *                 旧规则下拖动一张牌永远只动它自己，既没有"被推的牌"，也没有"整段回弹"。
  *               ⚠️ 两行都可能 none（本盘没有推箱走法）→ **跳过不算失败**，
  *                 但 `ok===0` 会让这一轮整体判失败（"绿灯的假象"比红灯更坏）。
+ *   flash   **「多选配对」呼吸闪烁的硬断言**（2026-10-03 加）。
+ *           取 `seq` **等于本局最后一条 `[Diag] STATE`** 的那批 `[Diag] FLASH` 行，
+ *           逐条查：
+ *             ① 这批样本必须存在（要么 `FLASH none`，要么 ≥1 条 `中心=…`）——
+ *                一条都没有 = `refreshFlash()` 没挂到这条路径上（本断言测的**正是**
+ *                "调用点有没有漏挂"，那是这个功能唯一会悄悄坏掉的方式）；
+ *             ② 每条 `中心=X@r,c 搭档数=N 搭档=…`：声明的 N 必须**恰好等于**
+ *                后面列出的搭档个数（数目对不上 = `pairedNeighbors` 数与列表不同源）；
+ *             ③ 每张搭档必须与中心**四方向紧邻**（|Δr|+|Δc| === 1）且**格上有牌**、
+ *                牌上的字与日志里写的字一致（回查同一时刻的 `[Diag] TILES`）；
+ *             ④ `FLASH none` 与 `中心=…` **不能在同一条 seq 下同时出现**
+ *                （同一个盘面不可能既"有中心"又"没有"）。
+ *           ★ 这四条合起来验的是"闪的确实是**挨着的**搭档"，也就是用户原话里的
+ *             「左/右/上/下」；"它俩真的能配对（canPair）"那半条在工装侧算不出来
+ *             （配对表只在 TS 侧），由 `core-selftest` 的 `adjacentPairs` 断言兜底。
+ *           ⚠️ 取样本按 **seq 相等**挑，**不是** `lastDiag`——
+ *              `lastDiag` 只取最后一行，会拿到跨盘的残留（同文件头那条"整盘一起取"）。
+ *              用"位置在 STATE 之后"也不行：洗牌那一路整盘换位，游戏侧已给
+ *              `reshuffleRemaining` 的收尾补了 `diag('洗牌')`，seq 才是唯一可信的归属。
+ *           ⚠️ 不需要拖拽，是纯读日志动作；放在 `d:` 开局后、`drag:` / `rebound:` /
+ *             `push:` / `treasure:` 之后各放一次，才能覆盖到"盘面变化后重算"这条路。
  *    xform       **坐标基准自检**：游戏从自己的变换链算出「格 (0,0) 的屏幕坐标」
  *               （`[Diag] XFORM`），工装用自己那套（cx + 设计x × PS）再算一遍，
  *               差 > 3px 即失败。★ 失败时**先查工装的 cx/cy/PS，别翻游戏代码**。
@@ -151,6 +172,11 @@
  *    th:<文字>   断言本局**曾经弹过**该提示（扫全部 `[Toast]` 行）。
  *               连续两句话的场合必须用它：卡住 →"未接入广告位…"→"盘面已重排"，
  *               等一会儿再查时第一句已被顶掉，`t:` 必失败而链路其实正常。
+ *               ⚠️ **只匹配 toast 的第一行**：两行的 toast（`msg` 里带 `\n`）
+ *                  在控制台里会**拆成两条记录**，第二行没有 `[Toast]` 前缀，
+ *                  扫不到。写断言文字时要用第一行里的字（例如提示的
+ *                  「已经对齐了」，而不是第二行的「拼成」）——
+ *                  2026-10-03 实际踩到过：断言文字取在第二行，游戏明明正常却报红。
  *    gate[:<标题>]  断言**弹层弹出过**。两个弹层的日志格式刻意同构，一条正则都认：
  *               · `[AdGate] 弹出：卡住了 / 看广告重排`    （死局兜底）
  *               · `[FailGate] 弹出：时间到了 / 看视频复活` （时间到 → 复活）
@@ -177,6 +203,31 @@
  *                 （ui/FailGate.ts）等真实限时要 150 秒，跑一轮回归得干等两分半，
  *                 等于不可验证。压缩到 6 秒后 `time:6 wait:7000 gate:时间到了` 就能走到。
  *               ⚠️ 约束同 seed：在 `unlock:` 之后、进对局页之前；不写则行为与之前一致。
+ *    lvl:<n>    **指定下一局进第 n 关**（写 `globalThis.__CHA_LEVEL__`）。
+ *               ★ 版式类的断言（尤其 frame）**必须跨关卡**才验得出来，
+ *                 而 unlock 只解锁、进哪关还得在地图上点（地图要滚动，坐标每次重算）。
+ *                 有了它就能 `lvl:1`（6×5）与 `lvl:34`（10×7）直接对照。
+ *               ⚠️ 约束同 seed：在 `unlock:` 之后、进对局页之前；不写则行为逐字节不变。
+ *    frame      **棋盘面板固定性**的硬断言（2026-10-03 用户第 2 条）。
+ *               取 `[Diag] FRAME` + `[Layout] game` 转储，判 7 条：
+ *                 ① `wrapH` 在所有样本间**逐值相同** → 面板不随行列数变；
+ *                 ② `room ≥ 0` 且 `boardTop − wrapTop == room/2` → 棋盘装得进、且居中；
+ *                 ③「顶部块→面板」「面板→已成字条」「已成字条→道具栏」三处缝 ≤ 12px
+ *                    （旧的"分割太开"是 90~165px，一眼可辨）；
+ *                 ④ 屏幕上下留白对称（头部块上沿 vs 道具栏距底，差 ≤ 2px）；
+ *                 ⑤ `#board` 在 `.board-wrap` 里居中；
+ *                 ⑥ 各样本的 `boardH` **互不相同** —— 反向哨兵：若两次采到同一档
+ *                    行列数，①就是"结构上恒真"的假判据；
+ *                 ⑦ 同 `headY` 的样本间 `wrapTop/ct/slack` 相同 → 骨架没挪窝。
+ *               ⚠️ **必须采 ≥2 次**（不同行列数的关卡各一次），只采 1 次整体判失败 ——
+ *                  这条断言的价值全在跨样本，1 个样本必然通过，那是绿灯的假象。
+ *               例：  … lvl:1  … xform frame   lb:game:.btn-back   lvl:34 … xform frame
+ *    lb:<页面>:<块名>  **按版式转储里的块点击**（`[Layout] <页面> <块名> …` 的中心）。
+ *               ★ 比手写 `d:` 稳：`d:` 是 720 单位系、dump 是 372px 系，
+ *                 换算还依赖内容块下移量 `ct` —— 改一次版式，所有手写坐标全失效。
+ *                 2026-10-03 做"面板固定"时当场踩到：负控里面板一变，
+ *                 `.btn-back` 移了 29px，"回地图"点空，第二个样本没采到 → 断言空转。
+ *               例：  lb:game:.btn-back   lb:map:.node[0]
  *  例（《挪字成章》的对局页；下面这些 `d:` 都是从 [Layout] dump 换算出来的，
  *      坐标口径见 chaiziDragPlay 上方那段说明）：
  *    # 进首页 → 选章节 1 → 进关卡地图
@@ -361,6 +412,27 @@ const OUT_DIR = process.argv[3] || '/tmp/smoke';
  * 且**失败必须能让调用方看见**（退出码），不能只打印一行就算了。
  */
 const FAILURES = [];
+
+/**
+ * 一条硬断言：不成立就记进 FAILURES 并打一条 ❌。
+ * 抽出来是因为 `frame` 动作有 7~8 条同类判据，逐条写 `if (!c) { FAILURES.push(…);
+ * console.log(…) }` 会把"判据到底是什么"淹在样板里。
+ * ⚠️ 只给"同一动作里成串的同类判据"用 —— 单条判据仍然直写，
+ *   这样 `FAILURES.push` 的调用点在文件里依然一眼可数。
+ */
+function must(cond, msg) {
+    if (cond) return true;
+    FAILURES.push(msg);
+    console.log(`==> ❌ ${msg}`);
+    return false;
+}
+
+/**
+ * `frame` 动作采到的样本（跨关卡对照用）。
+ * 之所以要**攒起来**而不是每次现算：这条断言的判据本身就是"样本之间相等/不等"，
+ * 单个样本永远自洽 —— 攒不住就必然是一种"绿灯的假象"。
+ */
+const FRAME_SAMPLES = [];
 const ACTIONS = process.argv.slice(4).map((s) => {
     // auto:<n> / auto:<n>@<gapMs> / auto:<n>@<gapMs>!<ms,ms,...>
     //   gapMs = **每步的最小间隔**，默认 800。
@@ -486,6 +558,81 @@ const ACTIONS = process.argv.slice(4).map((s) => {
         const n = Number(s.slice(4).replace(/^:/, ''));
         return { kind: 'time', sec: Number.isFinite(n) && n > 0 ? Math.floor(n) : 0,
             label: s.replace(/[:.]/g, '_') };
+    }
+    // lvl:<n> —— **指定下一局进第 n 关**（写页面里的 `globalThis.__CHA_LEVEL__`）。
+    //
+    //  【为什么必须有它】
+    //  `unlock:<n>` 只解锁，**真正进哪一关还得在地图上点**。而地图是可滚动的
+    //  （38 关分 13 行），想进第 34 关得先把地图拖到底、再把新位置量出来当 `d:` 用 ——
+    //  每次改版式都要重做一遍，而且极容易点偏（点偏了表现是"进了别的关"，
+    //  看起来像"关卡数据坏了"）。
+    //
+    //  【它真正的用途：版式对照】
+    //  第 2 条「地图大小不变，只变格子和字体的大小」**本质上是一条跨关卡断言**，
+    //  必须拿两个不同行列数的关卡比。`lvl:1`（6×5，30 格）与 `lvl:34`（10×7，70 格）
+    //  是最省事的两个端点 —— 一个最矮最胖、一个最宽最扁。
+    //    例：  … lvl:1 … xform frame  （→ 回地图）lvl:34 … xform frame
+    //
+    //  【用法】与 seed / time 完全一致：必须在 `unlock:` **之后**（unlock 会重载，
+    //          重载清全局变量）、且**进入对局页之前**（GamePage.onCreate 读一次）。
+    //  ⚠️ 只改"进哪一关"，不改玩法；不写这个动作时行为逐字节不变。
+    //     生效时会打 `[GamePage] ⚠️ 工装指定关卡：__CHA_LEVEL__ = n`，可当场复核。
+    if (s.startsWith('lvl')) {
+        const n = Number(s.slice(3).replace(/^:/, ''));
+        return { kind: 'lvl', level: Number.isFinite(n) && n > 0 ? Math.floor(n) : 0,
+            label: s.replace(/[:.]/g, '_') };
+    }
+    // frame —— **棋盘面板固定性的硬断言**（2026-10-03 用户第 2 条）。
+    //
+    //  【它防的是什么】
+    //  用户原话：「页面分割太开…固定住…当行列越来越多的时候，地图大小不变，
+    //  只变格子和字体的大小」。这三句靠截图都验不了：
+    //    · "分割太开"在截图里有主观性 —— 差 20px 还是 120px，肉眼分不清；
+    //    · "固定住"要看**两个不同行列数的关卡**才成立，单张截图必然看不出；
+    //    · "地图大小不变"最容易假绿：面板高度若还跟着行数走，单关看起来
+    //      **完全正常**（无缝合缝、无越界），只有对照两关才暴露。
+    //
+    //  【判据】（数据源 `[Diag] FRAME`，见 GamePage.diag）
+    //    ① `wrapH` 在**所有样本**之间必须逐值相同  → 面板不随行列数变；
+    //    ② `room = wrapH − boardH ≥ 0` 且 `boardTop − wrapTop == room/2`
+    //       → 棋盘装得进面板、且在面板内居中（不许贴着一边）；
+    //    ③ 各样本的 `boardH` 必须**互不相同** → 否则那两个样本行列一样，
+    //       ①就是"结构上恒真"的假判据（负控时正是 ③ 会先报出来）；
+    //    ④ 同 `headY` 的样本之间，`wrapTop` / `ct` / `slack` 必须相同
+    //       → 面板上沿与上下留白不随关卡挪动（"固定住"）。
+    //  ⚠️ 只采到 1 个样本 ⇒ 整个动作判失败：这条断言的**全部价值**就在跨样本对比，
+    //     1 个样本必然通过，那是绿灯的假象（同 `push:` 的 ok===0 规则）。
+    if (s === 'frame' || s.startsWith('frame:')) {
+        return { kind: 'frame', label: s.replace(/[:.]/g, '_') };
+    }
+    // lb:<页面>:<块名> —— **按「版式转储里的块」点击**，不用手算 d: 坐标。
+    //
+    //  【它解决什么】
+    //  `d:<x>,<y>` 是 720 设计单位系，而 `[Layout]` dump 是 372px 系，
+    //  两者要乘 1.9355 **并换掉 y 原点**（dump 自屏幕顶、d: 自屏幕中心）——
+    //  换算错一步的表现是"点了没反应"，看起来像按钮坏了。
+    //  更麻烦的是：**这个换算还依赖 ct**（内容块下移量）。改一次版式，
+    //  所有手写的 `d:` 全失效 —— 2026-10-03 做面板固定时就当场踩到：
+    //  同一份负控里 `.btn-back` 因为 ct 从 68 变到 124 而移了 29px，
+    //  于是"回地图"那一下点空，第二个样本根本没采到（断言随之变成空转）。
+    //  改成按块名点之后，版式怎么挪都点得中。
+    //
+    //  【换算】（与 `xform` 那条自检同源，别再另推一套）
+    //    design 单位 = 372px × (720/372) − 半屏；屏幕 = 画布中心 + 单位 × PS
+    //    所以：sx = cx + PS×(PX_SCALE×x_px − UNIT_W/2)
+    //          sy = cy + PS×(PX_SCALE×y_px − UNIT_H/2)
+    //  例：  lb:game:.btn-back      （对局页左上返回键）
+    //        lb:map:.node[0]        （地图页第 1 关节点 —— ★ 用它进关比写 d: 稳）
+    if (s.startsWith('lb:')) {
+        const body = s.slice(3);
+        const cut = body.indexOf(':');
+        const page = cut > 0 ? body.slice(0, cut) : 'game';
+        const name = cut > 0 ? body.slice(cut + 1) : body;
+        return {
+            kind: 'lb', page: page.trim(), name: name.trim(),
+            delay: 1600,
+            label: s.replace(/[:.#\[\]]/g, '_'),
+        };
     }
     // unlock:<n>[:<stars>] —— **把第 1..n 关直接标记为已通关**，然后重载页面。
     //
@@ -818,6 +965,16 @@ const ACTIONS = process.argv.slice(4).map((s) => {
     // ----------------------------------------------------------
     if (s === 'xform' || s.startsWith('xform:')) {
         return { kind: 'xform', label: 'xform' };
+    }
+
+    // ----------------------------------------------------------
+    //  flash —— 「多选配对」呼吸闪烁的硬断言（2026-10-03 加）。
+    //  判据与理由见文件头 `flash` 那一段，这里只留"它为什么不能靠截图"：
+    //  闪烁是 160ms 一步的呼吸，截图正好停在波谷时那一圈金边**几乎透明**，
+    //  拍出来的图与"根本没闪"完全一样 —— 靠人眼看图验证必然误判。
+    // ----------------------------------------------------------
+    if (s === 'flash' || s.startsWith('flash:')) {
+        return { kind: 'flash', label: s.replace(/[:.]/g, '_') };
     }
 
     // ----------------------------------------------------------
@@ -1411,6 +1568,69 @@ function parseBoardGeo(line) {
     return Number.isFinite(out.pitch) ? out : null;
 }
 
+/**
+ * 解析 FRAME 行 → { headY, ct, wrapTop, wrapH, boardH, boardTop, room, slack }
+ * 单位一律是**设计单位（720 系）**，与棋盘几何同一口径 —— 别拿去和
+ * `[Layout]` dump 的 372px 系混用（换算 ×1.9355，见文件头那条）。
+ */
+function parseFrame(line) {
+    if (!line) return null;
+    const out = {};
+    const body = line.slice(line.indexOf('FRAME') + 5);
+    for (const kv of body.trim().split(/\s+/)) {
+        const i = kv.indexOf('=');
+        if (i > 0) out[kv.slice(0, i)] = Number(kv.slice(i + 1));
+    }
+    return Number.isFinite(out.wrapH) ? out : null;
+}
+
+/**
+ * 取页面**最后一次**版式转储 → `{ 块名: {x,y,w,h,db} }`（单位 = 372px 设计系）。
+ *
+ * 【为什么要"最后一段"，而不是全文扫描】
+ *   `[Layout] game …` 一行一个块，一页一整套。同一轮里进两次对局页就有两套，
+ *   按名字全局扫会拿到**上一套**的残留（例如上一关的 `.board-wrap`）——
+ *   与 `lastDiag` 那个"跨局残留"是同一类坑。所以先定位最后一行，
+ *   再向前收拢**连续**的同一页行，得到"这一套"。
+ * ⚠️ 名字可能重复（两行 `.goal-chip[0]`），这里后写覆盖先写 ——
+ *   本函数的消费方（frame 动作）只用唯一的块名，不受影响。
+ */
+/** 372px 设计稿 → 720 设计单位的比例（= CFG.SPEC.SCALE，与 px() 同源） */
+const PX_SCALE = 720 / 372;
+
+/**
+ * 把 `[Layout]` 转储里的一个盒子（372px 系、自**屏幕左上角**）
+ * 换算成**屏幕坐标**（CDP 点击用）。见 `lb:` 动作那段说明。
+ * ⚠️ 两处偏移都要带：① `−UNIT_W/2` / `−UNIT_H/2`（设计单位的原点在屏幕中心）
+ *    ② `cx` / `cy` 是画布中心 —— 少任何一处都是"差半屏"级的错。
+ */
+function dumpBoxToScreen(cx, cy, ps, b) {
+    return {
+        x: Math.round(cx + ps * (PX_SCALE * (b.x + b.w / 2) - UNIT_W / 2)),
+        y: Math.round(cy + ps * (PX_SCALE * (b.y + b.h / 2) - UNIT_H / 2)),
+    };
+}
+
+function layoutBlock(cdp, page = 'game') {
+    const lines = cdp.consoleLines;
+    const pre = `[Layout] ${page} `;
+    let end = -1;
+    for (let i = lines.length - 1; i >= 0; i--) {
+        if (lines[i].includes(pre)) { end = i; break; }
+    }
+    if (end < 0) return null;
+    let start = end;
+    while (start - 1 >= 0 && lines[start - 1].includes(pre)) start--;
+    const out = {};
+    for (let i = start; i <= end; i++) {
+        const m = lines[i].match(
+            /\[Layout\]\s+\S+\s+(\S+)\s+x=(-?[\d.]+)\s+y=(-?[\d.]+)\s+w=(-?[\d.]+)\s+h=(-?[\d.]+)\s+db=(-?[\d.]+)/);
+        if (!m) continue;
+        out[m[1]] = { x: +m[2], y: +m[3], w: +m[4], h: +m[5], db: +m[6] };
+    }
+    return Object.keys(out).length ? out : null;
+}
+
 /** 解析 SUGGEST 行 → { char, fromR, fromC, toR, toC, hit } */
 function parseSuggest(line) {
     if (!line || line.includes('SUGGEST none')) return null;
@@ -1598,6 +1818,177 @@ async function waitState(cdp, seqBefore, timeoutMs) {
 /** 格子 → 棋盘局部坐标（与 GamePage.cellX / cellY 必须同口径） */
 function cellLocalX(geo, c) { return (c - (geo.cols - 1) / 2) * geo.pitch; }
 function cellLocalY(geo, r) { return ((geo.rows - 1) / 2 - r) * geo.pitch; }
+
+// ------------------------------------------------------------
+//  「多选配对」呼吸闪烁：取样本 + 断言（flash 动作用）
+// ------------------------------------------------------------
+/**
+ * 解析一条 `[Diag] FLASH 中心=X@r,c 搭档数=N 搭档=Y@r,c Z@r,c …` 行。
+ * （游戏侧的格式见 GamePage.refreshFlash；`FLASH none` 走 `isNone`。）
+ * ⚠️ 搭档那一段没有 `搭档=` 这个前缀 —— 游戏打的是**空格分隔的裸列表**
+ *    （`c.ps.map(p => `${p.char}@${p.r},${p.c}`).join(' ')`）。这里按
+ *    "数出所有 `X@r,c` 形态的 token"来取，不依赖任何前缀，才不会因为
+ *    游戏侧改了一句文案就静默退化成"0 个搭档"（那样断言会变成永远通过）。
+ */
+function parseFlashLine(line) {
+    if (!line) return null;
+    const sq = line.match(/FLASH\s+seq=(\d+)/);
+    if (!sq) return null;                       // 没有 seq 认不出归属，按"格式不认识"处理
+    const seq = +sq[1];
+    if (line.includes('FLASH seq=' + seq + ' none')) return { isNone: true, seq, centers: [] };
+    const m = line.match(/FLASH\s+seq=\d+\s+中心=(\S+?)@(\d+),(\d+)\s+搭档数=(\d+)\s*(.*)$/);
+    if (!m) return null;
+    const partners = [];
+    const re = /(\S+?)@(\d+),(\d+)/g;
+    let g;
+    while ((g = re.exec(m[5])) !== null) {
+        partners.push({ char: g[1], r: +g[2], c: +g[3] });
+    }
+    return {
+        isNone: false,
+        seq,
+        center: { char: m[1], r: +m[2], c: +m[3] },
+        declaredCount: +m[4],
+        partners,
+    };
+}
+
+/**
+ * 取**当前盘面**的 `[Diag] FLASH` 样本。
+ *
+ * 【判据：seq 相等，不是"位置在 STATE 之后"】
+ * 每行 FLASH 都自带 `seq=`（取自最近一次 `diag()`）。工装只认
+ * **seq === 本局最后一条 STATE 的 seq** 的那些行 —— 这样"这批闪烁属于哪个盘面"
+ * 是日志里写死的，不靠推断。
+ * ★ 为什么不能用"STATE 之后的所有 FLASH 行"：洗牌那一路**整盘换位**，
+ *   如果它不补 diag()，新盘的 FLASH 会顶着旧盘的 seq，两批样本就混成一批
+ *   （旧盘的格在新盘上早就是别的字了，紧邻/TILES 断言会集体误报）。
+ *   游戏侧已在 `reshuffleRemaining` 的 `settle()` 里补了 `diag('洗牌')`。
+ */
+function flashSamples(cdp) {
+    const start = gameAnchor(cdp);
+    let seq = -1;
+    for (let i = cdp.consoleLines.length - 1; i >= start; i--) {
+        const m = cdp.consoleLines[i].match(/\[Diag\] STATE seq=(\d+)/);
+        if (m) { seq = Number(m[1]); break; }
+    }
+    if (seq < 0) return null;
+    const out = [];
+    for (let i = start; i < cdp.consoleLines.length; i++) {
+        const line = cdp.consoleLines[i];
+        if (!line.includes('[Diag] FLASH')) continue;
+        const p = parseFlashLine(line);
+        if (p && p.seq === seq) out.push({ i, line, p });
+    }
+    return out;
+}
+
+/**
+ * 「多选配对」闪烁的硬断言（flash 动作的实现）。
+ *
+ * 【它防的是什么】
+ * `refreshFlash()` 要挂在**每一个盘面变化点**上（开局 / 合成 / 宝牌 / 挪牌 /
+ * 洗牌 / 复活），漏掉任何一处都不会报错、不会崩，只会"那个场景下不闪了" ——
+ * 而"不闪"和"这个盘面本来就没有多选局面"在肉眼上完全一样。
+ * 本断言的第一步（"最后一条 STATE 之后必须存在 FLASH 行"）就是专门堵这个的。
+ *
+ * 【它验不到什么（如实写明）】
+ * "这两张真的能配对（canPair）"算不出来 —— 配对表在 TS 侧，工装只有日志。
+ * 那半条由 core-selftest 的 `adjacentPairs` 断言兜底（它直接调 Board 的规则）。
+ * 这里验的是**紧邻 + 数量自洽 + 与 TILES 对得上**，即用户原话的「左/右/上/下」。
+ *
+ * @returns {{ ok:number, fail:number, skipped:number, notes:string[] }}
+ */
+function chaiziFlashCheck(cdp) {
+    const notes = [];
+    const samples = flashSamples(cdp);
+    if (!samples) {
+        return { ok: 0, fail: 1, skipped: 0, notes: ['本局还没有任何 `[Diag] STATE` 行 —— 盘面还没就绪'] };
+    }
+    if (!samples.length) {
+        // ★ 这条是**最要紧的那条**：盘面就绪了（有 STATE），却一条 FLASH 都没有
+        //   ⇒ `refreshFlash()` 根本没被调到（漏挂 / 提前 return / 抛异常被吞）。
+        return {
+            ok: 0, fail: 1, skipped: 0,
+            notes: ['当前盘面（最后一条 STATE 的 seq）**一条 `[Diag] FLASH` 都没有**'
+                + ' —— refreshFlash() 没挂到这条路径上'],
+        };
+    }
+    const bad = samples.filter((s) => !s.p);
+    if (bad.length) {
+        return {
+            ok: 0, fail: 1, skipped: 0,
+            notes: [`有 ${bad.length} 条 FLASH 行认不出格式（改名了？）：${bad[0].line}`],
+        };
+    }
+
+    const nones = samples.filter((s) => s.p.isNone);
+    const centers = samples.filter((s) => !s.p.isNone);
+    if (nones.length && centers.length) {
+        // 同一个盘面（seq 相同）里不可能既"有中心"又"没有" —— 只有一个解释：
+        // 两次重算之间盘面被改过却没重新打 seq（调用点插在了 diag 之前）。
+        return {
+            ok: 0, fail: 1, skipped: 0,
+            notes: [`同一个 seq 下既有 \`FLASH none\` 又有 \`中心=…\`（自相矛盾）`
+                + ` —— 多半是 refreshFlash() 被插在了 diag() 之前`],
+        };
+    }
+    if (!centers.length) {
+        // `FLASH none` 是**合法**结果（这个盘面确实没有"一张牌挨着 ≥2 个能配的搭档"）。
+        // 不算失败，但必须把"我这次什么都没验到"如实打出来 —— 不然它会冒充绿灯。
+        return { ok: 0, fail: 0, skipped: 1, notes: ['本盘面是 `FLASH none`（没有多选局面）'] };
+    }
+    // ★ 同一个盘面可能被重算多次（拖动回弹 / 拖回原格都会重算，而盘面没变），
+    //   于是同一批样本里会有**多行内容完全相同**的记录。去重后再报数 ——
+    //   不去重的话输出会变成"中心 8 个"（其实是同一批 4 个报了两遍），
+    //   判读的人会以为多选局面突然变多了。
+    const uniq = [];
+    const seenCenter = new Set();
+    for (const s of centers) {
+        const k = `${s.p.center.char}@${s.p.center.r},${s.p.center.c}`;
+        if (!seenCenter.has(k)) { seenCenter.add(k); uniq.push(s); }
+    }
+
+    // 回查同一时刻的 TILES，用于"格上真的有这张牌、字也对"
+    const tiles = parseTiles(lastDiag(cdp, '[Diag] TILES'));
+    const at = (r, c, char) => tiles.some((t) => t.r === r && t.c === c && t.char === char);
+    const occupied = (r, c) => tiles.some((t) => t.r === r && t.c === c);
+
+    const problems = [];
+    for (const s of uniq) {
+        const p = s.p;
+        const tag = `${p.center.char}@${p.center.r},${p.center.c}`;
+        // ② 声明的数目 == 实际列出的个数
+        if (p.declaredCount !== p.partners.length) {
+            problems.push(`${tag}：搭档数写 ${p.declaredCount}，实际列了 ${p.partners.length} 张`);
+        }
+        // 判据下限：≥2 才算"多选"（只有 1 个搭档时没有选择可言，游戏不该闪）
+        if (p.partners.length < 2) {
+            problems.push(`${tag}：只列了 ${p.partners.length} 张搭档（多选至少要有 2 张）`);
+        }
+        if (tiles.length && !at(p.center.r, p.center.c, p.center.char)) {
+            problems.push(`${tag}：中心格上不是「${p.center.char}」（TILES 里对不上）`);
+        }
+        for (const q of p.partners) {
+            // ③ 四方向紧邻（用户原话「左/右/上/下」）—— 斜角和不挨着都不算
+            const d = Math.abs(q.r - p.center.r) + Math.abs(q.c - p.center.c);
+            if (d !== 1) {
+                problems.push(`${tag} 的搭档「${q.char}」@${q.r},${q.c} 不紧邻（曼哈顿距离 ${d}）`);
+            }
+            if (tiles.length && !occupied(q.r, q.c)) {
+                problems.push(`${tag} 的搭档格 ${q.r},${q.c} 上**没有牌**（TILES 里是空的）`);
+            } else if (tiles.length && !at(q.r, q.c, q.char)) {
+                problems.push(`${tag} 的搭档格 ${q.r},${q.c} 上是别的字（日志写「${q.char}」）`);
+            }
+        }
+    }
+    if (problems.length) {
+        return { ok: 0, fail: 1, skipped: 0, notes: problems.slice(0, 5) };
+    }
+    notes.push(`seq=${centers[0].p.seq}，中心 ${uniq.length} 个：`
+        + uniq.map((s) => `${s.p.center.char}@${s.p.center.r},${s.p.center.c}(${s.p.partners.length})`).join('、'));
+    return { ok: uniq.length, fail: 0, skipped: 0, notes };
+}
 
 // ------------------------------------------------------------
 //  页面状态判定（p: 断言用）
@@ -3000,6 +3391,16 @@ try {
             i++;
             continue;
         }
+        if (a.kind === 'lvl') {
+            // 同上：写全局，由 GamePage.onCreate 里的 forceLevel() 读取。
+            // ★ 它的用途是**版式跨关卡对照**：不进这一关，就永远验不出
+            //   "地图大小不随行列数变"（见动作解析里那段说明）。
+            await cdp.evaluate(`globalThis.__CHA_LEVEL__ = ${a.level}; true`);
+            console.log(`==> 指定下一局关卡：globalThis.__CHA_LEVEL__ = ${a.level}`
+                + '（进入对局页时生效；GamePage 会打「⚠️ 工装指定关卡」那行回显）');
+            i++;
+            continue;
+        }
         if (a.kind === 'unlock') {
             const cleared = [], starMap = {};
             for (let k = 1; k <= a.upTo; k++) {
@@ -3077,6 +3478,164 @@ try {
                 FAILURES.push(msg);
                 console.log(`==> ❌ ${msg}`);
             }
+            i++;
+            continue;
+        }
+        if (a.kind === 'frame') {
+            console.log('==> 棋盘面板固定性断言（[Diag] FRAME + [Layout] 版式转储）');
+            const f = parseFrame(lastDiag(cdp, '[Diag] FRAME'));
+            if (!f) {
+                const msg = 'frame：本局拿不到 [Diag] FRAME —— 这条断言的全部数据都在它上面，'
+                    + '对局页没建好（或该版本没打这行）时不要当"通过"';
+                FAILURES.push(msg);
+                console.log(`==> ❌ ${msg}`);
+                i++;
+                continue;
+            }
+            const geo = parseBoardGeo(lastDiag(cdp, '[Diag] BOARD'));
+            const lay = layoutBlock(cdp, 'game');
+            const shape = geo ? `${geo.cols}×${geo.rows}` : '?';
+
+            must(
+                f.room >= 0,
+                `frame：棋盘 ${f.boardH} 比面板 ${f.wrapH} 还高（room=${f.room}）`
+                + ' —— 会盖住下面的「已成字条」/道具栏');
+            const offIn = f.boardTop - f.wrapTop - f.room / 2;
+            must(
+                Math.abs(offIn) <= 1.5,
+                `frame：棋盘没在面板里居中（boardTop−wrapTop=${f.boardTop - f.wrapTop}，`
+                + `room/2=${f.room / 2}，差 ${offIn.toFixed(1)} 设计单位）`);
+
+            // ---- 三段首尾相接 / 上下留白对称：用 [Layout] 的 372px 系，同系相减 ----
+            if (!lay) {
+                FAILURES.push('frame：拿不到 [Layout] game 版式转储 —— 无法核对"三段挨着"');
+                console.log('==> ❌ frame：拿不到 [Layout] game 转储');
+            } else {
+                const wrap = lay['.board-wrap'], made = lay['.made-strip'], tool = lay['.tool-bar'];
+                const top = lay['.tips'] || lay['.goal-bar'];
+                const visH = tool ? tool.y + tool.h + tool.db : NaN;
+                const gapTop = wrap && top ? wrap.y - (top.y + top.h) : NaN;
+                const gapMid = wrap && made ? made.y - (wrap.y + wrap.h) : NaN;
+                const gapBot = made && tool ? tool.y - (made.y + made.h) : NaN;
+                // 留白对称：顶部块上沿 vs 道具栏距底 —— 两者相等才是"内容整体居中"
+                const marginTop = lay['.play-top'] ? lay['.play-top'].y : NaN;
+                const marginBot = tool ? tool.db : NaN;
+                // 实测值（L3 6×6）：gapTop/gapMid ≈ 4/0.5（= TIPS_MB / 取整误差），
+                // gapBot = 8（= 设计稿 .made-strip 的 margin-bottom，**本来就该有**）。
+                // 所以门槛卡在 12 —— 旧的"分割太开"是 90~165px，一眼可辨。
+                const GAP_MAX = 12;
+                must(
+                    Number.isFinite(gapTop) && Math.abs(gapTop) <= GAP_MAX,
+                    `frame：顶部块与棋盘面板之间差 ${gapTop.toFixed(1)}px（> ${GAP_MAX}）`
+                    + ' —— 就是用户说的"页面分割太开"');
+                must(
+                    Number.isFinite(gapMid) && Math.abs(gapMid) <= GAP_MAX,
+                    `frame：棋盘面板与「已成字条」之间差 ${gapMid.toFixed(1)}px（> ${GAP_MAX}）`);
+                must(
+                    Number.isFinite(gapBot) && Math.abs(gapBot) <= GAP_MAX,
+                    `frame：「已成字条」与道具栏之间差 ${gapBot.toFixed(1)}px（> ${GAP_MAX}）`);
+                must(
+                    Number.isFinite(marginTop) && Number.isFinite(marginBot)
+                    && Math.abs(marginTop - marginBot) <= 2,
+                    `frame：屏幕上下留白不对称（顶部块上沿 ${marginTop} vs 道具栏距底 ${marginBot}，`
+                    + '差 > 2px）—— 内容块没按 CONTENT_SHARE 居中');
+                const bw = lay['#board'], ww = lay['.board-wrap'];
+                if (bw && ww) {
+                    const dx = (bw.x + bw.w / 2) - (ww.x + ww.w / 2);
+                    const dy = (bw.y + bw.h / 2) - (ww.y + ww.h / 2);
+                    must(
+                        Math.abs(dx) <= 1.5 && Math.abs(dy) <= 1.5,
+                        `frame：#board 没在 .board-wrap 里居中（差 ${dx.toFixed(1)},${dy.toFixed(1)}px）`);
+                }
+                console.log(`    版式：面板 ${ww ? `${ww.y.toFixed(1)}..${(ww.y + ww.h).toFixed(1)}` : '?'}`
+                    + ` (#board ${f.boardH}/1.9355=${(f.boardH / 1.9355).toFixed(1)}px 高)　`
+                    + `段间缝 顶=${gapTop.toFixed(1)} 中=${gapMid.toFixed(1)} 底=${gapBot.toFixed(1)}　`
+                    + `上下留白 ${marginTop.toFixed(1)} / ${marginBot.toFixed(1)}　`
+                    + `屏幕高 ${visH.toFixed(1)}px`);
+            }
+
+            // ---- 跨样本：面板高度必须一致，且样本本身必须"形状不同" ----
+            FRAME_SAMPLES.push({ shape, ...f });
+            console.log(`    样本 #${FRAME_SAMPLES.length}：${shape} 面板 wrapH=${f.wrapH}`
+                + ` boardH=${f.boardH} boardTop=${f.boardTop} wrapTop=${f.wrapTop}`
+                + ` ct=${f.ct} slack=${f.slack}`);
+            const first = FRAME_SAMPLES[0];
+            if (FRAME_SAMPLES.length >= 2) {
+                const bad = FRAME_SAMPLES.filter((s) => s.wrapH !== first.wrapH);
+                must(bad.length === 0,
+                    'frame：**面板高 wrapH 随关卡变了**（'
+                    + FRAME_SAMPLES.map((s) => `${s.shape}:${s.wrapH}`).join(' ')
+                    + `）—— 用户要求"地图大小不变，只变格子和字体的大小"`);
+                // ★ 反向哨兵：两次采样的棋盘高若相同，说明采的是同一档行列数，
+                //   上面那条"面板一致"就是**结构上恒真**的假判据。必须报出来。
+                const bh = FRAME_SAMPLES.map((s) => s.boardH);
+                must(new Set(bh).size === bh.length,
+                    'frame：各样本的 boardH 竟然相同（'
+                    + bh.join(' ') + '）—— 采样没覆盖到不同行列数，'
+                    + '这轮的"面板不变"断言是空转的，换两个 shape 天差地别的关卡（如 lvl:1 与 lvl:34）');
+                // 固定住：同一头顶高度（= 同一套头部块，是否带提示条一致）下，
+                // 面板上沿与上下留白不许随关卡挪动
+                const sameHead = FRAME_SAMPLES.filter((s) => s.headY === first.headY);
+                if (sameHead.length >= 2) {
+                    const drift = sameHead.filter(
+                        (s) => s.wrapTop !== first.wrapTop || s.ct !== first.ct || s.slack !== first.slack);
+                    must(drift.length === 0,
+                        'frame：头部块相同、但面板上沿/下移量/留白随关卡变了（'
+                        + drift.map((s) => `${s.shape}:wrapTop=${s.wrapTop},ct=${s.ct},slack=${s.slack}`).join(' ')
+                        + '）—— 骨架没"固定住"');
+                }
+                // ⚠️ 这句**不能**无条件写"一律 …"：面板不一致时上面那条 must 已经报红，
+                //   这里再复述一句"一律"会自相矛盾（负控时当场读到过 "面板高一律 569，
+                //   棋盘高 561 / 461" —— 而两个样本的面板其实是 569 / 469）。
+                const allSameWrap = FRAME_SAMPLES.every((s) => s.wrapH === first.wrapH);
+                console.log(`    ✅ 已对照 ${FRAME_SAMPLES.length} 个样本：面板高`
+                    + (allSameWrap ? `一律 ${first.wrapH}` : `**不一致** ${FRAME_SAMPLES.map((s) => s.wrapH).join(' / ')}`)
+                    + `，棋盘高 ${bh.join(' / ')}`);
+            } else {
+                console.log('    ⚠️ 只采到 1 个样本 —— 跨样本判据还没生效（需要在两个不同行列数的关卡各跑一次）');
+            }
+            i++;
+            continue;
+        }
+        if (a.kind === 'lb') {
+            const lay = layoutBlock(cdp, a.page);
+            const bx = lay ? lay[a.name] : null;
+            if (!bx) {
+                const msg = `lb：${a.page} 页的版式转储里找不到「${a.name}」`
+                    + '（页面没进去？块名写错？该页还没 dump？）';
+                FAILURES.push(msg);
+                console.log(`==> ❌ ${msg}`);
+                i++;
+                continue;
+            }
+            const pt = dumpBoxToScreen(cx, cy, PS, bx);
+            console.log(`==> 点击「${a.page} / ${a.name}」`
+                + `（转储 x=${bx.x} y=${bx.y} w=${bx.w} h=${bx.h} @372px 系）`
+                + ` → 屏幕(${pt.x}, ${pt.y})`);
+            await cdp.clickAt(pt.x, pt.y);
+            await sleep(a.delay);
+            const shot = await cdp.shot(`${String(i).padStart(2, '0')}-lb-${a.label}`);
+            console.log(`    已截图：${shot}`);
+            i++;
+            continue;
+        }
+        if (a.kind === 'flash') {
+            console.log('==> 「多选配对」闪烁断言（取 seq == 当前盘面 seq 的 FLASH 样本）');
+            const r = chaiziFlashCheck(cdp);
+            if (r.fail > 0) {
+                // ★ 硬断言：漏挂调用点是个"不报错、只是不闪了"的静默坏法 ——
+                //   不把它推进 FAILURES，这个功能坏了也会一路绿灯。
+                const msg = `「多选配对」闪烁断言失败：${r.notes.join('；')}`;
+                FAILURES.push(msg);
+                console.log(`    ❌ ${msg}`);
+            } else if (r.skipped > 0) {
+                // 合法但没验到东西 —— 必须如实说，不能让"跳过"冒充绿灯。
+                console.log(`    ⚠️ 跳过：${r.notes.join('；')}`);
+            } else {
+                console.log(`    ✅ 通过：${r.notes.join('；')}`);
+            }
+            const p = await cdp.shot(`${String(i).padStart(2, '0')}-flash-${a.label}`);
+            console.log(`    已截图：${p}`);
             i++;
             continue;
         }
@@ -3712,6 +4271,12 @@ try {
     // ---- 硬断言小结 ----
     //  退出码 = 调用方可编程消费的判据。没有它，"跑完了"和"验证通过了"
     //  就混为一谈，而这两件事在真机试玩那一轮已经证明会分叉。
+    // ★ `frame` 只采到 1 个样本 ⇒ 整体判失败：这条断言的**全部价值**就在
+    //   跨样本对比，1 个样本必然通过 —— 那是绿灯的假象（同 `push:` 的 ok===0 规则）。
+    if (FRAME_SAMPLES.length === 1) {
+        FAILURES.push('frame：只采到 1 个样本 —— "面板不随行列数变"无法成立，'
+            + '请在两个不同行列数的关卡各采一次（例如 lvl:1 与 lvl:34）');
+    }
     if (FAILURES.length > 0) {
         console.log(`\n❌ 硬断言失败 ${FAILURES.length} 条：`);
         for (const f of FAILURES) console.log('   · ' + f);

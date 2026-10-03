@@ -100,6 +100,14 @@ for (const lv of LEVELS) {
     const cells = lv.cols * lv.rows;
     const need = lv.pairs * 2 + (lv.tr || 0) * 2 + (lv.junk || 0);
     if (need > cells) problems.push(`L${lv.n} 需要 ${need} 张牌 > 棋盘 ${cells} 格`);
+    // ★★ 「铺满」（2026-10-03 用户第 2 条）★★
+    //   牌数必须**恰好等于**格数，一格不空。两个绕不开的数学前提：
+    //     ① 牌数恒为偶数（偏旁+部件成对 push、宝牌 2 张一对）；
+    //     ② ⇒ 格数也必须是偶数，否则永远差一格。
+    //   所以奇数格的棋盘（7×7、9×9）**不可能**铺满，必须动 rows。
+    //   重算规则见 tools/plan-dense-levels.mjs（它就是这么反推 pairs 的）。
+    if (cells % 2 !== 0) problems.push(`L${lv.n} 棋盘 ${cells} 格是奇数 —— 偶数张牌永远铺不满`);
+    if (need !== cells) problems.push(`L${lv.n} 牌数 ${need} ≠ 棋盘 ${cells} 格（「铺满」要求两者相等）`);
     if (!lv.words || !lv.words.length) { problems.push(`L${lv.n} 没有 words`); continue; }
     for (const w of lv.words) {
         if (!WORDS[w]) problems.push(`L${lv.n} 的字「${w}」不在 WORDS 里`);
@@ -235,7 +243,7 @@ fs.writeFileSync(OUT, L.join('\n'), 'utf8');
 
 const bytes = fs.statSync(OUT).size;
 console.log(`✓ ${Object.keys(WORDS).length} 条拆字表 · ${LEVELS.length} 关 · ${CHAPTERS.length} 章`);
-console.log('✓ 关卡数据自检通过（牌数 ≤ 棋盘格数、目标字都在拆字表里、'
+console.log('✓ 关卡数据自检通过（★牌数 = 棋盘格数且格数为偶「铺满」、目标字都在拆字表里、'
     + '★字频三条：每字 ≤2 组 / 每偏旁 ≤4 张 / 每关字数 ≥ ⌈pairs/2⌉）');
 console.log(`✓ 已写 ${OUT}（${(bytes / 1024).toFixed(1)} KB）`);
 // ★ 干扰字数**从数据算**，不要写死 —— 2026-10-02 删掉「罒」时这句写死的

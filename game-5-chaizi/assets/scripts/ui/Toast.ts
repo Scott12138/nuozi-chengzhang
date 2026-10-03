@@ -34,16 +34,24 @@ export class Toast {
     private _lb: Label;
     private _op: UIOpacity;
     private _timer = 0;
+    /** 小条的**上沿** y（页面根坐标）。按上沿定位，行数变化时只往下长，不会往上顶 */
+    private _topEdgeY = 0;
 
     /**
-     * @param root    页面根节点
-     * @param visW    可见宽度（用来算 max-width）
-     * @param centerY 小条中心相对页面根的 y（设计稿是屏幕 52% 高度处）
+     * @param root     页面根节点
+     * @param visW     可见宽度（用来算 max-width）
+     * @param topEdgeY 小条**上沿**相对页面根的 y
+     *
+     * ★ 2026-10-03 改：原来是按**中心**定位（设计稿就是 `top:52%` 居中压在屏幕上），
+     *   而用户真机试玩后明确说「提示不要放在中间很影响用户体验和操作，遮住了页面」
+     *   —— 52% 正好是棋盘中部，两行提示能把一整行牌盖掉。
+     *   现在按**上沿**定位：调用方给一条"棋盘下沿之下的基准线"，
+     *   提示就从那条线往下挂，行数一多只往下长，永远不会往上顶到牌上。
      */
-    constructor(root: Node, visW: number, centerY: number) {
+    constructor(root: Node, visW: number, topEdgeY: number) {
         const maxW = Math.min(MAX_W, visW * 0.8);
+        this._topEdgeY = topEdgeY;
         const box = mkNode('toast', root, maxW, LH + PAD_Y * 2);
-        setPos(box, 0, centerY);
         this._face = box.addComponent(Graphics);
         this._op = box.addComponent(UIOpacity);
         this._lb = mkLabel(box, '', {
@@ -88,6 +96,8 @@ export class Toast {
         g.fillColor = hex(CFG.COLOR.TOAST_BG, CFG.COLOR.TOAST_BG_A);
         g.roundRect(-w / 2, -h / 2, w, h, px(13));
         g.fill();
+        // ★ 位置也要跟着 h 重算：两行时高度是 1.5 倍，只画不挪就会"底边不变、上边往上长"
+        setPos(this._node, 0, this._topEdgeY - h / 2);
     }
 
     /** 页面退出时必须调，否则回调会打到已销毁的节点上 */

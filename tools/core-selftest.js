@@ -79,6 +79,9 @@ if (/error TS\d+/.test(tscOut)) {
 const core = require(path.join(OUT, 'core', 'Board.js'));
 const rngMod = require(path.join(OUT, 'core', 'Rng.js'));
 const data = require(path.join(OUT, 'core', 'LevelData.js'));
+// ★ CFG 也在编译输入里（inputs 的第一项），所以这里能直接 require ——
+//   棋盘几何常量（PANEL_INNER_H 等）只有**一份真源**，断言与游戏读的是同一个数。
+const CFG = require(path.join(OUT, 'CFG.js')).CFG;
 const saveMod = require(path.join(OUT, 'core', 'Save.js'));
 const types = require(path.join(OUT, 'core', 'Types.js'));   // 纯类型，导出应为空
 const treasureMod = require(path.join(OUT, 'core', 'Treasure.js'));
@@ -106,6 +109,23 @@ function deq(got, want, msg) {
 const S = (name, fn) => {
     try { fn(); } catch (e) { fails.push(`${name} 抛异常：${e && e.stack ? e.stack.split('\n')[0] : e}`); }
 };
+
+/**
+ * 密铺判据：牌必须**连续**占住前 N 格（行优先），否则盘面中间就出现了洞。
+ * 返回空串 = 通过；否则返回一句人能读懂的原因。
+ *
+ * ★ 为什么要有独立判据：密铺是"看着像"最容易骗人的一种性质 —— 随手截一张图
+ *   永远看不出中间那两个洞是"设计如此"还是"发牌 bug"。这里把它变成可判定的。
+ */
+function denseCheck(b) {
+    const n = b.allTiles().length;
+    for (let i = 0; i < b.cols * b.rows; i++) {
+        const has = !!b.at(Math.floor(i / b.cols), i % b.cols);
+        if (i < n && !has) return `第 ${i} 格是洞（它前面还有牌）`;
+        if (i >= n && has) return `第 ${i} 格多出一张牌（牌数应为 ${n}）`;
+    }
+    return '';
+}
 
 // ------------------------------------------------------------
 //  ⓪b 关卡种子表（LevelSeeds.ts，生成物）
@@ -189,21 +209,24 @@ S('关卡数据', () => {
 
     const l1 = data.levelByN(1);
     eq(l1.cols, 6, 'L1 列数');
-    eq(l1.rows, 6, 'L1 行数');
-    eq(l1.pairs, 14, 'L1 配对数');
-    eq(l1.tr, 0, 'L1 宝牌对数（6×6 不设宝牌）');
+    // ★ 2026-10-03 「铺满」重排：6×6(36 格/28 牌) → 6×5(30 格/30 牌)
+    eq(l1.rows, 5, 'L1 行数（铺满重排：6×6→6×5）');
+    eq(l1.pairs, 15, 'L1 配对数（铺满：6×5/2 − 0 对宝牌）');
+    eq(l1.cols * l1.rows, l1.pairs * 2 + l1.tr * 2 + l1.junk, '★ L1 棋盘格数 = 牌数（一格不空）');
+    eq(l1.tr, 0, 'L1 宝牌对数（小盘不设宝牌）');
     eq(l1.junk, 0, 'L1 干扰牌数（已被宝牌取代）');
     eq(l1.time, 175, 'L1 限时');
-    deq(l1.words, ['枪', '锤', '鞭', '箭', '斧', '弩', '剑'], 'L1 目标字');
+    deq(l1.words, ['枪', '锤', '鞭', '箭', '斧', '弩', '剑', '炮'], 'L1 目标字（铺满后补一个「炮」）');
     ok(!!l1.tip, 'L1 应有拆法提示');
 
     const l3 = data.levelByN(3);
-    eq(l3.tr, 1, '★ L3（6×7）起就有宝牌');
+    eq(l3.tr, 1, '★ L3（6×6）起就有宝牌');
     eq(l3.junk, 0, 'L3 干扰牌数');
-    eq(l3.words.length, 8, 'L3 目标字数 = ⌈pairs/2⌉ = 8');
+    eq(l3.words.length, 9, '★ L3 目标字数 = ⌈pairs/2⌉ = 9（铺满后 pairs 15→17）');
 
     // ★ 全部 38 关过一遍字频三条（生成期也断言了，这里再独立验一次）
     const bad = [];
+    const lastTr = {};   // 章 → 同章上一关的宝牌对数（用于宝牌曲线，见下）
     for (const l of data.LEVELS) {
         const byWord = {}, byRad = {};
         for (let i = 0; i < l.pairs; i++) {
@@ -214,40 +237,87 @@ S('关卡数据', () => {
         if (l.words.length < Math.ceil(l.pairs / 2)) bad.push(`L${l.n} 字数不足`);
         for (const w in byWord) if (byWord[w] > 2) bad.push(`L${l.n} 「${w}」${byWord[w]} 组`);
         for (const a in byRad) if (byRad[a] > 4) bad.push(`L${l.n} 偏旁「${a}」${byRad[a]} 张`);
-        // 宝牌登场曲线：<42 格 0 对 / 42~72 格 1 对 / 81~110 格 2 对 / ≥120 格 3 对
-        const c = l.cols * l.rows;
-        const wantTr = c < 42 ? 0 : c <= 72 ? 1 : c <= 110 ? 2 : 3;
-        if (l.tr !== wantTr) bad.push(`L${l.n} 宝牌对数 ${l.tr}≠${wantTr}`);
+        // ★ 宝牌曲线：2026-10-03 铺满重排后棋盘格数区间从 30~120 收窄到 30~70，
+        //   旧的「按格数分档」（<42 → 0 对 / 42~72 → 1 对 …）不再成立。
+        //   换成表达**同一条设计意图**的相对口径：每章首关不给（轻起手）、章内只增不减。
+        //   绝对对数仍由 LEVELS 里的 `tr` 真源决定，这里只验曲线形状。
+        if (lastTr[l.ch] === undefined) {
+            if (l.tr !== 0) bad.push(`L${l.n} 是第 ${l.ch} 章首关，宝牌应为 0 对（轻起手）`);
+        } else if (l.tr < lastTr[l.ch]) {
+            bad.push(`L${l.n} 宝牌对数 ${l.tr} 比同章上一关 ${lastTr[l.ch]} 还少`);
+        }
+        lastTr[l.ch] = l.tr;
     }
-    deq(bad, [], '★ 38 关全部满足字频三条 + 宝牌曲线');
+    deq(bad, [], '★ 38 关全部满足字频三条 + 宝牌曲线（章首 0 对、章内不减）');
 
     // ★ 尺寸上限 10×12（10 列 12 行）—— 用户 2026-10-03 拍板的硬上限
     const over = data.LEVELS.filter((l) => l.cols > 10 || l.rows > 12)
         .map((l) => `L${l.n} ${l.cols}×${l.rows}`);
     deq(over, [], '★ 没有任何一关超过 10×12');
 
-    // ★ 占格数 = 28 + 4×档位，**章内**单调不减；章末逐章递增
-    //   （章首会合法地回落到 6×6 —— 那是"每章重新起手"的设计，不是回退）
-    const TIERS = [[6, 6], [6, 7], [7, 7], [7, 8], [8, 8], [8, 9],
-        [9, 9], [9, 10], [10, 10], [10, 11], [10, 12]];
+    // ★★ 「铺满」（2026-10-03 用户第 2 条：重新设置字数，要铺满所有格子）★★
+    //   牌数必须**恰好等于**棋盘格数，一格不空。两个绕不开的数学前提：
+    //     ① 牌数恒为偶数（偏旁+部件成对 push、宝牌 2 张一对）；
+    //     ② ⇒ 格数也必须是偶数，否则永远差一格。
+    //   所以奇数格棋盘（7×7、9×9）**不可能**铺满，必须动 rows ——
+    //   这就是为什么每关 rows 不再是"档位表"里的值，而是 `⌈牌数/cols⌉` 就近取偶。
+    //   ⚠️ 旧的「占格数 = 28 + 4×档位」口径**已作废**（它假设棋盘可以大于牌数）。
     const badUsed = [];
     const chapterEnd = {};
     let prev = 0, prevCh = 1;
     for (const l of data.LEVELS) {
-        const ti = TIERS.findIndex((t) => t[0] === l.cols && t[1] === l.rows);
-        if (ti < 0) { badUsed.push(`L${l.n} 尺寸 ${l.cols}×${l.rows} 不在 11 档里`); continue; }
-        const used = l.pairs * 2 + l.tr * 2;
-        if (used !== 28 + 4 * ti) badUsed.push(`L${l.n} 占格 ${used} ≠ ${28 + 4 * ti}`);
-        if (l.ch === prevCh && used < prev) badUsed.push(`L${l.n} 章内占格 ${used} 比上一关 ${prev} 还小`);
+        const used = l.pairs * 2 + l.tr * 2 + l.junk;
+        const cells = l.cols * l.rows;
+        if (used !== cells) badUsed.push(`L${l.n} 牌数 ${used} ≠ 棋盘 ${l.cols}×${l.rows} = ${cells} 格`);
+        if (cells % 2 !== 0) badUsed.push(`L${l.n} 棋盘 ${cells} 格是奇数，偶数张牌永远铺不满`);
+        if (l.ch === prevCh && used < prev) badUsed.push(`L${l.n} 章内牌数 ${used} 比上一关 ${prev} 还少`);
         prev = used;
         prevCh = l.ch;
         chapterEnd[l.ch] = used;
     }
     const ends = [1, 2, 3, 4].map((c) => chapterEnd[c]);
+    // 章末只要求**不减**：铺满重排后第 3、4 章的末关都是 10×7 = 70 格，
+    // 而两章的差别落在"目标字数/宝牌对数"上（第 3 章 17 字/2 对宝牌、
+    // 第 4 章 16 字/3 对宝牌），不再靠牌数区分。
     for (let i = 1; i < ends.length; i++) {
-        if (ends[i] <= ends[i - 1]) badUsed.push(`章 ${i + 1} 末档 ${ends[i]} 没超过章 ${i} 的 ${ends[i - 1]}`);
+        if (ends[i] < ends[i - 1]) badUsed.push(`章 ${i + 1} 末关牌数 ${ends[i]} 比章 ${i} 的 ${ends[i - 1]} 还少`);
     }
-    deq(badUsed, [], '★ 38 关尺寸都在 11 档内、占格数 = 28+4×档位、章内不减且章末递增');
+    deq(badUsed, [], '★ 38 关全部铺满（牌数 = 格数且格数为偶）、章内不减、章末不减');
+
+    // ------------------------------------------------------------
+    //  ★ 棋盘装得进「固定面板」（2026-10-03 用户第 2 条 "地图大小不变"）
+    // ------------------------------------------------------------
+    //  【为什么这条断言必须在数据层，而不是只靠真机看】
+    //   棋盘面板取 `CFG.BOARDGEO.PANEL_INNER_H` 定高（见那里的长注释），
+    //   格距 = min(按面板内宽、按面板内高) —— 于是正常情况**必然**装得下。
+    //   唯一的越界口子是 `CELL_MIN`：行数多到 `(面板内高−4)/行数 < 32` 时，
+    //   格距被顶到 32，棋盘就比面板还高 ⇒ **压住下面的「已成字条」**。
+    //   那种坏法不报错、只是"某一关的版式略微错位"，截图上看不出来 ——
+    //   所以在这里按关卡表逐关算一遍，加关卡/调 rows 时当场报红。
+    const G = CFG.BOARDGEO;
+    const PANEL_W = CFG.SPEC.W - 2 * G.WRAP_PAD_X;      // 372 − 20 = 352
+    const badFit = [];
+    let tallest = 0;
+    for (const l of data.LEVELS) {
+        const pitch = Math.max(G.CELL_MIN, Math.min(
+            Math.floor((PANEL_W - 4) / l.cols),
+            Math.floor((G.PANEL_INNER_H - 4) / l.rows),
+            G.CELL_MAX,
+        ));
+        const bh = l.rows * pitch;
+        tallest = Math.max(tallest, bh);
+        if (bh > G.PANEL_INNER_H) {
+            badFit.push(`L${l.n} ${l.cols}×${l.rows} 需 ${bh} > 面板内高 ${G.PANEL_INNER_H}`);
+        }
+    }
+    deq(badFit, [], '★ 38 关的棋盘都装得进固定面板（PANEL_INNER_H）');
+
+    // ★ 反向哨兵：面板不能"白留得过多"。判据 = 最高的那一关必须**几乎用满**面板
+    //   （差值 ≤ 8 设计px）。否则说明面板定得比任何关卡需要的都高 ⇒
+    //   每一关都在面板里上下凭空留白 —— 那正是用户抱怨的"页面分割太开"。
+    //   ⚠️ 少了这条，"装得下"就成了"面板越大越容易通过"的单向判据（假绿灯）。
+    ok(G.PANEL_INNER_H - tallest <= 8,
+        `★ 面板内高 ${G.PANEL_INNER_H} 没有被白留（最高的一关占 ${tallest}，差 ${G.PANEL_INNER_H - tallest} ≤ 8）`);
 
     ok(data.isPlayable(l1), 'L1 可玩');
     // ★ 2026-10-03 **全量解封**（PLAYABLE_MAX 3 → 38）。下面三条就是
@@ -361,11 +431,12 @@ S('贴图清单', () => {
     // ⑤ 干扰牌已下线 → 空表（留着非空说明有人又把旧贴图烘回来了）
     eq(Object.keys(manifest.JUNK_TEX).length, 0, '★ JUNK_TEX 为空（宝牌已取代干扰牌）');
 
-    // ⑥ 全库规模：与「按章分包」的体积预算对齐（248 张 / 46 + 71 + 63 + 68）
-    eq(Object.keys(TEX).length, 248, '全库字牌贴图张数');
+    // ⑥ 全库规模：与「按章分包」的体积预算对齐（250 张 / 48 + 71 + 63 + 68）
+    //   ★ 2026-10-03 铺满重排后第 1 章多了「棍」（及其部件「昆」）→ 46→48。
+    eq(Object.keys(TEX).length, 250, '全库字牌贴图张数');
     eq(Object.keys(TR).length, 8, '宝牌贴图张数（四章共 8 件器物）');
     const per = [1, 2, 3, 4].map((n) => Object.values(CH).filter((x) => x === n).length);
-    deq(per, [46, 71, 63, 68], '各章贴图张数（跨章的字只烘一次，归属最早那章）');
+    deq(per, [48, 71, 63, 68], '各章贴图张数（跨章的字只烘一次，归属最早那章）');
 });
 
 // ------------------------------------------------------------
@@ -528,15 +599,30 @@ S('发牌', () => {
     //   （之前写着 `+ 0` 并带"临时真话"注释，是因为 buildDeck 还没发宝牌。）
     eq(b1.allTiles().length, lv.pairs * 2 + lv.tr * 2 + lv.junk,
         '牌数 = 配对数×2 + 宝牌×2 + 干扰牌');
-    eq(lv.tr, 0, 'L1 是 6×6，按拍板不设宝牌 —— 上面这条对 L1 等价于 pairs×2');
+    eq(lv.tr, 0, 'L1 是小盘（30 格），按拍板不设宝牌 —— 上面这条对 L1 等价于 pairs×2');
     ok(b1.hasDirectMatch(pt), '★ L1 必须一上来就有可直接消的一对（教学关正反馈）');
 
-    // 目标字计数：14 对分到 7 个字上 → 每个字 2 对（★ 上限就是 2 组，用户拍板）
+    // ★★ 2026-10-03 密铺（用户拍板"初始时要把格子铺满，不能空"）★★
+    //   三条判据，缺一条都会让"铺满"变成一句没人验过的说法：
+    //     ① 牌**连续**占住前 N 格（行优先）⇒ 盘面中间不可能有洞；
+    //     ② 棋盘行数 = ceil(牌数/列数) ⇒ 边框紧贴牌，不留空行；
+    //     ③ 开局就有 OPEN_PAIRS 对「紧挨着且能配对」的牌
+    //        —— 这是铺满之后**唯一能开局的一步**（没空格 ⇒ 一张牌都滑不动）。
+    const dense = (b) => denseCheck(b);
+    eq(dense(b1), '', '★ 密铺：牌连续占住前 N 格，盘面中间没有洞');
+    eq(b1.rows, Math.ceil(b1.allTiles().length / b1.cols), '★ 棋盘行数 = ⌈牌数/列数⌉（边框紧贴牌）');
+    const ap1 = core.adjacentPairs(b1, pt);
+    ok(ap1.length >= core.OPEN_PAIRS,
+        `★ 开局至少有 ${core.OPEN_PAIRS} 对紧邻且能配对的牌（实际 ${ap1.length} 对）`
+        + ' —— 铺满后没空格可滑，这是唯一能开局的一步');
+
+    // 目标字计数：15 对分到 8 个字上 → 前 7 个字各 2 对、第 8 个字 1 对
+    //   （★ 上限就是 2 组，用户拍板；`words[i % words.length]` 轮转 ⇒ 1 个字的组数只能是 1 或 2）
     const need = core.computeNeed(lv);
-    eq(Object.values(need).reduce((a, b) => a + b, 0), 14, '目标字总对数 = pairs');
-    deq(Object.keys(need), lv.words, '目标条顺序 = lv.words（新字排前面）');
+    eq(Object.values(need).reduce((a, b) => a + b, 0), 15, '目标字总对数 = pairs');
+    deq(Object.keys(need), lv.words, '目标条顺序 = lv.words（新字排后面）');
     const rw = core.makeRunWords(lv);
-    eq(rw.length, 7, 'L1 目标条 7 格');
+    eq(rw.length, 8, 'L1 目标条 8 格（铺满后补了一个字）');
     eq(Math.max(...rw.map((x) => x.need)), 2, '★ 轮转发牌：每字最多 2 组（上限就是 2）');
     eq(rw.every((x) => x.got === 0), true, '初始 got 全 0');
 
@@ -548,7 +634,15 @@ S('发牌', () => {
         // ★ 真实口径：宝牌也上盘面（2×tr 张）
         const want = l.pairs * 2 + l.tr * 2 + l.junk;
         if (bb.allTiles().length !== want) bad.push(`L${l.n}: ${bb.allTiles().length}≠${want}`);
-        if (bb.emptyCount() !== l.cols * l.rows - want) bad.push(`L${l.n}: 空格数不符`);
+        // ★ 空格数：**铺满口径 = 必须为 0**（2026-10-03 第 2 条）。
+        //   以前这里写 `bb.cols*bb.rows - want`，那是"棋盘允许大于牌数"的旧口径；
+        //   真源改成"牌数 = 格数"之后两者等价，但写 0 才是**这条要求的判据本身**。
+        if (bb.emptyCount() !== 0) bad.push(`L${l.n}: 铺满要求空格 0，实际 ${bb.emptyCount()} 格是空的`);
+        // ★ 密铺：中间不能有洞（38 关一律成立，不是只有教学关）
+        const hole = denseCheck(bb);
+        if (hole) bad.push(`L${l.n}: ${hole}`);
+        // ★ 每一关都要有开局就能点的保底对（用户原话"开局时要有一些相邻可以直接消除的"）
+        if (core.adjacentPairs(bb, p).length < 1) bad.push(`L${l.n}: 开局没有紧邻可配的对`);
         // 宝牌张数必须正好 2×tr，且**同款成对**（tr=2 时是两件不同物件，各两张）
         const trs = bb.allTiles().filter((t) => t.kind === 'treasure');
         if (trs.length !== l.tr * 2) bad.push(`L${l.n}: 宝牌 ${trs.length}≠${l.tr * 2} 张`);
@@ -742,7 +836,15 @@ S('可行解 / 死局检测', () => {
     const bd = core.generateBoard(lv, pt, rng);
 
     const s = bd.findSuggest(pt, rng);
-    ok(!!s, 'L1 盘面必有解');
+    // ★★ 口径必须跟着"铺满"改（2026-10-03 第 2 条）★★
+    //   `findSuggest` 只找「**挪**一步能凑成"的走法，而铺满的盘面一格不空 ⇒
+    //   任何一张牌都推不动（推箱也要有落点）⇒ 它在**开局必然返回 null**。
+    //   开局唯一能走的一步是「两张已经挨在一起的牌点一下消掉」（`hasDirectMatch`）。
+    //   所以判据从"挪得出一步"改成"总有一步行得通"：点 ∨ 挪。
+    //   （保留 findSuggest 那一半：中盘出现空格之后，它才可能给出走法。）
+    //   ⚠️ 别把这条改回 `!!s` —— 那会在每一关的开局都误报"盘面无解"。
+    ok(bd.hasDirectMatch(pt) || !!s,
+        '★ L1 盘面必有解（铺满开局靠"点掉一对紧邻牌"，出现空格后才可能靠"挪"）');
     if (s) {
         // ① 落点必须是"拿起这张牌时就能滑到"的格子（否则提示等于骗玩家）
         const reach = bd.reachableCells(s.tile).some((x) => x.r === s.r && x.c === s.c);
