@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>挪字成章 · 水墨视觉与字形设计稿 v1</title>
+<style><!--INK_CSS--></style>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:var(--kai);color:var(--mo-2);-webkit-font-smoothing:antialiased;}
+  .page{max-width:1080px;margin:0 auto;padding:0 22px 90px;}
+
+  /* ── 头版 ── */
+  .hero{padding:46px 0 26px;text-align:center;position:relative;}
+  .hero h1{font-size:44px;letter-spacing:.34em;margin:0 0 10px;color:var(--mo-1);
+           text-indent:.34em;font-weight:700;}
+  .hero .sub{font-size:14px;letter-spacing:.2em;color:var(--mo-4);}
+  .hero .seal{position:absolute;right:8px;top:52px;width:56px;height:56px;font-size:13px;
+              line-height:1.15;flex-direction:column;transform:rotate(-6deg);}
+  .hero .stamp{display:inline-block;margin-top:16px;padding:5px 14px;border-radius:3px;
+               font-size:12.5px;letter-spacing:.16em;color:var(--zhu);
+               box-shadow:inset 0 0 0 1.4px var(--zhu);}
+
+  h2.sec{font-size:21px;letter-spacing:.14em;color:var(--mo-1);margin:44px 0 6px;
+         display:flex;align-items:baseline;gap:12px;}
+  h2.sec .no{font-size:13px;color:var(--zhu);letter-spacing:.1em;
+             box-shadow:inset 0 0 0 1.2px var(--zhu);border-radius:3px;padding:2px 7px;}
+  .sec-note{font-size:13.5px;line-height:1.9;color:var(--mo-3);margin:0 0 20px;max-width:78ch;}
+
+  /* ── 墨色阶 ── */
+  .ramp{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+  .ramp .sw{height:78px;border-radius:4px;display:flex;flex-direction:column;
+            justify-content:flex-end;padding:8px;font-size:12px;letter-spacing:.06em;}
+  .paints{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px;}
+  .paints .sw{height:64px;border-radius:4px;display:flex;flex-direction:column;
+              justify-content:flex-end;padding:8px;font-size:12px;color:#fdf6ea;
+              text-shadow:0 1px 2px rgba(0,0,0,.35);letter-spacing:.06em;}
+
+  /* ── 通用栅格 ── */
+  .grid{display:grid;gap:14px;}
+  .g-tile{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));}
+  .g-word{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
+  .cell{text-align:center;}
+  .cell .box{width:100%;aspect-ratio:1;position:relative;}
+  .cell .cap{margin-top:7px;font-size:14px;color:var(--mo-2);font-weight:700;letter-spacing:.08em;}
+  .cell .cap .orig{font-size:12px;color:var(--mo-4);margin-left:5px;font-weight:400;}
+  .cell .cap .gl{display:block;font-size:11.5px;color:var(--mo-4);font-weight:400;
+                 margin-top:2px;letter-spacing:0;}
+
+  /* ── 手机样张 ── */
+  .phones{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+  .phone{width:296px;border-radius:26px;padding:9px;
+         background:linear-gradient(160deg,#4a4e55,#22242a);
+         box-shadow:0 18px 40px rgba(40,34,22,.28);}
+  .screen{position:relative;border-radius:19px;overflow:hidden;height:552px;
+          display:flex;flex-direction:column;}
+  .p-label{text-align:center;font-size:13px;color:var(--mo-3);margin-top:9px;letter-spacing:.1em;}
+
+  .topbar{display:flex;align-items:center;gap:10px;padding:12px 14px 8px;font-size:13px;color:var(--mo-3);}
+  .topbar .back{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;
+                justify-content:center;box-shadow:inset 0 0 0 1.3px var(--mo-3);font-size:13px;}
+  .topbar .lv{font-weight:700;color:var(--mo-2);letter-spacing:.1em;}
+  .topbar .time{margin-left:auto;font-size:12.5px;color:var(--mo-4);}
+
+  .board{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;padding:0 13px;margin-top:6px;}
+  .bt{aspect-ratio:1;position:relative;}
+  .bt .glyph{width:86%;height:86%;margin:7% auto;display:block;}
+  .hintline{margin:12px 13px 0;font-size:12px;line-height:1.85;color:var(--mo-3);
+            padding:9px 11px;border-radius:4px;background:rgba(255,255,255,.4);
+            box-shadow:inset 0 0 0 1px var(--mo-5);}
+  .tools{display:flex;gap:8px;padding:12px 13px 0;margin-top:auto;}
+  .tools .t{flex:1;text-align:center;padding:9px 0;border-radius:4px;font-size:12.5px;
+            color:var(--mo-3);background:var(--zhi-2);box-shadow:0 0 0 1.2px var(--mo-4);}
+  .tools .t b{display:block;font-size:15px;color:var(--zhu);}
+
+  /* 首页样张 */
+  .home-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+             padding:0 24px;}
+  .home-hero .title{font-size:31px;letter-spacing:.2em;text-indent:.2em;color:var(--mo-1);font-weight:700;white-space:nowrap;}
+  .home-hero .desc{font-size:12.5px;color:var(--mo-4);letter-spacing:.14em;margin-top:12px;text-align:center;line-height:2;}
+  .home-hero .demo{margin-top:24px;display:flex;gap:9px;align-items:center;}
+  .home-hero .demo .arrow{color:var(--mo-4);font-size:15px;}
+  .home-hero .demo .box{width:62px;height:62px;}
+  .home-btns{padding:0 26px 26px;display:flex;flex-direction:column;gap:10px;}
+  .home-btns .ink-btn{width:100%;text-align:center;}
+
+  /* 结算 */
+  .clear-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 22px;}
+  .clear-wrap .big{font-size:24px;letter-spacing:.22em;color:var(--mo-1);margin-bottom:6px;}
+  .clear-wrap .line{font-size:12px;color:var(--mo-4);letter-spacing:.1em;margin-bottom:20px;}
+  .clear-list{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+  .clear-list .box{width:58px;height:58px;}
+  .clear-stats{display:flex;gap:22px;margin-top:26px;}
+  .clear-stats div{text-align:center;font-size:11.5px;color:var(--mo-4);}
+  .clear-stats b{display:block;font-size:20px;color:var(--zhu);font-weight:700;}
+
+  /* ── 规范表 ── */
+  table.rule{width:100%;border-collapse:collapse;font-size:13.5px;line-height:1.85;}
+  table.rule th,table.rule td{padding:11px 12px;text-align:left;vertical-align:top;
+                              border-bottom:1px solid var(--mo-5);}
+  table.rule th{color:var(--mo-1);font-weight:700;letter-spacing:.06em;white-space:nowrap;}
+  table.rule td{color:var(--mo-3);}
+  table.rule tr:last-child td{border-bottom:0;}
+
+  .ask{list-style:none;padding:0;margin:0;}
+  .ask li{padding:13px 15px;margin-bottom:10px;border-radius:4px;background:var(--zhi-2);
+          box-shadow:0 0 0 1px var(--mo-5);font-size:13.5px;line-height:1.9;color:var(--mo-3);}
+  .ask li b{color:var(--mo-1);}
+  .ask li .tag{display:inline-block;font-size:11.5px;color:#fdf6ea;background:var(--zhu);
+               border-radius:3px;padding:1px 7px;margin-right:8px;letter-spacing:.06em;}
+
+  .foot{margin-top:50px;padding-top:18px;border-top:1px solid var(--mo-5);
+        font-size:12px;color:var(--mo-4);line-height:2;}
+  @media (max-width:720px){
+    .hero h1{font-size:32px}
+    .hero .seal{position:static;margin:14px auto 0;transform:none}
+    .ramp,.paints{grid-template-columns:repeat(3,1fr)}
+  }
+</style>
+</head>
+<body class="paper">
+<div class="page">
+
+  <div class="hero">
+    <div class="seal">挪字<br>成章</div>
+    <h1>挪字成章</h1>
+    <div class="sub">水墨视觉基调 &nbsp;·&nbsp; 「字物合一」字形设计稿 &nbsp;·&nbsp; v1 样张</div>
+    <div class="stamp">待 拍 板</div>
+  </div>
+
+  <h2 class="sec"><span class="no">一</span>水墨视觉基调</h2>
+  <p class="sec-note">
+    水墨画的构成只有四样东西：<b>墨色阶、宣纸、水痕、印章</b>。所以整套界面只允许用这四样表达层次——
+    不做玻璃拟态、不做渐变高光、不做糖果色圆角按钮。圆角一律收到 3~6px，边框一律用「笔线」而不是「描边」。
+  </p>
+  <div class="ramp" id="ramp-mo"></div>
+  <p class="sec-note" style="margin-top:18px">
+    国画颜料只做点缀，且每种颜色绑定固定语义，避免「好看但看不懂」：赭石=木土、朱砂=印章与流苏、
+    花青=水与金属冷光、藤黄=花蕊与烛焰、玉青=草木与部件牌。
+  </p>
+  <div class="paints" id="ramp-paint"></div>
+
+  <h2 class="sec"><span class="no">二</span>字牌（把墨色阶用起来）</h2>
+  <p class="sec-note">
+    字牌不再靠渐变色区分类型，改用<b>纸色深浅 + 墨线 + 一个角标</b>：偏旁牌偏暖（赭石角标），
+    部件牌偏冷（花青味），干扰牌用清墨褪色。拿起字牌时，可达格用藤黄罩染，像在纸上点了一笔淡彩。
+  </p>
+  <div class="grid g-tile" id="tile-demo"></div>
+
+  <h2 class="sec"><span class="no">三</span>页面样张（水墨版）</h2>
+  <p class="sec-note">
+    三个关键页面用真实字形渲染，可直接判断「整体风格」是否成立。玩法页里的每一张牌都是本稿的字形引擎实时画出来的，
+    不是贴图——也就是说这套风格一旦拍板，字形与界面是同一套代码产出的。
+  </p>
+  <div class="phones">
+
+    <div>
+      <div class="phone"><div class="screen paper">
+        <div class="home-hero">
+          <div class="title">挪字成章</div>
+          <div class="desc">挪一挪，让偏旁与部件<br>在同一行或同一列相遇</div>
+          <div class="demo">
+            <div class="box" data-ch="木"></div>
+            <div class="arrow">＋</div>
+            <div class="box" data-ch="仓"></div>
+            <div class="arrow">＝</div>
+            <div class="box" data-ch="枪"></div>
+          </div>
+        </div>
+        <div class="home-btns">
+          <div class="ink-btn primary">开 始 拆 字</div>
+          <div class="ink-btn">收 录 一 览</div>
+          <div class="ink-btn">设 置</div>
+        </div>
+      </div></div>
+      <div class="p-label">首页</div>
+    </div>
+
+    <div>
+      <div class="phone"><div class="screen paper">
+        <div class="topbar"><span class="back">‹</span><span class="lv">第 1 关 · 木字营</span><span class="time">02:30</span></div>
+        <div class="board" id="mock-board"></div>
+        <div class="hintline">字牌只能沿 <b style="color:var(--zhu)">本行或本列</b> 滑动，遇到牌即停<br>凑到同一行、中间无遮挡，即可合成</div>
+        <div class="tools"><div class="t"><b>3</b>提示</div><div class="t"><b>1</b>洗牌</div><div class="t"><b>1</b>凑对</div></div>
+      </div></div>
+      <div class="p-label">主玩法（真实字形渲染）</div>
+    </div>
+
+    <div>
+      <div class="phone"><div class="screen paper">
+        <div class="clear-wrap">
+          <div class="big">本 章 已 成</div>
+          <div class="line">木 字 营 · 十 八 般 兵 器</div>
+          <div class="clear-list" id="mock-clear"></div>
+          <div class="clear-stats">
+            <div><b>18</b>挪动</div><div><b>9</b>成字</div><div><b>02:30</b>用时</div>
+          </div>
+        </div>
+        <div class="home-btns" style="padding-top:26px">
+          <div class="ink-btn primary">下 一 关</div>
+          <div class="ink-btn">重 玩 本 关</div>
+        </div>
+      </div></div>
+      <div class="p-label">结算</div>
+    </div>
+
+  </div>
+
+  <h2 class="sec"><span class="no">四</span>表义形旁（17 个）</h2>
+  <p class="sec-note">
+    这是「表义文字」的第一层：<b>偏旁本身就是一个物</b>。木是树（竖为干、横为枝、撇捺为根），
+    钅是叠起的金属锭带刃光，艹是破土的草叶。但笔画位置严格照楷体，所以字仍然认得出来——右边灰色小字是原字对照。
+  </p>
+  <div class="grid g-tile" id="rad-grid"></div>
+
+  <h2 class="sec"><span class="no">五</span>合成字样张（10 个）</h2>
+  <p class="sec-note">
+    第二层：<b>合成之后整体是一个物</b>。你点名的「枪」在这条规则下是：左边的木 → 木质枪杆，
+    右边的仓 → 枪头（人的两笔变成枪刃的两条脊线）＋铜箍＋红缨。物象全部长在笔画上，不额外贴一张插图。
+    每张右侧仍给原字对照，方便你判断「像不像物」与「还认不认得出字」这对矛盾把握得对不对。
+  </p>
+  <div class="grid g-word" id="word-grid"></div>
+
+  <h2 class="sec"><span class="no">六</span>构造规范（这套字形的「宪法」）</h2>
+  <table class="rule">
+    <tr>
+      <th>① 先立楷体骨架</th>
+      <td>每个字的笔画位置＝标准楷体的位置。这是「可辨认」的底线。骨架用折线定义（如 <code>木</code> 的竖是 <code>[50,10]→[50,90]</code>），
+          笔迹由引擎统一生成，所以 119 个字粗细、笔锋、收锋完全一致，不会越画越散。</td>
+    </tr>
+    <tr>
+      <th>② 笔画上生长物象</th>
+      <td>不额外贴插图，而是让笔画本身变成物：木的竖变成树干（向下加粗＋树皮纹），艹的两竖变成草叶，火的两笔变成火舌。
+          <b>物象必须落在笔画外侧</b>（叶子、火星、流苏、蜡泪），不许遮挡笔画交点。</td>
+    </tr>
+    <tr>
+      <th>③ 可辨认度底线</th>
+      <td>判据是：<b>遮住右边的原字，只看字形，能不能认出这是哪个字</b>。认不出就是装饰过头，要往回收。
+          这条比「好看」优先。</td>
+    </tr>
+    <tr>
+      <th>分层策略</th>
+      <td>只做<b>表义形旁 + 合成字</b>（共 119 个）。声旁（仓/昆/奉/每）本就不表义，硬做成物象反而干扰「拆字」认知，
+          所以它们保持干净的水墨书法字形——这也让玩家一眼分得清「哪半是表义的、哪半是表音的」。</td>
+    </tr>
+    <tr>
+      <th>技术形态</th>
+      <td>全部为 <b>SVG 矢量</b>，由一份字形表 + 引擎在运行时生成。好处：① 体积远小于位图，不占小游戏 4MB 主包额度；
+          ② 任意缩放不糊；③ 改一处参数全局生效。缺点：暂时没有笔墨的随机飞白，后续可加一层噪点滤镜补。</td>
+    </tr>
+  </table>
+
+  <h2 class="sec"><span class="no">七</span>请你拍板的四件事</h2>
+  <ul class="ask">
+    <li><span class="tag">A</span><b>水墨的分量够不够？</b>现在偏「清雅」（宣纸底＋墨线＋朱砂印）。
+        可选方向还有：<b>更浓</b>（重墨压底、大面积泼墨，视觉冲击强但字牌对比度会下降）、
+        <b>更绢本</b>（米黄绢底＋青绿设色，更古但更暗）。</li>
+    <li><span class="tag">B</span><b>「像物」与「认字」的配比。</b>本稿主张「认字优先」——物象只加在笔画外侧。
+        如果你希望更像物（例如枪头做得更大更抢眼），字形的可辨认度会下降，需要你给一个倾向。</li>
+    <li><span class="tag">C</span><b>字牌上要不要保留原字小字对照？</b>像本页这样在角落印一个浅灰的原字，
+        对「识字」有正向作用，但会让牌面变满。</li>
+    <li><span class="tag">D</span><b>样张里哪几个最接近你想要的？哪几个要推倒重来？</b>
+        特别想听你对 <b>枪 / 梅 / 狗 / 烛 / 鲤</b> 这五个的评价——它们分别代表「兵器、花草、走兽、火烛、鱼」五种物象路线。</li>
+  </ul>
+
+  <div class="foot">
+    本稿为 <b>样张</b>：形旁 17 个已出全，合成字先出 10 个覆盖各类结构（左右／上下、木／钅／犭／竹／火／虫／艹／鱼）。<br>
+    方向一经确认，即按任务清单分批把剩余 93 个合成字铺满（每批独立超时、独立自测、分批交付），不需要你逐字盯。
+  </div>
+</div>
+
+<script><!--GLYPH_JS--></script>
+<script>
+/* ---------------------------------------------------------- 渲染评审页 */
+const MO = [
+  ['--mo-1','焦墨','标题、关键笔画'], ['--mo-2','浓墨','主体笔画'],
+  ['--mo-3','重墨','正文'], ['--mo-4','淡墨','提示、禁用'], ['--mo-5','清墨','分隔线']
+];
+const PAINT = [
+  ['--zhe','赭石','木 · 土'], ['--zhu','朱砂','印 · 流苏'],
+  ['--hua','花青','水 · 金属冷光'], ['--teng','藤黄','蕊 · 焰'], ['--qing','玉青','草木 · 部件牌']
+];
+
+document.getElementById('ramp-mo').innerHTML = MO.map(([v,n,d]) =>
+  `<div class="sw" style="background:var(${v});color:${n==='清墨'||n==='淡墨'?'#2b2e33':'#f6f1e4'}">
+     <b style="font-size:13px">${n}</b><span style="font-size:11px;opacity:.75">${d}</span></div>`).join('');
+
+document.getElementById('ramp-paint').innerHTML = PAINT.map(([v,n,d]) =>
+  `<div class="sw" style="background:var(${v})"><b style="font-size:13px">${n}</b>
+     <span style="font-size:11px;opacity:.85">${d}</span></div>`).join('');
+
+/* 字牌三态 */
+document.getElementById('tile-demo').innerHTML = [
+  ['木','t-radical','偏旁牌 · 赭石角标'], ['仓','t-part','部件牌 · 花青味'],
+  ['昆','t-junk','干扰牌 · 清墨褪色']
+].map(([ch,cls,cap]) =>
+  `<div class="cell"><div class="box ink-tile ${cls}" data-ch="${ch}"></div>
+   <div class="cap" style="font-size:12px;font-weight:400;color:var(--mo-4)">${cap}</div></div>`).join('');
+
+/* 形旁（17） */
+const RADS = [['木','树'],['艹','草叶'],['钅','金属锭'],['竹','竹竿'],['犭','走兽'],['鸟','禽'],
+              ['虫','虫豸'],['鱼','鱼'],['火','火焰'],['纟','丝线'],['革','皮张'],['石','顽石'],
+              ['巾','布帛'],['斤','斧'],['弓','弓'],['刂','刀'],['皿','器皿']];
+document.getElementById('rad-grid').innerHTML = RADS.map(([ch,g]) =>
+  `<div class="cell"><div class="box ink-tile t-radical" data-ch="${ch}"></div>
+   <div class="cap">${ch}<span class="orig">${ch}</span><span class="gl">${g}</span></div></div>`).join('');
+
+/* 合成字（10） */
+const WORDS = [['枪','红缨枪'],['棒','木棒'],['梅','梅枝'],['铜','铜器'],['狗','犬'],
+               ['笼','竹笼'],['烛','蜡烛'],['虾','虾'],['莲','莲花'],['鲤','鲤鱼']];
+document.getElementById('word-grid').innerHTML = WORDS.map(([ch,g]) =>
+  `<div class="cell"><div class="box ink-tile" style="background:linear-gradient(160deg,#f8f2e2,#efe6cf)"
+     data-ch="${ch}"></div>
+   <div class="cap">${ch}<span class="orig">${ch}</span><span class="gl">${g}</span></div></div>`).join('');
+
+/* 首页样张的三个小牌 */
+document.querySelectorAll('.home-hero .box').forEach(b => {
+  b.classList.add('ink-tile'); b.style.width = '62px'; b.style.height = '62px';
+});
+
+/* 玩法页样张：真的排一个 5×6 的盘 */
+const BOARD = [
+  ['枪','木','棍','仓','棒','奉'],
+  ['昆','木','槌','追','杖','丈'],
+  ['钅','垂','锤','勾','镰','廉'],
+  ['箭','竹','前','铠','岂','锏'],
+  ['间','革','鞭','便','靶','巴']
+];
+document.getElementById('mock-board').innerHTML = BOARD.flat().map(ch => {
+  // 只有形旁与已画出的部件才有字形，其余用文字兜底
+  const isRad = ['木','钅','竹','革','艹','犭','虫','火','纟','鱼','石','巾','斤','弓','刂','皿','鸟'].includes(ch);
+  const cls = isRad ? 't-radical' : 't-part';
+  return `<div class="bt ink-tile ${cls}" data-ch="${ch}"></div>`;
+}).join('');
+
+/* 结算样张 */
+document.getElementById('mock-clear').innerHTML = ['枪','棍','棒','槌','锤','镰']
+  .map(ch => `<div class="box ink-tile" data-ch="${ch}"></div>`).join('');
+
+/* 统一填字形；表里没有的字回退成楷体文字，绝不留空白 */
+document.querySelectorAll('[data-ch]').forEach(el => {
+  const ch = el.dataset.ch;
+  const svg = glyphSVG(ch);
+  if (svg) { el.innerHTML = svg; }
+  else {
+    el.innerHTML = `<span style="font-family:var(--kai);font-weight:700;color:var(--mo-3);
+      font-size:${Math.max(18, Math.round(el.clientWidth * 0.52))}px;line-height:1">${ch}</span>`;
+    el.style.display = 'flex'; el.style.alignItems = 'center'; el.style.justifyContent = 'center';
+  }
+});
+</script>
+</body>
+</html>

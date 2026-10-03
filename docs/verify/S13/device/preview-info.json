@@ -1,0 +1,27 @@
+{
+  "size": {
+    "total": 7146948,
+    "packages": [
+      {
+        "name": "TOTAL",
+        "size": 7146948
+      },
+      {
+        "name": "main",
+        "size": 3321037
+      },
+      {
+        "name": "/subpackages/ch02/",
+        "size": 1348353
+      },
+      {
+        "name": "/subpackages/ch03/",
+        "size": 1204797
+      },
+      {
+        "name": "/subpackages/ch04/",
+        "size": 1272761
+      }
+    ]
+  }
+}

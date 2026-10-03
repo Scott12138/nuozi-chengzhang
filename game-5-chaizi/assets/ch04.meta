@@ -1,0 +1,14 @@
+{
+  "ver": "1.2.0",
+  "importer": "directory",
+  "imported": true,
+  "uuid": "93284b8c-0a15-4208-94f0-54bfd4a83e6d",
+  "files": [],
+  "subMetas": {},
+  "userData": {
+    "isBundle": true,
+    "bundleConfigID": "ch04",
+    "bundleName": "ch04",
+    "priority": 11
+  }
+}

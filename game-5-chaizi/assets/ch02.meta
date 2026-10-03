@@ -1,0 +1,14 @@
+{
+  "ver": "1.2.0",
+  "importer": "directory",
+  "imported": true,
+  "uuid": "4d848001-4f15-4d61-a989-d8af569a9b8c",
+  "files": [],
+  "subMetas": {},
+  "userData": {
+    "isBundle": true,
+    "bundleConfigID": "ch02",
+    "bundleName": "ch02",
+    "priority": 9
+  }
+}

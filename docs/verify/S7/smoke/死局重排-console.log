@@ -1,0 +1,166 @@
+[timeEnd] Init Base: 7.095947265625 ms
+[timeEnd] Init Infrastructure: 14.966064453125 ms
+[timeEnd] Init SubSystem: 45.51904296875 ms
+[log] Cocos Creator v3.8.8
+[log] Using custom pipeline: Builtin
+[timeEnd] Init Project: 44.503173828125 ms
+[timeEnd] LoadScene db://assets/scenes/Main.scene: 16.97705078125 ms
+[timeEnd] InitScene: 0.130126953125 ms
+[timeEnd] AttachPersist: 0.001953125 ms
+[timeEnd] AutoRelease: 0.06201171875 ms
+[timeEnd] Destroy: 0.079833984375 ms
+[timeEnd] Activate: 2.30908203125 ms
+[log] Success to load scene: db://assets/scenes/Main.scene
+[log] [Bootstrap] GameRoot 已挂载到 Canvas
+[log] [AdService] 广告位自检：非微信环境（web / 本地预览），跳过
+[log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1512
+[log] [PageManager] 进入页面 boot
+[log] [GameRoot] 启动完成，可见尺寸 720×1512
+[log] [AudioService] 音效就绪 13/13
+[log] [AudioService] BGM 就绪：audio/bgm（35.2s）
+[log] [AudioService] BGM 起播（35.2s 循环）
+[log:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[log] [AudioService] BGM 首播未生效（多半被 autoplay 拦了）—— 已复位，等下一次触摸重试
+[log] [PageManager] 进入页面 home
+[timeEnd] Init Base: 1.42919921875 ms
+[timeEnd] Init Infrastructure: 9.2548828125 ms
+[timeEnd] Init SubSystem: 23.244140625 ms
+[log] Cocos Creator v3.8.8
+[log] Using custom pipeline: Builtin
+[timeEnd] Init Project: 21.040771484375 ms
+[timeEnd] LoadScene db://assets/scenes/Main.scene: 16.70703125 ms
+[timeEnd] InitScene: 0.129150390625 ms
+[timeEnd] AttachPersist: 0.008056640625 ms
+[timeEnd] AutoRelease: 0.031005859375 ms
+[timeEnd] Destroy: 0.089111328125 ms
+[timeEnd] Activate: 2.30712890625 ms
+[log] Success to load scene: db://assets/scenes/Main.scene
+[log] [Bootstrap] GameRoot 已挂载到 Canvas
+[log] [AdService] 广告位自检：非微信环境（web / 本地预览），跳过
+[log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1512
+[log] [PageManager] 进入页面 boot
+[log] [GameRoot] 启动完成，可见尺寸 720×1512
+[log] [AudioService] 音效就绪 13/13
+[log] [AudioService] BGM 就绪：audio/bgm（35.2s）
+[log] [AudioService] BGM 起播（35.2s 循环）
+[log:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[log] [AudioService] BGM 首播未生效（多半被 autoplay 拦了）—— 已复位，等下一次触摸重试
+[log] [PageManager] 进入页面 home
+[log] [AudioService] BGM 起播（35.2s 循环）
+[log] [Layout] chap .topbar x=0.0 y=0.0 w=372.0 h=123.5 db=657.7
+[log] [Layout] chap .btn-back x=16.0 y=55.8 w=32.0 h=32.0 db=693.4
+[log] [Layout] chap .chap-list x=0.0 y=163.8 w=372.0 h=577.1 db=40.3
+[log] [Layout] chap .chap[0] x=16.0 y=163.8 w=340.0 h=135.4 db=482.1 r=17
+[log] [Layout] chap .chap[1] x=16.0 y=311.0 w=340.0 h=135.4 db=334.8 r=17
+[log] [Layout] chap .chap[2] x=16.0 y=458.3 w=340.0 h=135.4 db=187.5 r=17
+[log] [Layout] chap .chap[3] x=16.0 y=605.5 w=340.0 h=135.4 db=40.3 r=17
+[log] [PageManager] 进入页面 chap
+[log] [Layout] map .topbar x=0.0 y=0.0 w=372.0 h=123.5 db=657.7
+[log] [Layout] map .btn-back x=16.0 y=55.8 w=32.0 h=32.0 db=693.4
+[log] [Layout] map .map-info x=0.0 y=123.5 w=372.0 h=31.0 db=626.7
+[log] [Layout] map .map-wrap x=0.0 y=154.5 w=372.0 h=626.7 db=0.0
+[log] [Layout] map .map-content x=0.0 y=154.5 w=372.0 h=660.3 db=-33.6
+[log] [Layout] map .node-row[0] x=0.0 y=160.7 w=372.0 h=68.2 db=552.3
+[log] [Layout] map .node[0] x=20.2 y=160.7 w=68.2 h=68.2 db=552.3 L1
+[log] [Layout] map .node-row[1] x=0.0 y=238.7 w=372.0 h=68.2 db=474.3
+[log] [Layout] map .node[1] x=151.9 y=238.7 w=68.2 h=68.2 db=474.3 L2
+[log] [Layout] map .node-row[2] x=0.0 y=316.7 w=372.0 h=68.2 db=396.3
+[log] [Layout] map .node[2] x=283.7 y=316.7 w=68.2 h=68.2 db=396.3 L3
+[log] [Layout] map .node-row[3] x=0.0 y=394.7 w=372.0 h=68.2 db=318.3
+[log] [Layout] map .node[3] x=20.2 y=394.7 w=68.2 h=68.2 db=318.3 L4
+[log] [Layout] map .node-row[4] x=0.0 y=472.8 w=372.0 h=68.2 db=240.3
+[log] [Layout] map .node[4] x=151.9 y=472.8 w=68.2 h=68.2 db=240.3 L5
+[log] [Layout] map .node-row[5] x=0.0 y=550.8 w=372.0 h=68.2 db=162.2
+[log] [Layout] map .node[5] x=283.7 y=550.8 w=68.2 h=68.2 db=162.2 L6
+[log] [Layout] map .node-row[6] x=0.0 y=628.8 w=372.0 h=68.2 db=84.2
+[log] [Layout] map .node[6] x=20.2 y=628.8 w=68.2 h=68.2 db=84.2 L7
+[log] [Layout] map .node-row[7] x=0.0 y=706.8 w=372.0 h=68.2 db=6.2
+[log] [Layout] map .node[7] x=151.9 y=706.8 w=68.2 h=68.2 db=6.2 L8
+[log] [PageManager] 进入页面 map
+[log] [PageManager] 进入页面 game
+[log] [Layout] game .play-top x=0.0 y=0.0 w=372.0 h=92.0 db=689.2
+[log] [Layout] game .btn-back x=14.0 y=55.8 w=32.0 h=32.0 db=693.4
+[log] [Layout] game .play-title x=54.8 y=61.2 w=160.2 h=21.2 db=698.8
+[log] [Layout] game .timer x=311.4 y=60.7 w=46.6 h=22.2 db=698.3
+[log] [Layout] game .goal-bar x=0.0 y=92.0 w=372.0 h=39.8 db=649.4
+[log] [Layout] game .goal-chip[0] x=18.3 y=96.1 w=61.3 h=27.9 db=657.2 枪
+[log] [Layout] game .goal-chip[1] x=86.8 y=96.1 w=61.3 h=27.9 db=657.2 棒
+[log] [Layout] game .goal-chip[2] x=155.3 y=96.1 w=61.3 h=27.9 db=657.2 锤
+[log] [Layout] game .goal-chip[3] x=223.9 y=96.1 w=61.3 h=27.9 db=657.2 钩
+[log] [Layout] game .goal-chip[4] x=292.4 y=96.1 w=61.3 h=27.9 db=657.2 镰
+[log] [Layout] game .tips x=14.0 y=131.8 w=344.1 h=35.7 db=613.8
+[log] [Layout] game .board-wrap x=0.0 y=171.5 w=372.0 h=457.3 db=152.4
+[log] [Layout] game #board x=11.9 y=255.2 w=348.2 h=289.8 db=236.1
+[log] [Layout] game .tile x=15.0 y=258.1 w=52.7 h=52.7 db=470.4 pitch=112 gap=10
+[log] [Layout] game .made-strip x=14.0 y=628.8 w=344.1 h=62.0 db=90.4
+[log] [Layout] game .tool-bar x=0.0 y=698.5 w=372.0 h=82.7 db=0.0
+[log] [Layout] game .tool[0] x=14.0 y=706.3 w=108.2 h=58.9 db=16.0
+[log] [Layout] game .tool[1] x=131.9 y=706.3 w=108.2 h=58.9 db=16.0
+[log] [Layout] game .tool[2] x=249.9 y=706.3 w=108.2 h=58.9 db=16.0
+[log] [Diag] XFORM cell=0,0 screen=66.67,458.75 win=600×1260 scale=0.8333
+[log] [GamePage] L2 开局就绪：21 张牌，棋盘 6×5，格距 112px / 牌 102px，棋盘 674×561，限时 146s · 种子=force:7
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-18
+[log] [Diag] TILES 勾@0,0,part 钅@0,2,radical 仓@1,0,part 钅@1,2,radical 钅@1,3,radical 勾@1,4,part 仓@1,5,part 木@2,0,radical 木@2,2,radical 彳@2,3,junk 钅@2,4,radical 奉@3,0,part 木@3,1,radical 疒@3,2,junk 垂@3,3,part 钅@3,4,radical 垂@3,5,part 奉@4,0,part 木@4,2,radical 廉@4,3,part 匚@4,4,junk
+[log] [Diag] STATE seq=1 开局 步=0 已消=0/9 剩牌=18
+[log] [Diag] SUGGEST 从=垂@3,5 到=2,5 命中=钅
+[log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+[log] [Diag] NONMATCH 从=仓@1,5 到=2,5
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-18
+[log] [Diag] TILES 勾@0,0,part 钅@0,2,radical 仓@1,0,part 钅@1,2,radical 钅@1,3,radical 勾@1,4,part 仓@1,5,part 木@2,0,radical 木@2,2,radical 彳@2,3,junk 奉@3,0,part 木@3,1,radical 疒@3,2,junk 垂@3,3,part 钅@3,4,radical 奉@4,0,part 木@4,2,radical 廉@4,3,part 匚@4,4,junk
+[log] [Diag] STATE seq=2 合成 步=1 已消=1/9 剩牌=16
+[log] [Diag] SUGGEST 从=木@4,2 到=4,1 命中=奉
+[log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+[log] [Diag] NONMATCH 从=木@2,2 到=2,1
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-18
+[log] [Diag] TILES 勾@0,0,part 钅@0,2,radical 仓@1,0,part 钅@1,2,radical 钅@1,3,radical 勾@1,4,part 仓@1,5,part 木@2,0,radical 木@2,2,radical 彳@2,3,junk 奉@3,0,part 木@3,1,radical 疒@3,2,junk 垂@3,3,part 钅@3,4,radical 廉@4,3,part 匚@4,4,junk
+[log] [Diag] STATE seq=3 合成 步=2 已消=2/9 剩牌=14
+[log] [Diag] SUGGEST 从=仓@1,0 到=1,1 命中=木
+[log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+[log] [Diag] NONMATCH 从=廉@4,3 到=4,0
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-18
+[log] [Diag] TILES 勾@0,0,part 钅@0,2,radical 钅@1,2,radical 钅@1,3,radical 勾@1,4,part 仓@1,5,part 木@2,0,radical 木@2,2,radical 彳@2,3,junk 奉@3,0,part 疒@3,2,junk 垂@3,3,part 钅@3,4,radical 廉@4,3,part 匚@4,4,junk
+[log] [Diag] STATE seq=4 合成 步=3 已消=3/9 剩牌=12
+[log] [Diag] SUGGEST 从=木@2,0 到=1,0 命中=奉
+[log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+[log] [Diag] NONMATCH 从=廉@4,3 到=4,0
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-18
+[log] [Diag] TILES 勾@0,0,part 钅@0,2,radical 钅@1,2,radical 钅@1,3,radical 勾@1,4,part 仓@1,5,part 木@2,2,radical 彳@2,3,junk 疒@3,2,junk 垂@3,3,part 钅@3,4,radical 廉@4,3,part 匚@4,4,junk
+[log] [Diag] STATE seq=5 合成 步=4 已消=4/9 剩牌=10
+[log] [Diag] SUGGEST 从=钅@3,4 到=3,5 命中=垂
+[log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+[log] [Diag] NONMATCH 从=廉@4,3 到=4,0
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-18
+[log] [Diag] TILES 勾@0,0,part 钅@0,2,radical 钅@1,2,radical 钅@1,3,radical 勾@1,4,part 仓@1,5,part 木@2,2,radical 彳@2,3,junk 疒@3,2,junk 廉@4,3,part 匚@4,4,junk
+[log] [Diag] STATE seq=6 合成 步=5 已消=5/9 剩牌=8
+[log] [Diag] SUGGEST 从=勾@1,4 到=0,4 命中=钅
+[log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+[log] [Diag] NONMATCH 从=仓@1,5 到=4,5
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-18
+[log] [Diag] TILES 勾@0,0,part 钅@1,2,radical 钅@1,3,radical 仓@1,5,part 木@2,2,radical 彳@2,3,junk 疒@3,2,junk 廉@4,3,part 匚@4,4,junk
+[log] [Diag] STATE seq=7 合成 步=6 已消=6/9 剩牌=6
+[log] [Diag] SUGGEST 从=钅@1,3 到=0,3 命中=勾
+[log] [Diag] REACH direct=0 suggest=1 → 有可挪的解法
+[log] [Diag] NONMATCH 从=廉@4,3 到=4,2
+[log] [GamePage] 卡住：无可立即凑成的挪法 → 弹「看广告重排」
+[log] [AdGate] 弹出：卡住了 / 看广告重排
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-18
+[log] [Diag] TILES 钅@1,2,radical 仓@1,5,part 木@2,2,radical 彳@2,3,junk 疒@3,2,junk 廉@4,3,part 匚@4,4,junk
+[log] [Diag] STATE seq=8 合成 步=7 已消=7/9 剩牌=4
+[log] [Diag] SUGGEST none
+[log] [Diag] REACH direct=0 suggest=0 → 真的卡住
+[log] [Diag] NONMATCH 从=廉@4,3 到=4,0
+[log] [GamePage] 请求激励视频（看广告重排）
+[warning] [AdService] 未接入激励视频（CFG.AD.REWARD_UNIT_ID 为空 / 非微信环境）→ 直接发放
+[log] [AdGate] 关闭
+[log] [GamePage] 看广告重排 → 有解
+[log] [Toast] 盘面已重排
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime

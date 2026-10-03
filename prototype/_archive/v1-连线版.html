@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>拆字连连看 · 可点击原型 v1.0</title>
+<style>
+  :root{
+    --bg:#F7F3EA;        /* 页面背景：米白宣纸 */
+    --ink:#2E2A26;       /* 文字主色 */
+    --ink2:#8A8278;      /* 文字次色 */
+    --red:#C0392B;       /* 主色：朱红 */
+    --tile-r-bg:#F5E6C8; /* 偏旁牌底 */
+    --tile-r-bd:#D9B67A;
+    --tile-p-bg:#E8EFF5; /* 部件牌底 */
+    --tile-p-bd:#A9C0D4;
+    --tile-j-bg:#DEDBD6; /* 干扰牌底 */
+    --tile-j-bd:#9A968F;
+    --cell-bg:#EFEAE0;   /* 空格 */
+    --ok:#3E9E5A;
+    --no:#D9534F;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:#DDD6C8;
+    font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    color:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    padding:16px;
+  }
+  /* ============ 手机外框 ============ */
+  .phone{
+    width:390px;height:780px;max-height:calc(100vh - 32px);
+    background:var(--bg);
+    border-radius:28px;
+    box-shadow:0 18px 50px rgba(0,0,0,.28);
+    overflow:hidden;position:relative;
+    border:8px solid #2E2A26;
+  }
+  .screen{
+    position:absolute;inset:0;display:none;flex-direction:column;
+    overflow-y:auto;overflow-x:hidden;
+  }
+  .screen.active{display:flex;}
+  /* ============ 通用 ============ */
+  .topbar{
+    flex:0 0 auto;display:flex;align-items:center;gap:10px;
+    padding:14px 16px 8px;font-size:15px;font-weight:600;
+  }
+  .btn-back{
+    width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,.06);
+    font-size:16px;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .btn-back:active{background:rgba(0,0,0,.14);}
+  .grow{flex:1;}
+  .pill{
+    background:rgba(192,57,43,.1);color:var(--red);font-size:13px;font-weight:700;
+    padding:4px 10px;border-radius:999px;
+  }
+  .btn{
+    border:none;border-radius:14px;background:var(--red);color:#fff;
+    font-size:17px;font-weight:700;padding:15px;width:100%;cursor:pointer;
+    font-family:inherit;box-shadow:0 4px 0 rgba(0,0,0,.12);
+    transition:transform .08s,box-shadow .08s;
+  }
+  .btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.12);}
+  .btn.ghost{background:rgba(0,0,0,.06);color:var(--ink);box-shadow:none;font-size:15px;}
+  .btn.ghost:active{transform:translateY(1px);}
+  .card{
+    background:#fff;border-radius:16px;padding:14px;margin:0 16px 12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+  }
+  .muted{color:var(--ink2);font-size:13px;}
+  .center{text-align:center;}
+
+  /* ============ S01 启动页 ============ */
+  #s-boot{align-items:center;justify-content:center;}
+  .logo-seal{
+    width:132px;height:132px;border-radius:18px;
+    background:linear-gradient(145deg,#C0392B,#9B2E22);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 26px rgba(192,57,43,.34);
+    position:relative;
+  }
+  .logo-seal span{font-size:46px;color:#fff;font-weight:800;letter-spacing:-4px;line-height:1;}
+  .logo-title{margin-top:22px;font-size:25px;font-weight:800;letter-spacing:6px;}
+  .bar{width:190px;height:7px;border-radius:99px;background:rgba(0,0,0,.09);overflow:hidden;margin-top:34px;}
+  .bar > i{display:block;height:100%;width:0;background:var(--red);border-radius:99px;transition:width .25s;}
+  .boot-tip{margin-top:40px;font-size:11px;color:var(--ink2);line-height:1.85;text-align:center;}
+
+  /* ============ S02 首页 ============ */
+  .home-wrap{padding:26px 22px;display:flex;flex-direction:column;height:100%;}
+  .home-title{font-size:34px;font-weight:800;letter-spacing:8px;text-align:center;margin:36px 0 6px;}
+  .home-sub{text-align:center;font-size:13px;color:var(--ink2);letter-spacing:2px;margin-bottom:40px;}
+  .home-mid{display:flex;gap:12px;margin-top:14px;}
+  .home-mid .btn{font-size:15px;padding:16px 8px;background:#fff;color:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,.07);}
+  .prog-wrap{margin-top:auto;padding-top:24px;}
+  .prog-bar{height:10px;border-radius:99px;background:rgba(0,0,0,.09);overflow:hidden;margin:8px 0;}
+  .prog-bar > i{display:block;height:100%;background:linear-gradient(90deg,#E0A33E,var(--red));}
+  .cont-line{
+    margin-top:16px;padding:13px 14px;border-radius:14px;background:#fff;
+    display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);cursor:pointer;
+  }
+
+  /* ============ S03 章节选择 ============ */
+  .chap{
+    background:#fff;border-radius:16px;padding:14px;margin:0 16px 12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);cursor:pointer;
+    border-left:5px solid var(--red);
+  }
+  .chap.locked{opacity:.52;border-left-color:#C9C4BB;cursor:not-allowed;filter:grayscale(.5);}
+  .chap h3{margin:0 0 4px;font-size:17px;}
+  .chap .stars{color:#E0A33E;font-size:14px;letter-spacing:1px;}
+  .chap .preview{margin-top:8px;font-size:15px;color:var(--ink2);letter-spacing:3px;}
+
+  /* ============ S04 关卡地图 ============ */
+  .map-wrap{padding:6px 0 30px;position:relative;}
+  .node-row{display:flex;padding:0 16px;margin-bottom:6px;}
+  .node-row.l{justify-content:flex-start;}
+  .node-row.r{justify-content:flex-end;}
+  .node-row.c{justify-content:center;}
+  .node{
+    width:78px;height:78px;border-radius:50%;background:#fff;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    box-shadow:0 3px 12px rgba(0,0,0,.09);cursor:pointer;position:relative;
+    border:3px solid transparent;
+  }
+  .node .n-id{font-size:15px;font-weight:800;}
+  .node .n-st{font-size:10px;color:#E0A33E;letter-spacing:-1px;height:12px;}
+  .node.done{border-color:#E0A33E;background:#FFFDF7;}
+  .node.cur{border-color:var(--red);background:#fff;animation:pulse 1.5s infinite;}
+  .node.locked{opacity:.42;filter:grayscale(1);cursor:not-allowed;}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.35);}50%{box-shadow:0 0 0 12px rgba(192,57,43,0);}}
+  .link-line{height:22px;border-left:2px dashed #D8D2C6;margin-left:53px;}
+  .link-line.r{margin-left:0;margin-right:53px;align-self:flex-end;}
+
+  /* ============ S05 主玩法 ============ */
+  #s-play{padding:0;}
+  .play-top{
+    flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:12px 14px 6px;
+  }
+  .timer{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;}
+  .timer.warn{color:var(--no);animation:blink .8s infinite;}
+  @keyframes blink{50%{opacity:.35;}}
+  .tray{
+    flex:0 0 auto;padding:6px 14px 10px;
+  }
+  .tray-label{font-size:11px;color:var(--ink2);margin-bottom:6px;letter-spacing:1px;}
+  .tray-words{display:flex;flex-wrap:wrap;gap:7px;align-items:center;}
+  .tray-chip{
+    width:44px;height:44px;border-radius:11px;background:#E6E1D7;color:#B9B2A6;
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;font-weight:700;position:relative;transition:.25s;
+  }
+  .tray-chip.on{background:var(--red);color:#fff;box-shadow:0 3px 10px rgba(192,57,43,.3);}
+  .tray-chip.on::after{
+    content:"✓";position:absolute;right:2px;bottom:0;font-size:11px;color:#FFE9A8;
+  }
+  .tray-chip.egg{border:2px dashed #D8CFB8;}
+  .egg-tag{font-size:10px;color:#B0A88F;margin-left:6px;align-self:center;}
+
+  .board-wrap{
+    flex:1 1 auto;display:flex;align-items:center;justify-content:center;
+    position:relative;padding:4px;
+  }
+  .board{position:relative;}
+  .cell-bg{
+    position:absolute;border-radius:10px;background:var(--cell-bg);
+    border:1px dashed #E2DBCD;
+  }
+  .tile{
+    position:absolute;border-radius:11px;display:flex;align-items:center;justify-content:center;
+    font-weight:700;cursor:pointer;user-select:none;
+    transition:left .22s cubic-bezier(.3,1.4,.5,1),top .22s cubic-bezier(.3,1.4,.5,1),
+               transform .12s,box-shadow .12s,opacity .2s;
+    will-change:left,top,transform;
+  }
+  .tile.r{background:var(--tile-r-bg);border:2px solid var(--tile-r-bd);color:#7A4E28;}
+  .tile.p{background:var(--tile-p-bg);border:2px solid var(--tile-p-bd);color:#33556E;}
+  .tile.j{background:var(--tile-j-bg);border:2px solid var(--tile-j-bd);color:#7C7873;}
+  .tile .role-tag{
+    position:absolute;left:3px;top:2px;font-size:9px;font-weight:600;opacity:.5;line-height:1;
+  }
+  .tile.j .crack{
+    position:absolute;inset:0;overflow:hidden;border-radius:9px;pointer-events:none;
+  }
+  .tile.j .crack::before{
+    content:"";position:absolute;left:-20%;top:48%;width:140%;height:2px;
+    background:#9A968F;transform:rotate(-32deg);opacity:.6;
+  }
+  .tile.j .crack::after{
+    content:"";position:absolute;left:-20%;top:58%;width:140%;height:2px;
+    background:#9A968F;transform:rotate(24deg);opacity:.45;
+  }
+  .tile.sel{transform:translateY(-8px) scale(1.08);box-shadow:0 8px 18px rgba(192,57,43,.32);z-index:5;}
+  .tile.hint{animation:hintGlow .7s ease-in-out 4;}
+  @keyframes hintGlow{0%,100%{box-shadow:0 0 0 0 rgba(224,163,62,0);}50%{box-shadow:0 0 0 7px rgba(224,163,62,.65);}}
+  .tile.shake{animation:shake .3s;}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+  .tile.gone{opacity:0;transform:scale(.35) translateY(-10px);}
+
+  .svg-layer{position:absolute;pointer-events:none;z-index:9;overflow:visible;}
+
+  .tools{
+    flex:0 0 auto;display:flex;gap:10px;padding:10px 14px calc(14px + env(safe-area-inset-bottom,0px));
+  }
+  .tool{
+    flex:1;background:#fff;border-radius:14px;padding:9px 4px;text-align:center;
+    box-shadow:0 2px 9px rgba(0,0,0,.07);cursor:pointer;position:relative;
+    border:2px solid transparent;transition:.12s;
+  }
+  .tool:active{transform:translateY(1px);}
+  .tool .ico{font-size:19px;line-height:1.2;}
+  .tool .nm{font-size:11px;color:var(--ink2);margin-top:2px;}
+  .tool .cnt{
+    position:absolute;right:5px;top:5px;background:var(--red);color:#fff;
+    font-size:10px;font-weight:700;border-radius:99px;padding:1px 6px;min-width:17px;
+  }
+  .tool .cnt.zero{background:#BDB7AC;}
+  .tool.act{border-color:var(--red);background:#FFF7F5;}
+
+  .toast{
+    position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);
+    background:rgba(46,42,38,.92);color:#fff;font-size:13px;padding:10px 16px;
+    border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:99;
+    max-width:86%;text-align:center;line-height:1.55;
+    white-space:normal;word-break:break-word;
+  }
+  .toast.show{opacity:1;}
+
+  /* ============ 结算 ============ */
+  .result-wrap{padding:52px 24px 30px;display:flex;flex-direction:column;align-items:center;height:100%;}
+  .stars-big{font-size:46px;letter-spacing:8px;color:#E0A33E;height:58px;}
+  .stars-big i{opacity:0;font-style:normal;display:inline-block;transform:scale(.3);}
+  .stars-big i.pop{animation:starPop .42s forwards cubic-bezier(.2,1.6,.5,1);}
+  @keyframes starPop{to{opacity:1;transform:scale(1);}}
+  .res-title{font-size:26px;font-weight:800;letter-spacing:3px;margin:12px 0 22px;}
+  .brk-list{width:100%;background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:18px;}
+  .brk-row{
+    display:flex;align-items:center;justify-content:center;gap:9px;
+    padding:7px 0;font-size:17px;font-weight:600;border-bottom:1px dashed #EDE7DA;
+  }
+  .brk-row:last-child{border-bottom:none;}
+  .brk-row .part{
+    background:var(--tile-r-bg);border:1.5px solid var(--tile-r-bd);border-radius:7px;
+    padding:2px 8px;font-size:15px;color:#7A4E28;
+  }
+  .brk-row .part.p2{background:var(--tile-p-bg);border-color:var(--tile-p-bd);color:#33556E;}
+  .brk-row .eq{color:var(--ink2);font-size:13px;}
+  .brk-row .full{color:var(--red);font-size:19px;}
+  .res-stats{font-size:13px;color:var(--ink2);margin-bottom:20px;}
+
+  /* ============ 图鉴 ============ */
+  .atlas-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:0 16px 30px;}
+  .a-card{
+    aspect-ratio:1;border-radius:13px;background:#fff;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.06);
+    cursor:pointer;border:2px solid transparent;transition:.14s;
+  }
+  .a-card .w{font-size:25px;font-weight:700;}
+  .a-card .p{font-size:9px;color:var(--ink2);margin-top:2px;}
+  .a-card.lock{background:#EDE9E1;color:#BBB4A8;}
+  .a-card.lock .w{font-size:20px;}
+  .a-card:active{transform:scale(.95);}
+  .filters{display:flex;gap:7px;padding:0 16px 12px;overflow-x:auto;}
+  .filters button{
+    flex:0 0 auto;border:none;background:#fff;border-radius:99px;padding:7px 14px;
+    font-size:13px;color:var(--ink2);cursor:pointer;font-family:inherit;
+    box-shadow:0 1px 5px rgba(0,0,0,.05);
+  }
+  .filters button.on{background:var(--red);color:#fff;}
+
+  /* ============ 设置 ============ */
+  .set-row{
+    display:flex;align-items:center;padding:14px 4px;border-bottom:1px solid #F0EBE0;font-size:15px;
+  }
+  .set-row:last-child{border-bottom:none;}
+  .switch{
+    width:48px;height:28px;border-radius:99px;background:#D6D0C4;position:relative;
+    cursor:pointer;transition:.2s;flex:0 0 auto;margin-left:auto;
+  }
+  .switch::after{
+    content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;
+    background:#fff;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.2);
+  }
+  .switch.on{background:var(--ok);}
+  .switch.on::after{left:23px;}
+  .arrow{margin-left:auto;color:#C8C2B6;font-size:14px;}
+
+  /* ============ 弹窗 ============ */
+  .modal{
+    position:absolute;inset:0;background:rgba(30,26,22,.55);display:none;
+    align-items:center;justify-content:center;z-index:200;padding:26px;
+  }
+  .modal.show{display:flex;}
+  .modal-box{
+    background:var(--bg);border-radius:20px;padding:22px 18px;width:100%;
+    box-shadow:0 18px 50px rgba(0,0,0,.3);
+  }
+  .modal-box h3{margin:0 0 8px;font-size:19px;text-align:center;}
+  .modal-box p{margin:0 0 16px;font-size:13px;color:var(--ink2);text-align:center;line-height:1.6;}
+  .modal-box .btn{margin-bottom:9px;}
+  .modal-box .btn:last-child{margin-bottom:0;}
+
+  /* 小园开场 */
+  #s-park{align-items:center;justify-content:center;background:#FBF8F2;}
+  .park-q{font-size:29px;font-weight:800;letter-spacing:4px;opacity:0;transition:opacity .6s;}
+  .park-q.in{opacity:1;}
+  .park-icons{font-size:34px;letter-spacing:12px;margin:26px 0 34px;}
+  .park-icons span{opacity:0;display:inline-block;transition:.3s;}
+  .park-icons span.in{opacity:1;}
+
+  .note{
+    font-size:11px;color:var(--ink2);line-height:1.7;padding:10px 16px 0;
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- ================= S01 启动页 ================= -->
+  <section class="screen active" id="s-boot">
+    <div style="margin:auto;display:flex;flex-direction:column;align-items:center;">
+      <div class="logo-seal"><span>拆连</span></div>
+      <div class="logo-title">拆字连连看</div>
+      <div class="bar"><i id="boot-bar"></i></div>
+      <div class="boot-tip">
+        抵制不良游戏，拒绝盗版游戏<br>
+        适度游戏益脑，沉迷游戏伤身<br>
+        <span style="opacity:.6">原型演示版 · 仅供评审</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= S02 首页 ================= -->
+  <section class="screen" id="s-home">
+    <div class="home-wrap">
+      <div style="display:flex;">
+        <div class="grow"></div>
+        <button class="btn-back" onclick="go('s-setting')">⚙</button>
+      </div>
+      <div class="home-title">拆字连连看</div>
+      <div class="home-sub">拆 开 汉 字 · 连 出 万 物</div>
+
+      <button class="btn" onclick="continueGame()">▶　开始游戏</button>
+
+      <div class="home-mid">
+        <button class="btn" onclick="go('s-atlas')">📖 字盘图鉴</button>
+        <button class="btn" onclick="toast('每日挑战将在正式版开放')">⚔️ 每日挑战</button>
+      </div>
+
+      <div class="prog-wrap">
+        <div class="muted" style="display:flex;justify-content:space-between;">
+          <span>已收集</span><span id="home-collect">0 / 103 字</span>
+        </div>
+        <div class="prog-bar"><i id="home-prog" style="width:0"></i></div>
+        <div class="cont-line" onclick="go('s-chapters')">
+          <span>📕</span><span>当前章节：十八般兵器</span>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= S03 章节选择 ================= -->
+  <section class="screen" id="s-chapters">
+    <div class="topbar">
+      <button class="btn-back" onclick="go('s-home')">←</button>
+      <span>章节选择</span>
+    </div>
+    <div class="chap" onclick="go('s-map')">
+      <h3>第一章 · 十八般兵器</h3>
+      <div class="stars">★★☆　3 / 8 关</div>
+      <div class="preview">枪 棍 棒 锤 钩</div>
+    </div>
+    <div class="chap" onclick="toast('第二章将在正式版开放')">
+      <h3>第二章 · 百花园</h3>
+      <div class="stars">☆　0 / 8 关</div>
+      <div class="preview">花 莲 莉 茉 蓉</div>
+    </div>
+    <div class="chap locked">
+      <h3>🔒 第三章 · 逛三园</h3>
+      <div class="stars">需要 ★22 解锁</div>
+      <div class="preview">猫 狗 狐 桃 杏</div>
+    </div>
+    <div class="chap locked">
+      <h3>🔒 第四章 · 居家器物</h3>
+      <div class="stars">需要 ★40 解锁</div>
+      <div class="preview">灯 炉 箱 筷 纸</div>
+    </div>
+    <div class="note">
+      章节解锁按累计星数计算，未解锁章节会显示解锁条件，不让玩家猜。
+    </div>
+  </section>
+
+  <!-- ================= S04 关卡地图 ================= -->
+  <section class="screen" id="s-map">
+    <div class="topbar">
+      <button class="btn-back" onclick="go('s-chapters')">←</button>
+      <span>第一章 · 十八般兵器</span>
+      <div class="grow"></div>
+      <span class="pill" id="map-stars">★ 5 / 24</span>
+    </div>
+    <div class="map-wrap" id="map-wrap"></div>
+  </section>
+
+  <!-- ================= S05 主玩法 ================= -->
+  <section class="screen" id="s-play">
+    <div class="play-top">
+      <button class="btn-back" onclick="exitLevel()">←</button>
+      <span style="font-size:14px;font-weight:700;" id="play-title">1-1</span>
+      <div class="grow"></div>
+      <span class="timer" id="play-timer">02:00</span>
+      <button class="btn-back" onclick="pauseGame()">⏸</button>
+    </div>
+
+    <div class="tray">
+      <div class="tray-label">本关目标字　　连出一个，点亮一个</div>
+      <div class="tray-words" id="tray-words"></div>
+    </div>
+
+    <div class="board-wrap">
+      <div class="board" id="board"></div>
+    </div>
+
+    <div class="tools">
+      <div class="tool" id="tool-nudge" onclick="useNudge()">
+        <div class="ico">↔️</div><div class="nm">腾挪</div><div class="cnt" id="cnt-nudge">3</div>
+      </div>
+      <div class="tool" id="tool-reshuffle" onclick="useReshuffle()">
+        <div class="ico">🔄</div><div class="nm">重排</div><div class="cnt" id="cnt-reshuffle">1</div>
+      </div>
+      <div class="tool" id="tool-hint" onclick="useHint()">
+        <div class="ico">💡</div><div class="nm">提示</div><div class="cnt" id="cnt-hint">1</div>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+  </section>
+
+  <!-- ================= S06 过关 ================= -->
+  <section class="screen" id="s-clear">
+    <div class="result-wrap">
+      <div class="stars-big" id="clear-stars"><i>★</i><i>★</i><i>★</i></div>
+      <div class="res-title">过 关 啦 ！</div>
+      <div class="brk-list" id="clear-brk"></div>
+      <div class="res-stats" id="clear-stats"></div>
+      <button class="btn" onclick="nextLevel()">下一关　▶</button>
+      <div style="height:9px"></div>
+      <button class="btn ghost" onclick="restartLevel()">重玩本关</button>
+      <div style="height:9px"></div>
+      <button class="btn ghost" onclick="go('s-map')">返回地图</button>
+    </div>
+  </section>
+
+  <!-- ================= S07 时间到 ================= -->
+  <section class="screen" id="s-fail">
+    <div class="result-wrap" style="padding-top:96px;">
+      <div style="font-size:56px;">⏰</div>
+      <div class="res-title" style="margin-top:16px;">时 间 到 啦</div>
+      <div class="muted" id="fail-msg" style="margin-bottom:26px;text-align:center;"></div>
+      <button class="btn" onclick="revive()">📺 看视频　+30 秒</button>
+      <div style="height:9px"></div>
+      <button class="btn ghost" onclick="restartLevel()">重来一次</button>
+      <div style="height:9px"></div>
+      <button class="btn ghost" onclick="go('s-map')">返回地图</button>
+    </div>
+  </section>
+
+  <!-- ================= S08 图鉴 ================= -->
+  <section class="screen" id="s-atlas">
+    <div class="topbar">
+      <button class="btn-back" onclick="go('s-home')">←</button>
+      <span>字盘图鉴</span>
+      <div class="grow"></div>
+      <span class="pill" id="atlas-count">0 / 103</span>
+    </div>
+    <div class="filters" id="atlas-filters"></div>
+    <div class="atlas-grid" id="atlas-grid"></div>
+  </section>
+
+  <!-- ================= S10 设置 ================= -->
+  <section class="screen" id="s-setting">
+    <div class="topbar">
+      <button class="btn-back" onclick="go('s-home')">←</button>
+      <span>设置</span>
+    </div>
+    <div class="card">
+      <div class="set-row">音效<div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="set-row">背景音乐<div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="set-row">震动反馈<div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="set-row">
+        <div>提示色开关<div class="muted" style="margin-top:2px;">关掉后偏旁与部件同色，进阶挑战</div></div>
+        <div class="switch" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="set-row">玩法说明<span class="arrow">›</span></div>
+      <div class="set-row">隐私政策<span class="arrow">›</span></div>
+      <div class="set-row">用户协议<span class="arrow">›</span></div>
+      <div class="set-row">联系我们<span class="arrow">›</span></div>
+    </div>
+    <div class="note">版本 v1.0.0 · 原型演示</div>
+  </section>
+
+  <!-- ================= S12 小园开场 ================= -->
+  <section class="screen" id="s-park">
+    <div class="park-q" id="park-q">动物园里有什么？</div>
+    <div class="park-icons" id="park-icons">
+      <span>🐾</span><span>🐾</span><span>🐾</span><span>🐾</span>
+    </div>
+    <button class="btn" style="width:190px;" onclick="go('s-map')">开 始</button>
+  </section>
+
+  <!-- ================= 弹窗 ================= -->
+  <div class="modal" id="modal">
+    <div class="modal-box" id="modal-box"></div>
+  </div>
+
+</div>
+
+<script>
+/* =====================================================================
+   拆字连连看 · 可点击原型
+   说明：本原型用 DOM 实现，仅为「看页面结构 + 验证玩法逻辑」。
+        真机实现必须用 Canvas 2D 自绘（小游戏无 DOM），
+        可直接复用的是：连通判定、配对判定、腾挪、死局检测、关卡数值、跳转关系。
+   ===================================================================== */
+
+/* ---------------------- 1. 字库（第一章演示数据） ---------------------- */
+const WORDLIB = {
+  '枪': { r:'木', p:'仓', py:'qiāng', gl:'长柄刺击的兵器', st:'lr', tag:'兵器' },
+  '棍': { r:'木', p:'昆', py:'gùn',  gl:'棒状的兵器',     st:'lr', tag:'兵器' },
+  '棒': { r:'木', p:'奉', py:'bàng', gl:'较粗的棍子',     st:'lr', tag:'兵器' },
+  '杖': { r:'木', p:'丈', py:'zhàng',gl:'手杖，也可作兵器',st:'lr', tag:'兵器' },
+  '杵': { r:'木', p:'午', py:'chǔ',  gl:'捣物的棒槌',     st:'lr', tag:'兵器' },
+  '柄': { r:'木', p:'丙', py:'bǐng', gl:'器物的把儿',     st:'lr', tag:'兵器' },
+  '槌': { r:'木', p:'追', py:'chuí', gl:'敲打的用具',     st:'lr', tag:'兵器' },
+};
+
+/* ---------------------- 2. 关卡配置 ---------------------- */
+const JUNK_CHARS = ['疒','匚','彳','廴'];   // 废牌池：永不成字，同名两张可互消
+
+const LEVELS = [
+  { id:'1-1', cols:5, rows:5, targets:['枪','棍','棒'], eggs:['杖','杵'],
+    junkPairs:3, timeLimit:120, hintMode:'always',
+    tip:'顶部是要拆的字，把「枪」在心里拆成两半，到棋盘上连起来' },
+  { id:'1-2', cols:5, rows:5, targets:['枪','棍','棒','杖'], eggs:['柄'],
+    junkPairs:3, timeLimit:120, hintMode:'afterIdle8s', tip:'' },
+  { id:'1-3', cols:5, rows:6, targets:['枪','棍','棒','杖','柄'], eggs:['杵','槌'],
+    junkPairs:3, timeLimit:110, hintMode:'off', tip:'' },
+  { id:'1-4', cols:5, rows:6, targets:['枪','棍','棒','杖','柄','杵'], eggs:['槌'],
+    junkPairs:4, timeLimit:130, hintMode:'off', tip:'' },
+  { id:'1-5', cols:5, rows:6, targets:['枪','棍','棒','杖','柄','杵','槌'], eggs:[],
+    junkPairs:4, timeLimit:140, hintMode:'off', tip:'' },
+  { id:'1-6', cols:6, rows:6, targets:['枪','棍','棒','杖','柄','杵'], eggs:['槌'],
+    junkPairs:4, timeLimit:140, hintMode:'off', tip:'' },
+  { id:'1-7', cols:6, rows:6, targets:['枪','棍','棒','杖','柄','杵','槌'], eggs:[],
+    junkPairs:5, timeLimit:150, hintMode:'off', tip:'' },
+  { id:'1-8', cols:6, rows:7, targets:['枪','棍','棒','杖','柄','杵','槌'], eggs:[],
+    junkPairs:5, timeLimit:160, hintMode:'off', tip:'' },
+];
+
+/* ---------------------- 3. 全局状态 ---------------------- */
+const G = {
+  screen: 's-boot',
+  levelIndex: 0,
+  stars: { '1-1':3, '1-2':2, '1-3':1 },   // 演示用已有进度
+  collected: ['枪','棍','棒','杖'],        // 演示用已收集
+  board: null,
+  timer: null,
+  timeLeft: 0,
+  sel: null,          // 当前选中的牌
+  tools: { nudge:3, reshuffle:1, hint:1 },
+  busy: false,        // 动画锁
+  failStreak: 0,      // 连续失败次数（用于腾挪引导）
+  nudgeGuideShown: false,
+  running: false,
+};
+
+/* ---------------------- 4. 页面路由 ---------------------- */
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  G.screen = id;
+  if (id === 's-map') renderMap();
+  if (id === 's-atlas') renderAtlas();
+  if (id === 's-home') renderHome();
+}
+
+/* ---------------------- 5. 提示条 ---------------------- */
+let toastTimer = null;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 1500);
+}
+
+/* ---------------------- 6. 棋盘核心逻辑 ---------------------- */
+
+// 6.1 连通判定：isEmpty / linkDirect / findPath（与文档 2.4.3 完全一致）
+function makeGrid(cfg){
+  const g = [];
+  for (let y=0; y<cfg.rows; y++){ g.push(new Array(cfg.cols).fill(null)); }
+  return g;
+}
+
+let CFG = { cols:5, rows:5 };
+
+function inOuterRing(x,y){
+  // 外圈一圈：x=-1 / x=cols / y=-1 / y=rows
+  return (x === -1 || x === CFG.cols || y === -1 || y === CFG.rows);
+}
+function beyond(x,y){
+  return (x < -1 || y < -1 || x > CFG.cols || y > CFG.rows);
+}
+function isEmpty(x,y){
+  if (beyond(x,y)) return false;
+  if (inOuterRing(x,y)) return true;      // 棋盘外圈视为空，允许绕行
+  return G.board[y][x] === null;
+}
+function linkDirect(a,b){
+  if (a.x === b.x){
+    const s = Math.min(a.y,b.y), e = Math.max(a.y,b.y);
+    for (let y=s+1; y<e; y++) if (!isEmpty(a.x,y)) return false;
+    return true;
+  }
+  if (a.y === b.y){
+    const s = Math.min(a.x,b.x), e = Math.max(a.x,b.x);
+    for (let x=s+1; x<e; x++) if (!isEmpty(x,a.y)) return false;
+    return true;
+  }
+  return false;
+}
+function findPath(a,b){
+  // 0 折点
+  if (linkDirect(a,b)) return [a,b];
+  // 1 折点
+  for (const c of [{x:a.x,y:b.y},{x:b.x,y:a.y}]){
+    if (isEmpty(c.x,c.y) && linkDirect(a,c) && linkDirect(c,b)) return [a,c,b];
+  }
+  // 2 折点
+  const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+  for (const [dx,dy] of dirs){
+    let x = a.x+dx, y = a.y+dy;
+    while (isEmpty(x,y)){
+      const p1 = {x,y};
+      for (const c2 of [{x:p1.x,y:b.y},{x:b.x,y:p1.y}]){
+        if (isEmpty(c2.x,c2.y) && linkDirect(p1,c2) && linkDirect(c2,b)){
+          return [a,p1,c2,b];
+        }
+      }
+      x += dx; y += dy;
+    }
+  }
+  return null;
+}
+
+// 6.2 配对合法性：key 排序后拼接 → 不区分左右顺序
+function sortKey(a,b){ return [a,b].sort().join(''); }
+let PAIRMAP = new Map();   // '木仓' -> '枪'
+let WORD_OF = new Map();   // 牌 id -> 它参与组成的字
+
+function buildPairMap(level){
+  PAIRMAP = new Map();
+  for (const w of [...level.targets, ...level.eggs]){
+    const d = WORDLIB[w];
+    PAIRMAP.set(sortKey(d.r, d.p), w);
+  }
+}
+function canPair(t1,t2){
+  // 废牌：同名两张可互消
+  if (t1.junk && t2.junk) return t1.char === t2.char;
+  if (t1.junk || t2.junk) return false;
+  return PAIRMAP.has(sortKey(t1.char, t2.char));
+}
+function pairWord(t1,t2){
+  if (t1.junk && t2.junk) return null;
+  return PAIRMAP.get(sortKey(t1.char, t2.char)) || null;
+}
+
+// 6.3 牌池构建
+let tileSeq = 0;
+function mkTile(ch, role, word){
+  return { id: ++tileSeq, char: ch, role, word, junk: role==='junk', x:0, y:0 };
+}
+function buildPool(level){
+  const pool = [];
+  for (const w of level.targets){
+    const d = WORDLIB[w];
+    pool.push(mkTile(d.r,'radical',w), mkTile(d.p,'part',w));
+  }
+  for (const w of level.eggs){
+    const d = WORDLIB[w];
+    pool.push(mkTile(d.r,'radical',w), mkTile(d.p,'part',w));
+  }
+  const jc = JUNK_CHARS.slice();
+  for (let i=0; i<level.junkPairs; i++){
+    const ch = jc[i % jc.length];
+    pool.push(mkTile(ch,'junk',null), mkTile(ch,'junk',null));
+  }
+  return pool;
+}
+
+// 6.4 随机洗牌
+function shuffle(a){
+  for (let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+// 6.5 合法牌对扫描
+function allTiles(){
+  const r = [];
+  for (let y=0;y<CFG.rows;y++) for (let x=0;x<CFG.cols;x++) if (G.board[y][x]) r.push(G.board[y][x]);
+  return r;
+}
+function findAllPairs(){
+  const ts = allTiles(), out = [];
+  for (let i=0;i<ts.length;i++){
+    for (let j=i+1;j<ts.length;j++){
+      if (!canPair(ts[i], ts[j])) continue;
+      const path = findPath(ts[i], ts[j]);
+      if (path) out.push({ a:ts[i], b:ts[j], path, word:pairWord(ts[i],ts[j]) });
+    }
+  }
+  return out;
+}
+
+// 6.6 可解性校验（纯数据模拟，不动真实棋盘）
+function isSolvable(grid, cfg, level){
+  const gp = grid.map(r=>r.slice());
+  const remaining = new Set(level.targets);
+  let guard = cfg.cols * cfg.rows * 3;
+  const get = (x,y)=>gp[y][x];
+  const setNull = (x,y)=>{ gp[y][x] = null; };
+
+  while (remaining.size > 0){
+    if (guard-- <= 0) return false;
+    // 局部复制一份判定函数，作用于 gp
+    const pairs = scanPairsOn(gp, cfg, level);
+    if (pairs.length === 0) return false;
+    const hit = pairs.find(p=>p.word && remaining.has(p.word));
+    if (hit){
+      setNull(hit.a.x, hit.a.y); setNull(hit.b.x, hit.b.y);
+      remaining.delete(hit.word);
+    } else {
+      const any = pairs[0];
+      setNull(any.a.x, any.a.y); setNull(any.b.x, any.b.y);
+    }
+  }
+  return true;
+}
+// 在指定 grid 上扫描（不依赖全局 G.board）
+function scanPairsOn(gp, cfg, level){
+  const isE = (x,y)=>{
+    if (x < -1 || y < -1 || x > cfg.cols || y > cfg.rows) return false;
+    if (x === -1 || y === -1 || x === cfg.cols || y === cfg.rows) return true;
+    return gp[y][x] === null;
+  };
+  const ld = (a,b)=>{
+    if (a.x===b.x){ const s=Math.min(a.y,b.y),e=Math.max(a.y,b.y);
+      for(let y=s+1;y<e;y++) if(!isE(a.x,y)) return false; return true; }
+    if (a.y===b.y){ const s=Math.min(a.x,b.x),e=Math.max(a.x,b.x);
+      for(let x=s+1;x<e;x++) if(!isE(x,a.y)) return false; return true; }
+    return false;
+  };
+  const fp = (a,b)=>{
+    if (ld(a,b)) return [a,b];
+    for (const c of [{x:a.x,y:b.y},{x:b.x,y:a.y}]) if (isE(c.x,c.y)&&ld(a,c)&&ld(c,b)) return [a,c,b];
+    for (const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      let x=a.x+dx,y=a.y+dy;
+      while (isE(x,y)){
+        const p1={x,y};
+        for (const c2 of [{x:p1.x,y:b.y},{x:b.x,y:p1.y}]) if (isE(c2.x,c2.y)&&ld(p1,c2)&&ld(c2,b)) return [a,p1,c2,b];
+        x+=dx;y+=dy;
+      }
+    }
+    return null;
+  };
+  const pm = new Map();
+  for (const w of [...level.targets, ...level.eggs]){ const d=WORDLIB[w]; pm.set(sortKey(d.r,d.p), w); }
+  const ts = [];
+  for (let y=0;y<cfg.rows;y++) for (let x=0;x<cfg.cols;x++) if (gp[y][x]) ts.push(gp[y][x]);
+  const out = [];
+  for (let i=0;i<ts.length;i++) for (let j=i+1;j<ts.length;j++){
+    const A=ts[i],B=ts[j];
+    let ok, word=null;
+    if (A.junk&&B.junk){ ok = A.char===B.char; }
+    else if (A.junk||B.junk){ ok = false; }
+    else { word = pm.get(sortKey(A.char,B.char)); ok = !!word; }
+    if (!ok) continue;
+    if (fp(A,B)) out.push({ a:A, b:B, word });
+  }
+  return out;
+}
+
+// 6.7 关卡生成（含可解性校验 + 兜底）
+function generateLevel(level){
+  const cfg = { cols: level.cols, rows: level.rows };
+  CFG = cfg;
+  const total = cfg.cols * cfg.rows;
+  const pool = buildPool(level);
+  const emptyCount = total - pool.length;
+  if (emptyCount < 0) console.warn('关卡配置有误：牌数超过棋盘格数');
+
+  for (let attempt=0; attempt<300; attempt++){
+    const arr = shuffle(pool.map(t=>t));
+    const cells = arr.slice();
+    // 生成位置索引
+    const idx = shuffle([...Array(total).keys()]);
+    const grid = makeGrid(cfg);
+    cells.forEach((t, i)=>{
+      const p = idx[i];
+      t.x = p % cfg.cols; t.y = Math.floor(p / cfg.cols);
+      grid[t.y][t.x] = t;
+    });
+    if (isSolvable(grid, cfg, level)) return grid;
+  }
+  // 兜底：必定可解的布局（把每对牌成对放在相邻位置）
+  console.warn('生成器触发兜底布局');
+  const grid = makeGrid(cfg);
+  const slots = shuffle([...Array(total).keys()]);
+  let si = 0;
+  for (let i=0;i<pool.length;i+=2){
+    const p1 = slots[si++], p2 = slots[si++];
+    for (const [t,p] of [[pool[i],p1],[pool[i+1],p2]]){
+      if (p===undefined) break;
+      t.x = p % cfg.cols; t.y = Math.floor(p / cfg.cols);
+      grid[t.y][t.x] = t;
+    }
+  }
+  return grid;
+}
+
+/* ---------------------- 7. 渲染 ---------------------- */
+const TILE_GAP = 6;
+let CELL = 60;
+
+function computeCell(cfg){
+  const maxW = 390 - 28;              // 左右各 14px 内边距
+  const maxH = 400;                   // 棋盘区最大高度
+  const cw = Math.floor(maxW / cfg.cols);
+  const ch = Math.floor(maxH / cfg.rows);
+  return Math.min(cw, ch, 76);
+}
+
+const tileEls = new Map();    // tile.id -> DOM
+
+function renderBoard(){
+  const board = document.getElementById('board');
+  CELL = computeCell(CFG);
+  const W = CFG.cols * CELL, H = CFG.rows * CELL;
+  board.style.width = W + 'px';
+  board.style.height = H + 'px';
+  board.innerHTML = '';
+
+  // 空格底纹
+  for (let y=0;y<CFG.rows;y++){
+    for (let x=0;x<CFG.cols;x++){
+      if (G.board[y][x]) continue;
+      const d = document.createElement('div');
+      d.className = 'cell-bg';
+      d.style.cssText = `left:${x*CELL+TILE_GAP/2}px;top:${y*CELL+TILE_GAP/2}px;
+                         width:${CELL-TILE_GAP}px;height:${CELL-TILE_GAP}px;`;
+      board.appendChild(d);
+    }
+  }
+
+  // SVG 覆盖层（向外扩一圈，用于画绕外圈的线）
+  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('class','svg-layer');
+  svg.setAttribute('width', (CFG.cols+2)*CELL);
+  svg.setAttribute('height',(CFG.rows+2)*CELL);
+  svg.style.left = -CELL + 'px';
+  svg.style.top  = -CELL + 'px';
+  svg.id = 'svg-layer';
+  board.appendChild(svg);
+
+  // 牌
+  tileEls.clear();
+  const fs = CELL >= 66 ? 30 : CELL >= 56 ? 27 : 24;
+  for (let y=0;y<CFG.rows;y++){
+    for (let x=0;x<CFG.cols;x++){
+      const t = G.board[y][x];
+      if (!t) continue;
+      const el = makeTileEl(t, fs);
+      board.appendChild(el);
+      tileEls.set(t.id, el);
+    }
+  }
+}
+
+function makeTileEl(t, fs){
+  const el = document.createElement('div');
+  el.className = 'tile ' + (t.junk ? 'j' : (t.role === 'radical' ? 'r' : 'p'));
+  el.style.cssText = `left:${t.x*CELL+TILE_GAP/2}px;top:${t.y*CELL+TILE_GAP/2}px;
+                      width:${CELL-TILE_GAP}px;height:${CELL-TILE_GAP}px;font-size:${fs}px;`;
+  el.innerHTML = `<span class="role-tag">${t.junk?'废':(t.role==='radical'?'偏':'旁')}</span>` +
+                 (t.junk ? '<span class="crack"></span>' : '') +
+                 `<span>${t.char}</span>`;
+  el.onclick = (e)=>{ e.stopPropagation(); onTileClick(t); };
+  return el;
+}
+
+function positionTile(t){
+  const el = tileEls.get(t.id);
+  if (!el) return;
+  el.style.left = t.x*CELL + TILE_GAP/2 + 'px';
+  el.style.top  = t.y*CELL + TILE_GAP/2 + 'px';
+}
+
+/* ---------------------- 8. 字盘渲染 ---------------------- */
+function renderTray(){
+  const level = LEVELS[G.levelIndex];
+  const wrap = document.getElementById('tray-words');
+  wrap.innerHTML = '';
+  for (const w of level.targets){
+    const c = document.createElement('div');
+    const got = G.collectedNow && G.collectedNow.has(w);
+    c.className = 'tray-chip' + (got ? ' on' : '');
+    c.textContent = got ? w : '？';
+    c.title = got ? w : '未收集';
+    wrap.appendChild(c);
+  }
+  if (level.eggs.length){
+    const tag = document.createElement('span');
+    tag.className = 'egg-tag';
+    tag.textContent = '彩蛋 ';
+    wrap.appendChild(tag);
+    for (const w of level.eggs){
+      const c = document.createElement('div');
+      const got = G.eggNow && G.eggNow.has(w);
+      c.className = 'tray-chip egg' + (got ? ' on' : '');
+      c.textContent = got ? w : '?';
+      wrap.appendChild(c);
+    }
+  }
+}
+
+function updateTools(){
+  const set = (id, n)=>{
+    const el = document.getElementById(id);
+    el.textContent = n;
+    el.classList.toggle('zero', n <= 0);
+  };
+  set('cnt-nudge', G.tools.nudge);
+  set('cnt-reshuffle', G.tools.reshuffle);
+  set('cnt-hint', G.tools.hint);
+  document.getElementById('tool-nudge').classList.toggle('act', !!G.nudgeMode);
+}
+
+/* ---------------------- 9. 交互 ---------------------- */
+function onTileClick(t){
+  if (G.busy || !G.running) return;
+
+  // 腾挪模式：选中一张牌 → 等点击目标格
+  if (!G.sel){
+    G.sel = t;
+    tileEls.get(t.id).classList.add('sel');
+    return;
+  }
+  if (G.sel.id === t.id){                 // 再点一次取消
+    tileEls.get(t.id).classList.remove('sel');
+    G.sel = null;
+    return;
+  }
+
+  const a = G.sel, b = t;
+  const elA = tileEls.get(a.id), elB = tileEls.get(b.id);
+
+  // 判定 A：配对是否合法
+  if (!canPair(a, b)){
+    toast(`${a.char} 和 ${b.char} 配不成字`);
+    shake(elA); shake(elB);
+    G.failStreak++;
+    maybeNudgeGuide();
+    elA.classList.remove('sel'); G.sel = null;
+    return;
+  }
+  // 判定 B：路径是否连通
+  const path = findPath(a, b);
+  if (!path){
+    toast('中间被挡住了，连不过去');
+    shake(elA); shake(elB);
+    drawPath(path0(a,b), false);          // 红色虚线示意
+    G.failStreak++;
+    maybeNudgeGuide();
+    elA.classList.remove('sel'); G.sel = null;
+    return;
+  }
+  // 成功
+  G.failStreak = 0;
+  elA.classList.remove('sel'); G.sel = null;
+  doMatch(a, b, path);
+}
+
+function path0(a,b){ return [a, b]; }   // 仅用于画"最短示意线"
+
+function shake(el){ if(!el) return; el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),300); }
+
+// 消除
+function doMatch(a, b, path){
+  G.busy = true;
+  const word = pairWord(a, b);
+  const isJunk = a.junk && b.junk;
+
+  drawPath(path, true);
+  setTimeout(()=>{
+    a.el = tileEls.get(a.id); b.el = tileEls.get(b.id);
+    a.el.classList.add('gone'); b.el.classList.add('gone');
+
+    G.board[a.y][a.x] = null;
+    G.board[b.y][b.x] = null;
+
+    setTimeout(()=>{
+      a.el.remove(); b.el.remove();
+      tileEls.delete(a.id); tileEls.delete(b.id);
+      clearSvg();
+      G.busy = false;
+
+      if (!isJunk && word){
+        const level = LEVELS[G.levelIndex];
+        if (level.targets.includes(word)){
+          G.collectedNow.add(word);
+          if (!G.collected.includes(word)) G.collected.push(word);
+        } else {
+          G.eggNow.add(word);
+          if (!G.collected.includes(word)) G.collected.push(word);
+          toast(`彩蛋！${word} = ${WORDLIB[word].r} + ${WORDLIB[word].p}`);
+        }
+        renderTray();
+      }
+
+      // 通关判定
+      const done = LEVELS[G.levelIndex].targets.every(w=>G.collectedNow.has(w));
+      if (done){ setTimeout(levelClear, 420); return; }
+      checkDeadlock();
+    }, 240);
+  }, 230);
+}
+
+/* ---------------------- 10. 连线绘制 ---------------------- */
+function clearSvg(){
+  const svg = document.getElementById('svg-layer');
+  if (svg) svg.innerHTML = '';
+}
+function drawPath(path, ok){
+  const svg = document.getElementById('svg-layer');
+  if (!svg) return;
+  const cx = (p)=> (p.x + 1) * CELL + CELL/2;
+  const cy = (p)=> (p.y + 1) * CELL + CELL/2;
+  const pts = path.map(p=>`${cx(p)},${cy(p)}`).join(' ');
+  const poly = document.createElementNS('http://www.w3.org/2000/svg','polyline');
+  poly.setAttribute('points', pts);
+  poly.setAttribute('fill','none');
+  poly.setAttribute('stroke', ok ? '#3E9E5A' : '#D9534F');
+  poly.setAttribute('stroke-width', ok ? 5 : 4);
+  poly.setAttribute('stroke-linecap','round');
+  poly.setAttribute('stroke-linejoin','round');
+  if (!ok) poly.setAttribute('stroke-dasharray','8,7');
+  poly.setAttribute('opacity','.92');
+  svg.appendChild(poly);
+  if (!ok) setTimeout(clearSvg, 700);
+}
+
+/* ---------------------- 11. 腾挪 / 重排 / 提示 ---------------------- */
+function useNudge(){
+  if (!G.running || G.busy) return;
+  if (G.tools.nudge <= 0){
+    showAdModal('腾挪次数用完了','看一段短视频，可获得 2 次腾挪机会。', ()=>{ G.tools.nudge += 2; updateTools(); });
+    return;
+  }
+  G.nudgeMode = !G.nudgeMode;
+  if (G.nudgeMode){
+    toast('腾挪：点亮一张牌，再点同行或同列的空位');
+    if (G.sel){ tileEls.get(G.sel.id)?.classList.remove('sel'); G.sel = null; }
+  }
+  updateTools();
+}
+
+function onCellEmptyClick(x,y){
+  if (!G.running || G.busy) return;
+  if (!G.nudgeMode || !G.sel){
+    if (G.sel){ toast('点一张牌，再点空位才能腾挪'); }
+    return;
+  }
+  if (G.tools.nudge <= 0){ toast('腾挪次数用完了'); return; }
+  const a = G.sel;
+  if (a.x !== x && a.y !== y){ toast('只能沿同一行或同一列滑动'); return; }
+  // 中间必须全空
+  if (a.x === x){
+    const s=Math.min(a.y,y), e=Math.max(a.y,y);
+    for (let yy=s+1; yy<e; yy++) if (G.board[yy][x]) { toast('中间有牌，滑不过去'); return; }
+  } else {
+    const s=Math.min(a.x,x), e=Math.max(a.x,x);
+    for (let xx=s+1; xx<e; xx++) if (G.board[y][xx]) { toast('中间有牌，滑不过去'); return; }
+  }
+  // 执行腾挪
+  G.board[a.y][a.x] = null;
+  a.x = x; a.y = y;
+  G.board[y][x] = a;
+  positionTile(a);
+  tileEls.get(a.id).classList.remove('sel');
+  G.sel = null;
+  G.tools.nudge--;
+  G.nudgeMode = false;
+  updateTools();
+  toast('腾挪成功');
+  setTimeout(checkDeadlock, 260);
+}
+
+function useReshuffle(){
+  if (!G.running || G.busy) return;
+  if (G.tools.reshuffle <= 0){
+    showAdModal('重排次数用完了','看一段短视频，可获得 1 次重排机会。', ()=>{ G.tools.reshuffle += 1; updateTools(); });
+    return;
+  }
+  G.tools.reshuffle--;
+  doReshuffle();
+  updateTools();
+}
+
+function doReshuffle(){
+  const ts = allTiles();
+  const total = CFG.cols * CFG.rows;
+  for (let attempt=0; attempt<80; attempt++){
+    const idx = shuffle([...Array(total).keys()]);
+    const grid = makeGrid(CFG);
+    ts.forEach((t,i)=>{
+      const p = idx[i];
+      t.x = p % CFG.cols; t.y = Math.floor(p / CFG.cols);
+      grid[t.y][t.x] = t;
+    });
+    G.board = grid;
+    if (findAllPairs().length > 0){
+      renderBoard();
+      toast('已重排');
+      return;
+    }
+  }
+  toast('重排失败，请重试');
+}
+
+function useHint(){
+  if (!G.running || G.busy) return;
+  if (G.tools.hint <= 0){
+    showAdModal('提示次数用完了','看一段短视频，可获得 1 次提示机会。', ()=>{ G.tools.hint += 1; updateTools(); });
+    return;
+  }
+  const pairs = findAllPairs();
+  if (!pairs.length){ toast('现在没有可连的组合，试试腾挪或重排'); return; }
+  // 优先给目标字的组合
+  const pick = pairs.find(p=>p.word && LEVELS[G.levelIndex].targets.includes(p.word)) || pairs[0];
+  G.tools.hint--;
+  updateTools();
+  const elA = tileEls.get(pick.a.id), elB = tileEls.get(pick.b.id);
+  elA?.classList.add('hint'); elB?.classList.add('hint');
+  setTimeout(()=>{ elA?.classList.remove('hint'); elB?.classList.remove('hint'); }, 2900);
+  toast(`试试 ${pick.a.char} + ${pick.b.char}`);
+}
+
+/* ---------------------- 12. 死局检测 ---------------------- */
+function checkDeadlock(){
+  if (!G.running) return;
+  const pairs = findAllPairs();
+  if (pairs.length > 0) return;      // 还有可连的，继续
+
+  if (G.tools.nudge > 0){
+    toast('没有可连的了，试试「腾挪」把挡路的牌挪开');
+    maybeNudgeGuide(true);
+  } else {
+    toast('没有可连的了，已自动重排');
+    doReshuffle();
+  }
+}
+
+/* ---------------------- 13. 腾挪引导（只弹一次） ---------------------- */
+function maybeNudgeGuide(force){
+  if (G.nudgeGuideShown && !force) return;
+  if (G.failStreak < 3 && !force) return;
+  if (G.nudgeGuideShown) return;
+  G.nudgeGuideShown = true;
+  const pairs = findAllPairs();
+  // 找一个"能腾挪出一对"的场景较复杂，这里只做机制提示
+  showModal(`
+    <h3>试试「腾挪」</h3>
+    <p>两张牌明明能配成字，可中间被别的牌挡住了？<br>
+       点右下角 <b>↔️ 腾挪</b>，再点一张牌、点一个空位，<br>
+       把它滑开，路就通了。</p>
+    <button class="btn" onclick="closeModal()">我知道了</button>
+  `);
+}
+
+/* ---------------------- 14. 计时 ---------------------- */
+function startTimer(){
+  stopTimer();
+  G.running = true;
+  G.timer = setInterval(()=>{
+    if (G.busy && false) return;
+    G.timeLeft--;
+    renderTimer();
+    if (G.timeLeft <= 0){ stopTimer(); levelFail(); }
+  }, 1000);
+  renderTimer();
+}
+function stopTimer(){
+  if (G.timer){ clearInterval(G.timer); G.timer = null; }
+}
+function renderTimer(){
+  const el = document.getElementById('play-timer');
+  const m = Math.floor(Math.max(0,G.timeLeft)/60);
+  const s = Math.max(0,G.timeLeft) % 60;
+  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.classList.toggle('warn', G.timeLeft <= 15);
+}
+
+/* ---------------------- 15. 关卡生命周期 ---------------------- */
+function startLevel(idx){
+  G.levelIndex = idx;
+  const level = LEVELS[idx];
+  G.collectedNow = new Set();
+  G.eggNow = new Set();
+  G.timeLeft = level.timeLimit;
+  G.sel = null;
+  G.busy = false;
+  G.nudgeMode = false;
+  G.failStreak = 0;
+  G.nudgeGuideShown = false;
+  G.tools = { nudge:3, reshuffle:1, hint:1 };
+
+  buildPairMap(level);
+  G.board = generateLevel(level);
+
+  document.getElementById('play-title').textContent = level.id;
+  renderBoard();
+  renderTray();
+  updateTools();
+
+  // 空格点击（腾挪落点）：绑到 board 容器上做坐标换算
+  const board = document.getElementById('board');
+  board.onclick = (ev)=>{
+    const rect = board.getBoundingClientRect();
+    const px = ev.clientX - rect.left, py = ev.clientY - rect.top;
+    const x = Math.floor(px / CELL), y = Math.floor(py / CELL);
+    if (x<0||y<0||x>=CFG.cols||y>=CFG.rows) return;
+    if (G.board[y][x]) return;         // 有牌的点由牌自己处理
+    onCellEmptyClick(x,y);
+  };
+
+  go('s-play');
+  startTimer();
+
+  if (level.tip) setTimeout(()=>toast(level.tip), 700);
+  if (level.hintMode === 'afterIdle8s') setTimeout(()=>{
+    if (G.running && !LEVELS[G.levelIndex].targets.every(w=>G.collectedNow.has(w)))
+      toast('想一想：这个字可以拆成哪两半？');
+  }, 8000);
+}
+
+function levelClear(){
+  stopTimer();
+  G.running = false;
+  const level = LEVELS[G.levelIndex];
+  const ratio = G.timeLeft / level.timeLimit;
+  const stars = ratio >= 0.5 ? 3 : ratio >= 0.2 ? 2 : 1;
+  const key = level.id;
+  G.stars[key] = Math.max(G.stars[key]||0, stars);
+
+  // 星星动画
+  const wrap = document.getElementById('clear-stars');
+  wrap.innerHTML = '<i>★</i><i>★</i><i>★</i>';
+  const list = wrap.querySelectorAll('i');
+  for (let i=0;i<3;i++){
+    setTimeout(()=>{
+      if (i < stars) list[i].textContent = '★';
+      else list[i].textContent = '☆';
+      list[i].classList.add('pop');
+    }, i*250);
+  }
+
+  // 拆解展示
+  const brk = document.getElementById('clear-brk');
+  brk.innerHTML = '';
+  for (const w of [...level.targets, ...level.eggs]){
+    if (!G.collectedNow.has(w) && !G.eggNow.has(w)) continue;
+    const d = WORDLIB[w];
+    const isEgg = G.eggNow.has(w);
+    const row = document.createElement('div');
+    row.className = 'brk-row';
+    row.innerHTML = `<span class="part">${d.r}</span><span class="eq">+</span>` +
+                    `<span class="part p2">${d.p}</span><span class="eq">=</span>` +
+                    `<span class="full">${w}</span>` +
+                    (isEgg ? '<span class="muted" style="font-size:11px;">彩蛋</span>' : '');
+    brk.appendChild(row);
+  }
+  const used = level.timeLimit - G.timeLeft;
+  document.getElementById('clear-stats').textContent =
+    `用时 ${fmt(used)}　剩余 ${fmt(G.timeLeft)}`;
+  go('s-clear');
+}
+
+function levelFail(){
+  G.running = false;
+  const level = LEVELS[G.levelIndex];
+  const miss = level.targets.filter(w=>!G.collectedNow.has(w));
+  document.getElementById('fail-msg').textContent =
+    miss.length ? `还差 ${miss.length} 个字就集齐了：${miss.join('、')}` : '就差一点点！';
+  go('s-fail');
+}
+
+function revive(){
+  showAdModal('广告演示','正式版将播放激励视频，看完 +30 秒。', ()=>{
+    G.timeLeft += 30;
+    go('s-play');
+    startTimer();
+    G.running = true;
+  });
+}
+
+function nextLevel(){
+  const nxt = G.levelIndex + 1;
+  if (nxt >= LEVELS.length){ toast('第一章已全部通关'); go('s-map'); return; }
+  startLevel(nxt);
+}
+function restartLevel(){ startLevel(G.levelIndex); }
+function pauseGame(){
+  const wasRunning = G.running;
+  stopTimer();
+  G.running = false;
+  showModal(`
+    <h3>暂停</h3>
+    <p>休息一下，回来接着拆。</p>
+    <button class="btn" onclick="closeModal();resumeGame(${wasRunning})">继续游戏</button>
+    <button class="btn ghost" onclick="closeModal();restartLevel()">重玩本关</button>
+    <button class="btn ghost" onclick="closeModal();go('s-map')">退出到地图</button>
+  `);
+}
+function resumeGame(was){ G.running = true; if (was) startTimer(); }
+function exitLevel(){
+  if (G.running){
+    showModal(`
+      <h3>退出本关？</h3>
+      <p>退出后本关进度不会保存。</p>
+      <button class="btn" onclick="closeModal();stopTimer();G.running=false;go('s-map')">退出</button>
+      <button class="btn ghost" onclick="closeModal()">继续玩</button>
+    `);
+  } else { stopTimer(); go('s-map'); }
+}
+function fmt(sec){
+  const m = Math.floor(sec/60), s = sec%60;
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+/* ---------------------- 16. 弹窗 ---------------------- */
+function showModal(html){
+  document.getElementById('modal-box').innerHTML = html;
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('show');
+}
+function showAdModal(title, desc, onDone){
+  showModal(`
+    <h3>📺 ${title}</h3>
+    <p>${desc}</p>
+    <button class="btn" onclick="closeModal();__adCb&&__adCb()">观看并领取</button>
+    <button class="btn ghost" onclick="closeModal()">先不用</button>
+  `);
+  __adCb = onDone;
+}
+let __adCb = null;
+
+/* ---------------------- 17. 其他页面渲染 ---------------------- */
+function renderHome(){
+  document.getElementById('home-collect').textContent = `${G.collected.length} / 103 字`;
+  document.getElementById('home-prog').style.width = (G.collected.length/103*100) + '%';
+}
+function continueGame(){
+  // 找第一个未通关的关卡
+  let idx = 0;
+  for (let i=0;i<LEVELS.length;i++){ if (!G.stars[LEVELS[i].id]){ idx = i; break; } idx = i; }
+  startLevel(idx);
+}
+function renderMap(){
+  const wrap = document.getElementById('map-wrap');
+  wrap.innerHTML = '';
+  let totalStars = 0;
+  LEVELS.forEach((lv, i)=>{
+    const st = G.stars[lv.id] || 0;
+    totalStars += st;
+    const unlocked = i === 0 || !!G.stars[LEVELS[i-1].id] || st > 0;
+    const row = document.createElement('div');
+    row.className = 'node-row ' + ['l','c','r'][i%3];
+    const node = document.createElement('div');
+    node.className = 'node ' + (st ? 'done' : (unlocked ? 'cur' : 'locked'));
+    node.innerHTML = `<div class="n-id">${lv.id}</div>
+                      <div class="n-st">${st ? '★'.repeat(st) : ''}</div>`;
+    if (unlocked){
+      node.onclick = ()=> startLevel(i);
+    } else {
+      node.onclick = ()=> toast('先通过上一关吧');
+    }
+    row.appendChild(node);
+    wrap.appendChild(row);
+    if (i < LEVELS.length-1){
+      const line = document.createElement('div');
+      line.className = 'link-line ' + (['l','c','r'][i%3] === 'r' ? 'r' : '');
+      wrap.appendChild(line);
+    }
+  });
+  document.getElementById('map-stars').textContent = `★ ${totalStars} / ${LEVELS.length*3}`;
+}
+
+let atlasFilter = '全部';
+function renderAtlas(){
+  const all = Object.keys(WORDLIB);
+  const filters = ['全部','已收集','未收集'];
+  const fWrap = document.getElementById('atlas-filters');
+  fWrap.innerHTML = '';
+  filters.forEach(f=>{
+    const b = document.createElement('button');
+    b.textContent = f;
+    b.className = atlasFilter === f ? 'on' : '';
+    b.onclick = ()=>{ atlasFilter = f; renderAtlas(); };
+    fWrap.appendChild(b);
+  });
+
+  let list = all;
+  if (atlasFilter === '已收集') list = all.filter(w=>G.collected.includes(w));
+  if (atlasFilter === '未收集') list = all.filter(w=>!G.collected.includes(w));
+
+  const grid = document.getElementById('atlas-grid');
+  grid.innerHTML = '';
+  list.forEach(w=>{
+    const got = G.collected.includes(w);
+    const d = WORDLIB[w];
+    const c = document.createElement('div');
+    c.className = 'a-card' + (got ? '' : ' lock');
+    c.innerHTML = `<div class="w">${got ? w : '？'}</div>` +
+                  `<div class="p">${got ? d.py : '未收集'}</div>`;
+    c.onclick = ()=>{
+      if (!got){ toast('还没拆出来哦'); return; }
+      showModal(`
+        <h3 style="font-size:34px;margin-bottom:2px;">${w}</h3>
+        <p style="font-size:13px;">${d.py}</p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;
+                    font-size:22px;font-weight:700;margin-bottom:12px;">
+          <span style="background:var(--tile-r-bg);border:2px solid var(--tile-r-bd);
+                       border-radius:9px;padding:6px 12px;color:#7A4E28;">${d.r}</span>
+          <span style="font-size:15px;color:var(--ink2);">+</span>
+          <span style="background:var(--tile-p-bg);border:2px solid var(--tile-p-bd);
+                       border-radius:9px;padding:6px 12px;color:#33556E;">${d.p}</span>
+        </div>
+        <p>${d.gl}</p>
+        <button class="btn ghost" onclick="closeModal()">关闭</button>
+      `);
+    };
+    grid.appendChild(c);
+  });
+  document.getElementById('atlas-count').textContent = `${G.collected.length} / 103`;
+}
+
+/* ---------------------- 18. 启动 ---------------------- */
+(function boot(){
+  // 评审直达：index.html?s=home|chapters|map|play|atlas|setting|park|clear|fail
+  //          可加 &lv=0..7 指定章节内关卡
+  const q = new URLSearchParams(location.search);
+  const s = q.get('s');
+  const lv = Number(q.get('lv') || 0);
+  const SCREEN_MAP = {
+    home:'s-home', chapters:'s-chapters', map:'s-map', play:'s-play',
+    atlas:'s-atlas', setting:'s-setting', park:'s-park', clear:'s-clear', fail:'s-fail',
+  };
+
+  let p = 0;
+  const bar = document.getElementById('boot-bar');
+  const t = setInterval(()=>{
+    p += 12 + Math.random()*16;
+    if (p >= 100){
+      p = 100; clearInterval(t);
+      setTimeout(()=>{
+        try {
+          if (s === 'play'){ startLevel(lv); if (q.get('auto')) setTimeout(()=>autoDemo(0), 900); return; }
+          if (s === 'clear'){ startLevel(lv); G.collectedNow = new Set(LEVELS[G.levelIndex].targets); stopTimer(); levelClear(); return; }
+          if (s === 'fail'){ startLevel(lv); stopTimer(); levelFail(); return; }
+          go(SCREEN_MAP[s] || 's-home');
+        } catch(err){
+          console.error(err);
+          go('s-home');
+        }
+      }, 320);
+    }
+    bar.style.width = p + '%';
+  }, 130);
+})();
+
+// 演示用：控制台可调用 __quickPlay() 直接进第一关
+window.__quickPlay = ()=> startLevel(0);
+
+/* 自动演示：?s=play&auto=1
+   走的是和玩家完全相同的交互路径（onTileClick），用于验证「点击→判定→消除→点亮」整条链路。 */
+function autoDemo(step){
+  step = step || 0;
+  if (!G.running || step > 60) return;
+  if (G.busy){ setTimeout(()=>autoDemo(step), 300); return; }
+  const pairs = findAllPairs();
+  if (!pairs.length){
+    if (G.tools.nudge > 0){ G.tools.nudge = 0; doReshuffle(); setTimeout(()=>autoDemo(step+1), 500); return; }
+    return;
+  }
+  const pick = pairs.find(p => p.word && LEVELS[G.levelIndex].targets.includes(p.word)) || pairs[0];
+  onTileClick(pick.a);
+  setTimeout(()=>{
+    onTileClick(pick.b);
+    setTimeout(()=>autoDemo(step+1), 760);
+  }, 220);
+}
+</script>
+</body>
+</html>

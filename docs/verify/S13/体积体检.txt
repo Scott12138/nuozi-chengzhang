@@ -1,0 +1,29 @@
+产物目录 /Users/consli/WorkBuddy/2026-10-01-19-57-04/chaizi-lianliankan/game-5-chaizi/build/wechatgame
+
+  ★ 主包            3353057 B     3.20 MB   （红线 4 MB）
+     余量             841247 B     0.80 MB   ✅ 在红线内
+    全部分包        3826646 B     3.65 MB
+    （合计          7179703 B     6.85 MB   上限 30 MB）
+
+  分包（game.json 声明 / 盘上目录）：
+    ✓ ch02     1348598 B     1.29 MB
+    ✓ ch03     1205042 B     1.15 MB
+    ✓ ch04     1273006 B     1.21 MB
+
+  主包构成：
+    assets/resources           1437303 B   1403.6 KB
+    cocos-js/                  1412697 B   1379.6 KB
+    assets/internal             158636 B    154.9 KB
+    assets/main                 139640 B    136.4 KB
+    web-adapter.js              102097 B     99.7 KB
+    src/                         27753 B     27.1 KB
+    engine-adapter.js            23825 B     23.3 KB
+    first-screen.js              18364 B     17.9 KB
+    logo.png                     14496 B     14.2 KB
+    slogan.png                   11482 B     11.2 KB
+    application.js                3302 B      3.2 KB
+    game.js                       2522 B      2.5 KB
+    game.json                      480 B      0.5 KB
+    project.config.json            460 B      0.4 KB
+
+✅ 体积合格

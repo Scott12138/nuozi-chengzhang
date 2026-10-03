@@ -1,0 +1,223 @@
+==> 静态服务器就绪（HTTP 200）
+==> 产物自检通过（含标记「挪字成章」）
+==> 启动无头 Chrome 打开 http://127.0.0.1:8123/index.html
+    窗口 600×1380（外框）· profile /tmp/cocos-cdp-profile-88531
+==> CDP 已连接
+==> 等待游戏加载渲染（9 秒）…
+    视口/画布/引擎可见尺寸： {"inner":[600,1260],"canvas":{"cssW":600,"cssH":1260,"left":0,"top":0,"attrW":600,"attrH":1260},"visible":[720,1512]}
+    ✅ 引擎可见尺寸 720×1512 设计单位 = 372×781 设计px（窗口 600×1260）
+    （点击换算中心：300,630　设计单位→屏幕px 缩放 PS=0.8333）
+    已截图：/tmp/s4-full/00-before.png
+==> 直写存档：标记第 1..1 关已通关（每关 0 星），然后重载页面
+==> 等待游戏加载渲染（9 秒） · unlock 后重载…
+    视口/画布/引擎可见尺寸： {"inner":[600,1260],"canvas":{"cssW":600,"cssH":1260,"left":0,"top":0,"attrW":600,"attrH":1260},"visible":[720,1512]}
+    ✅ 引擎可见尺寸 720×1512 设计单位 = 372×781 设计px（窗口 600×1260）
+    已截图：/tmp/s4-full/01-unlock.png
+==> 等待 2200ms → 截图 /tmp/s4-full/02-wait-2200.png
+==> 固定发牌种子：globalThis.__CHA_SEED__ = 4（进入对局页时生效；"开局就绪"那行日志会以「种子=force:…」回显）
+==> 点击 设计坐标(0, -534) → 屏幕(300, 1075)
+    已截图：/tmp/s4-full/04-click-d_0,-534.png
+==> ✅ 页面断言通过：确在「chap」页
+    已截图：/tmp/s4-full/05-p_chap.png
+==> 点击 设计坐标(0, 335) → 屏幕(300, 351)
+    已截图：/tmp/s4-full/06-click-d_0,335.png
+==> ✅ 页面断言通过：确在「map」页
+    已截图：/tmp/s4-full/07-p_map.png
+==> 点击 设计坐标(255, 131) → 屏幕(513, 521)
+    已截图：/tmp/s4-full/08-click-d_255,131.png
+==> ✅ 页面断言通过：确在「game」页
+    已截图：/tmp/s4-full/09-p_game.png
+==> 等待 3000ms → 截图 /tmp/s4-full/10-wait-3000.png
+==> ✅ 坐标基准自检通过：格(0,0) 游戏(66.7,487.1) vs 工装(66.7,486.7)，差 (0.0,0.4)px
+==> 严格回弹断言 2 次（坐标取自游戏打印的 NONMATCH）
+    [1] 回弹测试：拖「钅」(3,2) → (2,2)　设计(-56,-164) → (-56,-52)
+       ✅ 已回弹到原位（节点(-56,-112) == 目标(-56,-112)），STATE seq=1 与 步=0 均未变
+    [2] 回弹测试：拖「钅」(3,2) → (2,2)　设计(-56,-164) → (-56,-52)
+       ✅ 已回弹到原位（节点(-56,-112) == 目标(-56,-112)），STATE seq=1 与 步=0 均未变
+    小结：通过 2 次，失败 0 次，跳过 0 次
+    已截图：/tmp/s4-full/12-rebound-rebound_2.png
+==> 自动拖拽 30 步（坐标取自游戏打印的 SUGGEST，判据=STATE 序号变大）
+    坐标基准自检 ✅ 格(0,0) 游戏(66.7,487.1) vs 工装(66.7,486.7)，差 (0.0,0.4)
+    [1] 拖「钅」(3,2) → (1,2) 设计(-56,-164) → (-56,60)
+       状态：[log] [Diag] STATE seq=2 合成 步=1 已消=1/9 剩牌=16
+    [2] 拖「木」(2,3) → (1,3) 设计(56,-52) → (56,60)
+       状态：[log] [Diag] STATE seq=3 合成 步=2 已消=2/9 剩牌=14
+    [3] 拖「间」(2,4) → (2,2) 设计(168,-52) → (-56,-52)
+       状态：[log] [Diag] STATE seq=4 合成 步=3 已消=3/9 剩牌=12
+    [4] 拖「丈」(4,1) → (4,2) 设计(-168,-276) → (-56,-276)
+       状态：[log] [Diag] STATE seq=5 合成 步=4 已消=4/9 剩牌=10
+    [5] 拖「钅」(1,5) → (1,3) 设计(280,60) → (56,60)
+       状态：[log] [Diag] STATE seq=6 合成 步=5 已消=5/9 剩牌=8
+    [6] 拖「丈」(3,0) → (3,4) 设计(-280,-164) → (168,-164)
+       状态：[log] [Diag] STATE seq=7 合成 步=6 已消=6/9 剩牌=6
+    [7] 拖「勾」(0,5) → (0,3) 设计(280,172) → (56,172)
+       状态：[log] [Diag] STATE seq=8 合成 步=7 已消=7/9 剩牌=4
+    （REACH direct=0 suggest=0 → 真的卡住，等游戏弹「看广告重排」）
+    小结：状态真的变了 7 步，没变 0 步
+    已截图：/tmp/s4-full/13-drag-drag_30_250.png
+==> ✅ 弹层断言通过：本局弹出过 1 次（卡住了），含「卡住了」
+    已截图：/tmp/s4-full/14-gate_卡住了.png
+==> 等待 900ms → 截图 /tmp/s4-full/15-wait-900.png
+==> 点击 设计坐标(0, -74) → 屏幕(300, 692)
+    已截图：/tmp/s4-full/16-click-d_0,-74.png
+==> 等待 2600ms → 截图 /tmp/s4-full/17-wait-2600.png
+==> ✅ 提示断言通过（历史）：本局弹过包含「未接入广告位」的提示
+==> ✅ 提示断言通过：「盘面已重排」包含「盘面已重排」
+    性能：峰值 draw call 72 / 平均帧 16.17ms → 约 62 FPS
+
+===== 页面控制台输出 =====
+  [timeEnd] Init Base: 3.198974609375 ms
+  [timeEnd] Init Infrastructure: 24.0400390625 ms
+  [timeEnd] Init Base: 0.913818359375 ms
+  [timeEnd] Init Infrastructure: 13.947998046875 ms
+  [timeEnd] Init SubSystem: 24.513916015625 ms
+  [log] Cocos Creator v3.8.8
+  [log] Using custom pipeline: Builtin
+  [timeEnd] Init Project: 27.64013671875 ms
+  [timeEnd] LoadScene db://assets/scenes/Main.scene: 15.932861328125 ms
+  [timeEnd] InitScene: 0.136962890625 ms
+  [timeEnd] AttachPersist: 0.0029296875 ms
+  [timeEnd] AutoRelease: 0.06103515625 ms
+  [timeEnd] Destroy: 0.077880859375 ms
+  [timeEnd] Activate: 2.760009765625 ms
+  [log] Success to load scene: db://assets/scenes/Main.scene
+  [log] [Bootstrap] GameRoot 已挂载到 Canvas
+  [log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 boot
+  [log] [GameRoot] 启动完成，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 home
+  [timeEnd] Init Base: 2.748046875 ms
+  [timeEnd] Init Infrastructure: 9.751953125 ms
+  [timeEnd] Init SubSystem: 26.237060546875 ms
+  [log] Cocos Creator v3.8.8
+  [log] Using custom pipeline: Builtin
+  [timeEnd] Init Project: 20.18994140625 ms
+  [timeEnd] LoadScene db://assets/scenes/Main.scene: 15.660888671875 ms
+  [timeEnd] InitScene: 0.06005859375 ms
+  [timeEnd] AttachPersist: 0.0029296875 ms
+  [timeEnd] AutoRelease: 0.012939453125 ms
+  [timeEnd] Destroy: 0.0458984375 ms
+  [timeEnd] Activate: 2.014892578125 ms
+  [log] Success to load scene: db://assets/scenes/Main.scene
+  [log] [Bootstrap] GameRoot 已挂载到 Canvas
+  [log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 boot
+  [log] [GameRoot] 启动完成，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 home
+  [log] [Layout] chap .topbar x=0.0 y=0.0 w=372.0 h=95.6 db=685.6
+  [log] [Layout] chap .btn-back x=16.0 y=55.8 w=32.0 h=32.0 db=693.4
+  [log] [Layout] chap .chap-list x=0.0 y=149.8 w=372.0 h=577.1 db=54.3
+  [log] [Layout] chap .chap[0] x=16.0 y=149.8 w=340.0 h=135.4 db=496.0 r=17
+  [log] [Layout] chap .chap[1] x=16.0 y=297.1 w=340.0 h=135.4 db=348.8 r=17
+  [log] [Layout] chap .chap[2] x=16.0 y=444.3 w=340.0 h=135.4 db=201.5 r=17
+  [log] [Layout] chap .chap[3] x=16.0 y=591.6 w=340.0 h=135.4 db=54.3 r=17
+  [log] [PageManager] 进入页面 chap
+  [log] [Layout] map .topbar x=0.0 y=0.0 w=372.0 h=95.6 db=685.6
+  [log] [Layout] map .btn-back x=16.0 y=55.8 w=32.0 h=32.0 db=693.4
+  [log] [Layout] map .map-info x=0.0 y=95.6 w=372.0 h=31.0 db=654.6
+  [log] [Layout] map .map-wrap x=0.0 y=126.6 w=372.0 h=654.6 db=0.0
+  [log] [Layout] map .map-content x=0.0 y=126.6 w=372.0 h=660.3 db=-5.7
+  [log] [Layout] map .node-row[0] x=0.0 y=132.8 w=372.0 h=68.2 db=580.2
+  [log] [Layout] map .node[0] x=20.2 y=132.8 w=68.2 h=68.2 db=580.2 L1
+  [log] [Layout] map .node-row[1] x=0.0 y=210.8 w=372.0 h=68.2 db=502.2
+  [log] [Layout] map .node[1] x=151.9 y=210.8 w=68.2 h=68.2 db=502.2 L2
+  [log] [Layout] map .node-row[2] x=0.0 y=288.8 w=372.0 h=68.2 db=424.2
+  [log] [Layout] map .node[2] x=283.7 y=288.8 w=68.2 h=68.2 db=424.2 L3
+  [log] [Layout] map .node-row[3] x=0.0 y=366.8 w=372.0 h=68.2 db=346.2
+  [log] [Layout] map .node[3] x=20.2 y=366.8 w=68.2 h=68.2 db=346.2 L4
+  [log] [Layout] map .node-row[4] x=0.0 y=444.9 w=372.0 h=68.2 db=268.2
+  [log] [Layout] map .node[4] x=151.9 y=444.9 w=68.2 h=68.2 db=268.2 L5
+  [log] [Layout] map .node-row[5] x=0.0 y=522.9 w=372.0 h=68.2 db=190.1
+  [log] [Layout] map .node[5] x=283.7 y=522.9 w=68.2 h=68.2 db=190.1 L6
+  [log] [Layout] map .node-row[6] x=0.0 y=600.9 w=372.0 h=68.2 db=112.1
+  [log] [Layout] map .node[6] x=20.2 y=600.9 w=68.2 h=68.2 db=112.1 L7
+  [log] [Layout] map .node-row[7] x=0.0 y=678.9 w=372.0 h=68.2 db=34.1
+  [log] [Layout] map .node[7] x=151.9 y=678.9 w=68.2 h=68.2 db=34.1 L8
+  [log] [PageManager] 进入页面 map
+  [log] [PageManager] 进入页面 game
+  [log] [Layout] game .play-top x=0.0 y=0.0 w=372.0 h=92.0 db=689.2
+  [log] [Layout] game .btn-back x=14.0 y=55.8 w=32.0 h=32.0 db=693.4
+  [log] [Layout] game .play-title x=54.8 y=61.2 w=160.2 h=21.2 db=698.8
+  [log] [Layout] game .timer x=311.4 y=60.7 w=46.6 h=22.2 db=698.3
+  [log] [Layout] game .goal-bar x=0.0 y=92.0 w=372.0 h=74.9 db=614.3
+  [log] [Layout] game .goal-chip[0] x=18.3 y=96.1 w=61.3 h=27.9 db=657.2 棍
+  [log] [Layout] game .goal-chip[1] x=86.8 y=96.1 w=61.3 h=27.9 db=657.2 杖
+  [log] [Layout] game .goal-chip[2] x=155.3 y=96.1 w=61.3 h=27.9 db=657.2 锤
+  [log] [Layout] game .goal-chip[3] x=223.9 y=96.1 w=61.3 h=27.9 db=657.2 钩
+  [log] [Layout] game .goal-chip[4] x=292.4 y=96.1 w=61.3 h=27.9 db=657.2 锏
+  [log] [Layout] game .goal-chip[0] x=155.3 y=131.2 w=61.3 h=27.9 db=622.1 铠
+  [log] [Layout] game .tips x=14.0 y=166.9 w=344.1 h=35.7 db=578.7
+  [log] [Layout] game .board-wrap x=0.0 y=206.7 w=372.0 h=422.1 db=152.4
+  [log] [Layout] game #board x=11.9 y=272.8 w=348.2 h=289.8 db=218.6
+  [log] [Layout] game .tile x=15.0 y=275.6 w=52.7 h=52.7 db=452.9 pitch=112 gap=10
+  [log] [Layout] game .made-strip x=14.0 y=628.8 w=344.1 h=62.0 db=90.4
+  [log] [Layout] game .tool-bar x=0.0 y=698.5 w=372.0 h=82.7 db=0.0
+  [log] [Layout] game .tool[0] x=14.0 y=706.3 w=108.2 h=58.9 db=16.0
+  [log] [Layout] game .tool[1] x=131.9 y=706.3 w=108.2 h=58.9 db=16.0
+  [log] [Layout] game .tool[2] x=249.9 y=706.3 w=108.2 h=58.9 db=16.0
+  [log] [Diag] XFORM cell=0,0 screen=66.67,487.08 win=600×1260 scale=0.8333
+  [log] [GamePage] L3 开局就绪：22 张牌，棋盘 6×5，格距 112px / 牌 102px，棋盘 674×561，限时 142s · 种子=force:4
+  [log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 彳@0,0,junk 匚@0,1,junk 木@0,2,radical 垂@0,3,part 木@0,4,radical 勾@0,5,part 疒@1,0,junk 垂@1,3,part 钅@1,5,radical 木@2,0,radical 木@2,3,radical 间@2,4,part 岂@2,5,part 丈@3,0,part 钅@3,2,radical 昆@3,3,part 卩@3,5,junk 钅@4,0,radical 丈@4,1,part 钅@4,2,radical 钅@4,3,radical 昆@4,5,part
+  [log] [Diag] STATE seq=1 开局 步=0 已消=0/9 剩牌=18
+  [log] [Diag] SUGGEST 从=钅@3,2 到=1,2 命中=垂
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] NONMATCH 从=钅@3,2 到=2,2
+  [log] [GamePage] 严格回弹：钅 格(2,2) → 格(3,2) 节点=(-56,0) 目标=(-56,-112) 落位凑不成字
+  [log] [Toast] 这一步凑不成字
+字牌已滑回原位
+  [log] [GamePage] 回弹到位：钅 节点=(-56,-112) 目标=(-56,-112)
+  [log] [GamePage] 严格回弹：钅 格(2,2) → 格(3,2) 节点=(-56,0) 目标=(-56,-112) 落位凑不成字
+  [log] [GamePage] 回弹到位：钅 节点=(-56,-112) 目标=(-56,-112)
+  [log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 彳@0,0,junk 匚@0,1,junk 木@0,2,radical 垂@0,3,part 木@0,4,radical 勾@0,5,part 疒@1,0,junk 钅@1,5,radical 木@2,0,radical 木@2,3,radical 间@2,4,part 岂@2,5,part 丈@3,0,part 昆@3,3,part 卩@3,5,junk 钅@4,0,radical 丈@4,1,part 钅@4,2,radical 钅@4,3,radical 昆@4,5,part
+  [log] [Diag] STATE seq=2 合成 步=1 已消=1/9 剩牌=16
+  [log] [Diag] SUGGEST 从=木@2,3 到=1,3 命中=昆
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] NONMATCH 从=木@2,3 到=2,2
+  [log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 彳@0,0,junk 匚@0,1,junk 木@0,2,radical 垂@0,3,part 木@0,4,radical 勾@0,5,part 疒@1,0,junk 钅@1,5,radical 木@2,0,radical 间@2,4,part 岂@2,5,part 丈@3,0,part 卩@3,5,junk 钅@4,0,radical 丈@4,1,part 钅@4,2,radical 钅@4,3,radical 昆@4,5,part
+  [log] [Diag] STATE seq=3 合成 步=2 已消=2/9 剩牌=14
+  [log] [Diag] SUGGEST 从=间@2,4 到=2,2 命中=钅
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] NONMATCH 从=木@0,2 到=1,2
+  [log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 彳@0,0,junk 匚@0,1,junk 木@0,2,radical 垂@0,3,part 木@0,4,radical 勾@0,5,part 疒@1,0,junk 钅@1,5,radical 木@2,0,radical 岂@2,5,part 丈@3,0,part 卩@3,5,junk 钅@4,0,radical 丈@4,1,part 钅@4,3,radical 昆@4,5,part
+  [log] [Diag] STATE seq=4 合成 步=3 已消=3/9 剩牌=12
+  [log] [Diag] SUGGEST 从=丈@4,1 到=4,2 命中=木
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] NONMATCH 从=钅@4,3 到=4,4
+  [log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 彳@0,0,junk 匚@0,1,junk 垂@0,3,part 木@0,4,radical 勾@0,5,part 疒@1,0,junk 钅@1,5,radical 木@2,0,radical 岂@2,5,part 丈@3,0,part 卩@3,5,junk 钅@4,0,radical 钅@4,3,radical 昆@4,5,part
+  [log] [Diag] STATE seq=5 合成 步=4 已消=4/9 剩牌=10
+  [log] [Diag] SUGGEST 从=钅@1,5 到=1,3 命中=垂
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] NONMATCH 从=木@0,4 到=2,4
+  [log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 彳@0,0,junk 匚@0,1,junk 木@0,4,radical 勾@0,5,part 疒@1,0,junk 木@2,0,radical 岂@2,5,part 丈@3,0,part 卩@3,5,junk 钅@4,0,radical 钅@4,3,radical 昆@4,5,part
+  [log] [Diag] STATE seq=6 合成 步=5 已消=5/9 剩牌=8
+  [log] [Diag] SUGGEST 从=丈@3,0 到=3,4 命中=木
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] NONMATCH 从=岂@2,5 到=2,2
+  [log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 彳@0,0,junk 匚@0,1,junk 勾@0,5,part 疒@1,0,junk 木@2,0,radical 岂@2,5,part 卩@3,5,junk 钅@4,0,radical 钅@4,3,radical 昆@4,5,part
+  [log] [Diag] STATE seq=7 合成 步=6 已消=6/9 剩牌=6
+  [log] [Diag] SUGGEST 从=勾@0,5 到=0,3 命中=钅
+  [log] [Diag] REACH direct=0 suggest=1 → 有可挪的解法
+  [log] [Diag] NONMATCH 从=昆@4,5 到=4,4
+  [log] [GamePage] 卡住：无可立即凑成的挪法 → 弹「看广告重排」
+  [log] [AdGate] 弹出：卡住了 / 看广告重排
+  [log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 彳@0,0,junk 匚@0,1,junk 疒@1,0,junk 木@2,0,radical 岂@2,5,part 卩@3,5,junk 钅@4,0,radical 昆@4,5,part
+  [log] [Diag] STATE seq=8 合成 步=7 已消=7/9 剩牌=4
+  [log] [Diag] SUGGEST none
+  [log] [Diag] REACH direct=0 suggest=0 → 真的卡住
+  [log] [Diag] NONMATCH 从=钅@4,0 到=4,3
+  [log] [GamePage] 请求激励视频（看广告重排）
+  [warning] [AdService] 未接入激励视频（CFG.AD.REWARD_UNIT_ID 为空 / 非微信环境）→ 直接发放
+  [log] [AdGate] 关闭
+  [log] [Toast] 未接入广告位，直接为你重排（上线前请填 CFG.AD.REWARD_UNIT_ID）
+  [log] [GamePage] 看广告重排 → 有解
+  [log] [Toast] 盘面已重排
+
+✅ 冒烟测试完成，全部硬断言通过，产物目录：/tmp/s4-full

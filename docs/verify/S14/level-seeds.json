@@ -1,0 +1,1378 @@
+{
+  "generatedAt": "2026-10-03T12:49:22.890Z",
+  "per": 4,
+  "levels": {
+    "1": {
+      "seeds": [
+        "1331007445",
+        "2144115192",
+        "1259949152",
+        "55240303"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "c8705b6f",
+          "got": "c8705b6f",
+          "ok": true
+        },
+        {
+          "want": "91105891",
+          "got": "91105891",
+          "ok": true
+        },
+        {
+          "want": "0fbe8941",
+          "got": "0fbe8941",
+          "ok": true
+        },
+        {
+          "want": "e2e27d5e",
+          "got": "e2e27d5e",
+          "ok": true
+        }
+      ]
+    },
+    "2": {
+      "seeds": [
+        "736188019",
+        "878330672",
+        "1420103664",
+        "1818896488"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "cce02a4c",
+          "got": "cce02a4c",
+          "ok": true
+        },
+        {
+          "want": "38a8dc78",
+          "got": "38a8dc78",
+          "ok": true
+        },
+        {
+          "want": "0c0a72df",
+          "got": "0c0a72df",
+          "ok": true
+        },
+        {
+          "want": "ff91fae5",
+          "got": "ff91fae5",
+          "ok": true
+        }
+      ]
+    },
+    "3": {
+      "seeds": [
+        "730614068",
+        "8734529",
+        "1945428225",
+        "1631370480"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "1fdfa2f7",
+          "got": "1fdfa2f7",
+          "ok": true
+        },
+        {
+          "want": "ebc589f4",
+          "got": "ebc589f4",
+          "ok": true
+        },
+        {
+          "want": "5bae5663",
+          "got": "5bae5663",
+          "ok": true
+        },
+        {
+          "want": "8f2331cc",
+          "got": "8f2331cc",
+          "ok": true
+        }
+      ]
+    },
+    "4": {
+      "seeds": [
+        "748044549",
+        "1207183290",
+        "260937550",
+        "1681517504"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "6b575c04",
+          "got": "6b575c04",
+          "ok": true
+        },
+        {
+          "want": "cc7c8a54",
+          "got": "cc7c8a54",
+          "ok": true
+        },
+        {
+          "want": "dd43fb03",
+          "got": "dd43fb03",
+          "ok": true
+        },
+        {
+          "want": "7658563f",
+          "got": "7658563f",
+          "ok": true
+        }
+      ]
+    },
+    "5": {
+      "seeds": [
+        "1423973279",
+        "314739996",
+        "2080046419",
+        "468964410"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "20b606cf",
+          "got": "20b606cf",
+          "ok": true
+        },
+        {
+          "want": "7d030a5c",
+          "got": "7d030a5c",
+          "ok": true
+        },
+        {
+          "want": "610993b5",
+          "got": "610993b5",
+          "ok": true
+        },
+        {
+          "want": "5f69af27",
+          "got": "5f69af27",
+          "ok": true
+        }
+      ]
+    },
+    "6": {
+      "seeds": [
+        "1051220165",
+        "1784898698",
+        "1372450569",
+        "2040845223"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "34246426",
+          "got": "34246426",
+          "ok": true
+        },
+        {
+          "want": "1c8bd559",
+          "got": "1c8bd559",
+          "ok": true
+        },
+        {
+          "want": "80a79ab7",
+          "got": "80a79ab7",
+          "ok": true
+        },
+        {
+          "want": "1411acfd",
+          "got": "1411acfd",
+          "ok": true
+        }
+      ]
+    },
+    "7": {
+      "seeds": [
+        "778300819",
+        "852345898",
+        "1262315330",
+        "1892928213"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "0ae7e54c",
+          "got": "0ae7e54c",
+          "ok": true
+        },
+        {
+          "want": "8ae5375a",
+          "got": "8ae5375a",
+          "ok": true
+        },
+        {
+          "want": "015d2507",
+          "got": "015d2507",
+          "ok": true
+        },
+        {
+          "want": "5a1063ed",
+          "got": "5a1063ed",
+          "ok": true
+        }
+      ]
+    },
+    "8": {
+      "seeds": [
+        "1808352482",
+        "209883698",
+        "478203000",
+        "151662690"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "23450e0b",
+          "got": "23450e0b",
+          "ok": true
+        },
+        {
+          "want": "bbfd6843",
+          "got": "bbfd6843",
+          "ok": true
+        },
+        {
+          "want": "0499fce1",
+          "got": "0499fce1",
+          "ok": true
+        },
+        {
+          "want": "2a48fbe9",
+          "got": "2a48fbe9",
+          "ok": true
+        }
+      ]
+    },
+    "9": {
+      "seeds": [
+        "1805746801",
+        "1715953227",
+        "2051131481",
+        "1179967277"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "cb9b644f",
+          "got": "cb9b644f",
+          "ok": true
+        },
+        {
+          "want": "7aaff5ce",
+          "got": "7aaff5ce",
+          "ok": true
+        },
+        {
+          "want": "40018854",
+          "got": "40018854",
+          "ok": true
+        },
+        {
+          "want": "275a3dab",
+          "got": "275a3dab",
+          "ok": true
+        }
+      ]
+    },
+    "10": {
+      "seeds": [
+        "1373292290",
+        "689671522",
+        "196186075",
+        "1469003094"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "2e14b79b",
+          "got": "2e14b79b",
+          "ok": true
+        },
+        {
+          "want": "734be4e0",
+          "got": "734be4e0",
+          "ok": true
+        },
+        {
+          "want": "76d54baf",
+          "got": "76d54baf",
+          "ok": true
+        },
+        {
+          "want": "d66ac2c0",
+          "got": "d66ac2c0",
+          "ok": true
+        }
+      ]
+    },
+    "11": {
+      "seeds": [
+        "1504636778",
+        "1895114971",
+        "29848034",
+        "1480904416"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "d1f902ac",
+          "got": "d1f902ac",
+          "ok": true
+        },
+        {
+          "want": "2f26a329",
+          "got": "2f26a329",
+          "ok": true
+        },
+        {
+          "want": "b99ae97c",
+          "got": "b99ae97c",
+          "ok": true
+        },
+        {
+          "want": "3ac856e8",
+          "got": "3ac856e8",
+          "ok": true
+        }
+      ]
+    },
+    "12": {
+      "seeds": [
+        "1263961398",
+        "1425949405",
+        "2036050413",
+        "1240397294"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "250f814d",
+          "got": "250f814d",
+          "ok": true
+        },
+        {
+          "want": "adc1d4ab",
+          "got": "adc1d4ab",
+          "ok": true
+        },
+        {
+          "want": "9c725f2b",
+          "got": "9c725f2b",
+          "ok": true
+        },
+        {
+          "want": "3188ac57",
+          "got": "3188ac57",
+          "ok": true
+        }
+      ]
+    },
+    "13": {
+      "seeds": [
+        "1988869420",
+        "877548474",
+        "211310867",
+        "984280522"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "ab9b09cc",
+          "got": "ab9b09cc",
+          "ok": true
+        },
+        {
+          "want": "b2ff5b37",
+          "got": "b2ff5b37",
+          "ok": true
+        },
+        {
+          "want": "c5a334ae",
+          "got": "c5a334ae",
+          "ok": true
+        },
+        {
+          "want": "bcb82dbe",
+          "got": "bcb82dbe",
+          "ok": true
+        }
+      ]
+    },
+    "14": {
+      "seeds": [
+        "1815757598",
+        "1654914464",
+        "2092549106",
+        "1644047813"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "a2897127",
+          "got": "a2897127",
+          "ok": true
+        },
+        {
+          "want": "f023c512",
+          "got": "f023c512",
+          "ok": true
+        },
+        {
+          "want": "f7fa0fe4",
+          "got": "f7fa0fe4",
+          "ok": true
+        },
+        {
+          "want": "fd4b33cf",
+          "got": "fd4b33cf",
+          "ok": true
+        }
+      ]
+    },
+    "15": {
+      "seeds": [
+        "539701715",
+        "1942076357",
+        "347450192",
+        "1951039959"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "5b6c0f7e",
+          "got": "5b6c0f7e",
+          "ok": true
+        },
+        {
+          "want": "de96924f",
+          "got": "de96924f",
+          "ok": true
+        },
+        {
+          "want": "0d814c7e",
+          "got": "0d814c7e",
+          "ok": true
+        },
+        {
+          "want": "e1e6052a",
+          "got": "e1e6052a",
+          "ok": true
+        }
+      ]
+    },
+    "16": {
+      "seeds": [
+        "1674361382",
+        "218763082",
+        "1935002750",
+        "1796996073"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "8a39c82c",
+          "got": "8a39c82c",
+          "ok": true
+        },
+        {
+          "want": "d828f6ac",
+          "got": "d828f6ac",
+          "ok": true
+        },
+        {
+          "want": "36131c34",
+          "got": "36131c34",
+          "ok": true
+        },
+        {
+          "want": "52e3976d",
+          "got": "52e3976d",
+          "ok": true
+        }
+      ]
+    },
+    "17": {
+      "seeds": [
+        "1885079085",
+        "453529151",
+        "1476996490",
+        "482775274"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "9fda1da9",
+          "got": "9fda1da9",
+          "ok": true
+        },
+        {
+          "want": "47605797",
+          "got": "47605797",
+          "ok": true
+        },
+        {
+          "want": "7a8c4c2d",
+          "got": "7a8c4c2d",
+          "ok": true
+        },
+        {
+          "want": "4d59fa16",
+          "got": "4d59fa16",
+          "ok": true
+        }
+      ]
+    },
+    "18": {
+      "seeds": [
+        "1997726213",
+        "1975104859",
+        "240235123",
+        "1391881121"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "ffa9a54e",
+          "got": "ffa9a54e",
+          "ok": true
+        },
+        {
+          "want": "a0aa4adf",
+          "got": "a0aa4adf",
+          "ok": true
+        },
+        {
+          "want": "ef7fc89c",
+          "got": "ef7fc89c",
+          "ok": true
+        },
+        {
+          "want": "7c9e6299",
+          "got": "7c9e6299",
+          "ok": true
+        }
+      ]
+    },
+    "19": {
+      "seeds": [
+        "408249086",
+        "1126519873",
+        "1568665038",
+        "1407666672"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "7ef3c845",
+          "got": "7ef3c845",
+          "ok": true
+        },
+        {
+          "want": "12ec8b66",
+          "got": "12ec8b66",
+          "ok": true
+        },
+        {
+          "want": "c93b5081",
+          "got": "c93b5081",
+          "ok": true
+        },
+        {
+          "want": "d35e588e",
+          "got": "d35e588e",
+          "ok": true
+        }
+      ]
+    },
+    "20": {
+      "seeds": [
+        "149089292",
+        "247597651",
+        "420047104",
+        "61219252"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "03ecebc7",
+          "got": "03ecebc7",
+          "ok": true
+        },
+        {
+          "want": "5c44b04b",
+          "got": "5c44b04b",
+          "ok": true
+        },
+        {
+          "want": "86e1a174",
+          "got": "86e1a174",
+          "ok": true
+        },
+        {
+          "want": "6f43bcb7",
+          "got": "6f43bcb7",
+          "ok": true
+        }
+      ]
+    },
+    "21": {
+      "seeds": [
+        "1427214128",
+        "1340218521",
+        "1209388349",
+        "1994610825"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "3c8170f9",
+          "got": "3c8170f9",
+          "ok": true
+        },
+        {
+          "want": "eceac8b8",
+          "got": "eceac8b8",
+          "ok": true
+        },
+        {
+          "want": "f6fa51f9",
+          "got": "f6fa51f9",
+          "ok": true
+        },
+        {
+          "want": "4fa826c0",
+          "got": "4fa826c0",
+          "ok": true
+        }
+      ]
+    },
+    "22": {
+      "seeds": [
+        "1234592047",
+        "1664855992",
+        "461904309",
+        "1741031106"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "f93287f7",
+          "got": "f93287f7",
+          "ok": true
+        },
+        {
+          "want": "a6442848",
+          "got": "a6442848",
+          "ok": true
+        },
+        {
+          "want": "1fbb7ae6",
+          "got": "1fbb7ae6",
+          "ok": true
+        },
+        {
+          "want": "4c257e55",
+          "got": "4c257e55",
+          "ok": true
+        }
+      ]
+    },
+    "23": {
+      "seeds": [
+        "1391834308",
+        "84435715",
+        "1996820657",
+        "821007588"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "03bd1289",
+          "got": "03bd1289",
+          "ok": true
+        },
+        {
+          "want": "0d2931e3",
+          "got": "0d2931e3",
+          "ok": true
+        },
+        {
+          "want": "cd4813cf",
+          "got": "cd4813cf",
+          "ok": true
+        },
+        {
+          "want": "44be55aa",
+          "got": "44be55aa",
+          "ok": true
+        }
+      ]
+    },
+    "24": {
+      "seeds": [
+        "1862613005",
+        "572596154",
+        "571465721",
+        "1547701030"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "d6424a25",
+          "got": "d6424a25",
+          "ok": true
+        },
+        {
+          "want": "263419dd",
+          "got": "263419dd",
+          "ok": true
+        },
+        {
+          "want": "b666a096",
+          "got": "b666a096",
+          "ok": true
+        },
+        {
+          "want": "af037ff4",
+          "got": "af037ff4",
+          "ok": true
+        }
+      ]
+    },
+    "25": {
+      "seeds": [
+        "1039985278",
+        "1872151525",
+        "152987813",
+        "401128414"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "aaae2d8c",
+          "got": "aaae2d8c",
+          "ok": true
+        },
+        {
+          "want": "f0f74f11",
+          "got": "f0f74f11",
+          "ok": true
+        },
+        {
+          "want": "b85dc9d8",
+          "got": "b85dc9d8",
+          "ok": true
+        },
+        {
+          "want": "23607260",
+          "got": "23607260",
+          "ok": true
+        }
+      ]
+    },
+    "26": {
+      "seeds": [
+        "2034398466",
+        "1903895274",
+        "113557889",
+        "1332268945"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "fdec136b",
+          "got": "fdec136b",
+          "ok": true
+        },
+        {
+          "want": "5b7530f6",
+          "got": "5b7530f6",
+          "ok": true
+        },
+        {
+          "want": "aff91bfa",
+          "got": "aff91bfa",
+          "ok": true
+        },
+        {
+          "want": "dc94f912",
+          "got": "dc94f912",
+          "ok": true
+        }
+      ]
+    },
+    "27": {
+      "seeds": [
+        "1378574539",
+        "1648642687",
+        "1284944605",
+        "755917967"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "37c450b9",
+          "got": "37c450b9",
+          "ok": true
+        },
+        {
+          "want": "27db055f",
+          "got": "27db055f",
+          "ok": true
+        },
+        {
+          "want": "a86e7170",
+          "got": "a86e7170",
+          "ok": true
+        },
+        {
+          "want": "0808d840",
+          "got": "0808d840",
+          "ok": true
+        }
+      ]
+    },
+    "28": {
+      "seeds": [
+        "1794493587",
+        "2120995239",
+        "1195929377",
+        "2046449890"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "f31a701a",
+          "got": "f31a701a",
+          "ok": true
+        },
+        {
+          "want": "dd2cbb53",
+          "got": "dd2cbb53",
+          "ok": true
+        },
+        {
+          "want": "e7e7a817",
+          "got": "e7e7a817",
+          "ok": true
+        },
+        {
+          "want": "169ff63c",
+          "got": "169ff63c",
+          "ok": true
+        }
+      ]
+    },
+    "29": {
+      "seeds": [
+        "106564533",
+        "838620827",
+        "235514195",
+        "1403001589"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "6c69efeb",
+          "got": "6c69efeb",
+          "ok": true
+        },
+        {
+          "want": "f0f8880c",
+          "got": "f0f8880c",
+          "ok": true
+        },
+        {
+          "want": "b941a774",
+          "got": "b941a774",
+          "ok": true
+        },
+        {
+          "want": "6da5b66e",
+          "got": "6da5b66e",
+          "ok": true
+        }
+      ]
+    },
+    "30": {
+      "seeds": [
+        "64446473",
+        "269681156",
+        "1445329519",
+        "710414385"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "e5844346",
+          "got": "e5844346",
+          "ok": true
+        },
+        {
+          "want": "03b21018",
+          "got": "03b21018",
+          "ok": true
+        },
+        {
+          "want": "522cf9df",
+          "got": "522cf9df",
+          "ok": true
+        },
+        {
+          "want": "d1c5969b",
+          "got": "d1c5969b",
+          "ok": true
+        }
+      ]
+    },
+    "31": {
+      "seeds": [
+        "1891964708",
+        "1579816297",
+        "510545193",
+        "1844043097"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "95ac7b75",
+          "got": "95ac7b75",
+          "ok": true
+        },
+        {
+          "want": "f8cc1652",
+          "got": "f8cc1652",
+          "ok": true
+        },
+        {
+          "want": "86bc6cdf",
+          "got": "86bc6cdf",
+          "ok": true
+        },
+        {
+          "want": "3f2eb04e",
+          "got": "3f2eb04e",
+          "ok": true
+        }
+      ]
+    },
+    "32": {
+      "seeds": [
+        "125022603",
+        "1927594074",
+        "1791729568",
+        "28754368"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "c7b20b19",
+          "got": "c7b20b19",
+          "ok": true
+        },
+        {
+          "want": "52977b5b",
+          "got": "52977b5b",
+          "ok": true
+        },
+        {
+          "want": "965a631d",
+          "got": "965a631d",
+          "ok": true
+        },
+        {
+          "want": "23eb04b4",
+          "got": "23eb04b4",
+          "ok": true
+        }
+      ]
+    },
+    "33": {
+      "seeds": [
+        "15471330",
+        "1953750989",
+        "1971723820",
+        "745110028"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "98d367c2",
+          "got": "98d367c2",
+          "ok": true
+        },
+        {
+          "want": "944c5e35",
+          "got": "944c5e35",
+          "ok": true
+        },
+        {
+          "want": "f9ec0c3e",
+          "got": "f9ec0c3e",
+          "ok": true
+        },
+        {
+          "want": "90f98701",
+          "got": "90f98701",
+          "ok": true
+        }
+      ]
+    },
+    "34": {
+      "seeds": [
+        "1141290130",
+        "1500319404",
+        "773078122",
+        "291974843"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "e0095112",
+          "got": "e0095112",
+          "ok": true
+        },
+        {
+          "want": "efe4d41b",
+          "got": "efe4d41b",
+          "ok": true
+        },
+        {
+          "want": "3342bf79",
+          "got": "3342bf79",
+          "ok": true
+        },
+        {
+          "want": "4bed2c5f",
+          "got": "4bed2c5f",
+          "ok": true
+        }
+      ]
+    },
+    "35": {
+      "seeds": [
+        "1315018750",
+        "531720888",
+        "1784411497",
+        "776907939"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "b31e19c1",
+          "got": "b31e19c1",
+          "ok": true
+        },
+        {
+          "want": "70bab13a",
+          "got": "70bab13a",
+          "ok": true
+        },
+        {
+          "want": "afea0e0c",
+          "got": "afea0e0c",
+          "ok": true
+        },
+        {
+          "want": "f193f90a",
+          "got": "f193f90a",
+          "ok": true
+        }
+      ]
+    },
+    "36": {
+      "seeds": [
+        "413505301",
+        "1212410540",
+        "466862663",
+        "944452505"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "78ab80bf",
+          "got": "78ab80bf",
+          "ok": true
+        },
+        {
+          "want": "a38d2c15",
+          "got": "a38d2c15",
+          "ok": true
+        },
+        {
+          "want": "e75a3a78",
+          "got": "e75a3a78",
+          "ok": true
+        },
+        {
+          "want": "428d29a3",
+          "got": "428d29a3",
+          "ok": true
+        }
+      ]
+    },
+    "37": {
+      "seeds": [
+        "1340145141",
+        "837641422",
+        "1651700799",
+        "1527038073"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "37ee5125",
+          "got": "37ee5125",
+          "ok": true
+        },
+        {
+          "want": "8b868c05",
+          "got": "8b868c05",
+          "ok": true
+        },
+        {
+          "want": "227340de",
+          "got": "227340de",
+          "ok": true
+        },
+        {
+          "want": "7ab40645",
+          "got": "7ab40645",
+          "ok": true
+        }
+      ]
+    },
+    "38": {
+      "seeds": [
+        "1293480343",
+        "1549680853",
+        "1195096870",
+        "791734105"
+      ],
+      "verdicts": [
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy",
+        "YES/greedy"
+      ],
+      "fps": [
+        {
+          "want": "70e7fdb7",
+          "got": "70e7fdb7",
+          "ok": true
+        },
+        {
+          "want": "ae81c689",
+          "got": "ae81c689",
+          "ok": true
+        },
+        {
+          "want": "01f8a1a9",
+          "got": "01f8a1a9",
+          "ok": true
+        },
+        {
+          "want": "9c306307",
+          "got": "9c306307",
+          "ok": true
+        }
+      ]
+    }
+  },
+  "ok": true,
+  "total": 152,
+  "bad": 0,
+  "elapsedMs": 928
+}

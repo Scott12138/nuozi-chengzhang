@@ -1,0 +1,71 @@
+==> 静态服务器就绪（HTTP 200）
+==> 产物自检通过（含标记「挪字成章」）
+==> 启动无头 Chrome 打开 http://127.0.0.1:8123/index.html
+    窗口 600×1380（外框）· profile /tmp/cocos-cdp-profile-89130
+==> CDP 已连接
+==> 等待游戏加载渲染（9 秒）…
+    视口/画布/引擎可见尺寸： {"inner":[600,1260],"canvas":{"cssW":600,"cssH":1260,"left":0,"top":0,"attrW":1200,"attrH":2520},"visible":[720,1512]}
+    ✅ 引擎可见尺寸 720×1512 设计单位 = 372×781 设计px（窗口 600×1260）
+    （点击换算中心：300,630　设计单位→屏幕px 缩放 PS=0.8333）
+    已截图：/tmp/s4-chap3/00-before.png
+==> 直写存档：标记第 1..1 关已通关（每关 0 星），然后重载页面
+==> 等待游戏加载渲染（9 秒） · unlock 后重载…
+    视口/画布/引擎可见尺寸： {"inner":[600,1260],"canvas":{"cssW":600,"cssH":1260,"left":0,"top":0,"attrW":1200,"attrH":2520},"visible":[720,1512]}
+    ✅ 引擎可见尺寸 720×1512 设计单位 = 372×781 设计px（窗口 600×1260）
+    已截图：/tmp/s4-chap3/01-unlock.png
+==> 等待 2200ms → 截图 /tmp/s4-chap3/02-wait-2200.png
+==> 点击 设计坐标(0, -534) → 屏幕(300, 1075)
+    已截图：/tmp/s4-chap3/03-click-d_0,-534.png
+==> ✅ 页面断言通过：确在「chap」页
+    已截图：/tmp/s4-chap3/04-p_chap.png
+    性能：峰值 draw call 48 / 平均帧 24.85ms → 约 40 FPS
+
+===== 页面控制台输出 =====
+  [timeEnd] Init Base: 3.488037109375 ms
+  [timeEnd] Init Infrastructure: 17.1220703125 ms
+  [timeEnd] Init Base: 0.9990234375 ms
+  [timeEnd] Init Infrastructure: 12.9619140625 ms
+  [timeEnd] Init SubSystem: 48.244140625 ms
+  [log] Cocos Creator v3.8.8
+  [log] Using custom pipeline: Builtin
+  [timeEnd] Init Project: 27.300048828125 ms
+  [timeEnd] LoadScene db://assets/scenes/Main.scene: 17.14697265625 ms
+  [timeEnd] InitScene: 0.129150390625 ms
+  [timeEnd] AttachPersist: 0.001953125 ms
+  [timeEnd] AutoRelease: 0.05908203125 ms
+  [timeEnd] Destroy: 0.098876953125 ms
+  [timeEnd] Activate: 2.407958984375 ms
+  [log] Success to load scene: db://assets/scenes/Main.scene
+  [log] [Bootstrap] GameRoot 已挂载到 Canvas
+  [log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 boot
+  [log] [GameRoot] 启动完成，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 home
+  [timeEnd] Init Base: 1.02001953125 ms
+  [timeEnd] Init Infrastructure: 8.85888671875 ms
+  [timeEnd] Init SubSystem: 28.8359375 ms
+  [log] Cocos Creator v3.8.8
+  [log] Using custom pipeline: Builtin
+  [timeEnd] Init Project: 20.7958984375 ms
+  [timeEnd] LoadScene db://assets/scenes/Main.scene: 17.635009765625 ms
+  [timeEnd] InitScene: 0.033935546875 ms
+  [timeEnd] AttachPersist: 0.001953125 ms
+  [timeEnd] AutoRelease: 0.0078125 ms
+  [timeEnd] Destroy: 0.0322265625 ms
+  [timeEnd] Activate: 0.81201171875 ms
+  [log] Success to load scene: db://assets/scenes/Main.scene
+  [log] [Bootstrap] GameRoot 已挂载到 Canvas
+  [log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 boot
+  [log] [GameRoot] 启动完成，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 home
+  [log] [Layout] chap .topbar x=0.0 y=0.0 w=372.0 h=95.6 db=685.6
+  [log] [Layout] chap .btn-back x=16.0 y=55.8 w=32.0 h=32.0 db=693.4
+  [log] [Layout] chap .chap-list x=0.0 y=149.8 w=372.0 h=577.1 db=54.3
+  [log] [Layout] chap .chap[0] x=16.0 y=149.8 w=340.0 h=135.4 db=496.0 r=17
+  [log] [Layout] chap .chap[1] x=16.0 y=297.1 w=340.0 h=135.4 db=348.8 r=17
+  [log] [Layout] chap .chap[2] x=16.0 y=444.3 w=340.0 h=135.4 db=201.5 r=17
+  [log] [Layout] chap .chap[3] x=16.0 y=591.6 w=340.0 h=135.4 db=54.3 r=17
+  [log] [PageManager] 进入页面 chap
+
+✅ 冒烟测试完成，全部硬断言通过，产物目录：/tmp/s4-chap3

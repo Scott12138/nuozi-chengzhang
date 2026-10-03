@@ -1,0 +1,86 @@
+# ============================================================
+#  《挪字成章》版本控制忽略清单
+#  （chaizi-lianliankan / game-5-chaizi · 微信小游戏）
+#
+#  原则：只入库「源码 / 素材 / 配置 / 文档 / 工具」，
+#        凡是能由源码重建的生成物一律不入库（保持仓库干净、体积小）。
+#  口径沿用上一版《麻麻大消除》（mahjong-chipeng）的 .gitignore，
+#  并按本项目的「精简入库范围」拍板补三条（过程截图 / 作废稿 / 试听页）。
+# ============================================================
+
+# ---------- Cocos Creator 生成物（体积大、可重建）----------
+# 实测本机体积：library/ 44M、temp/ 18M、build/ 22M（含 web-desktop 与微信包）
+# —— 全部由编辑器与 tools/cocos-build.sh 重建，不入库。
+**/library/
+**/temp/
+**/local/
+**/build/
+**/profiles/
+**/native/
+**/node_modules/
+**/.cache/
+
+# 注意：game-5-chaizi/build-config/ 是手写的构建配置，必须入库。
+#      上面的 **/build/ 只匹配「名字正好是 build」的目录，不会误伤 build-config/；
+#      这条否定规则写在这里是为了防止将来有人把模式改成 **/build*。
+!**/build-config/
+
+# ---------- 过程截图与作废稿（按「精简入库范围」拍板排除）----------
+#  /shots/            开发过程截图 53M（含 review-tile.png 8.2M、界面设计 PDF 4.8M）
+#  /_archive/         v1「连线版」作废稿 272K
+#  /_wip-old-pages/   旧页面 TS 备份 72K
+#  ⚠️ 三条都加了前导 /（只匹配仓库根），所以 prototype/_archive/v1-连线版.html
+#     这个「原型归档」仍会入库 —— 它体积只有 60K，是原型演进的可读证据。
+/shots/
+/_archive/
+/_wip-old-pages/
+
+# ---------- 系统与编辑器 ----------
+.DS_Store
+**/.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+
+# ⚠️ 例外：docs/verify/ 下的 console 日志是**验收一手证据**，必须入库。
+#    实测每条只有 6~21 KB（本项目 9 条合计 84 KB）—— 排掉它们省不了任何体积，
+#    只会把"当时到底打印了什么"这件唯一的原始证据丢掉。
+#    上一版仓库（mahjong-chipeng）就是因为这条 *.log 把 15+ 条验收日志全排掉了
+#    （git ls-files | grep -c '\.log$' == 0），属于静默丢证据，本轮不再沿用。
+#    注意：docs/verify/S7/smoke/ 整个目录只有 3 个 .log，不写这条的话它会整个消失。
+!docs/verify/**/*.log
+
+# ---------- 打包 / 压缩产物 ----------
+*.zip
+*.dmg
+
+# ---------- Python 缓存 ----------
+**/__pycache__/
+
+# ---------- 「base64 内联了音频的单文件试听页」（大且可一键重建）----------
+#  docs/verify/S6/bgm/BGM候选-试听.html  = 同目录 candidates.json + 4 个 .m4a 内联而成
+#  重建：python3 tools/make-bgm.py --audition
+#  ⚠️ 源文件（candidates.json / *.m4a / _v1-将军令轴/）必须入库，否则无法重建。
+docs/verify/*/bgm/BGM候选-试听.html
+
+# ============================================================
+#  以下是「生成物但**故意保留**」的文件（备查，别误当多余文件删掉）
+# ------------------------------------------------------------
+#  · design/glyphs-data.js（865K）
+#      由 tools/build-glyphs.py 从马善政字体（MaShanZheng）生成。
+#      之所以入库：字体本体（msj.ttf，5.8M）**不在仓库里**且要从 jsDelivr 下载，
+#      不保留这份数据的话，换台机器就得先解决字体来源才能重建字牌。
+#      重建：python3 tools/build-glyphs.py
+#  · design/tile-roles.js（8.7K）
+#      由 tools/gen-tile-roles.py 生成（131 个部件的「靠哪半边」角色表）。
+#      之所以入库：它是**算出来的规则数据**，重算依赖字形匹配的全套分析流程；
+#      入库等于把「这一版每条规则的确切取值」固化下来，便于比对与回滚。
+#      重建：python3 tools/gen-tile-roles.py
+#  · design/review*.html（1.4M）
+#      review.tpl.html + tools/build-review.py 生成的单文件评审页。
+#      之所以入库：它是需求方实际打开看的验收页，体积不大，留一份便于复查。
+#      重建：python3 tools/build-review.py
+#  · docs/verify/S16/device/ 下的真机预览二维码.png / preview-info.json
+#      微信开发者工具产出的试玩码，同属验收凭证，保留。
+# ============================================================

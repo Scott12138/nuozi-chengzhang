@@ -1,0 +1,80 @@
+[timeEnd] Init Base: 3.785888671875 ms
+[timeEnd] Init Infrastructure: 22.3369140625 ms
+[timeEnd] Init Base: 1.76611328125 ms
+[timeEnd] Init Infrastructure: 12.633056640625 ms
+[timeEnd] Init SubSystem: 27.636962890625 ms
+[log] Cocos Creator v3.8.8
+[log] Using custom pipeline: Builtin
+[timeEnd] Init Project: 27.541015625 ms
+[timeEnd] LoadScene db://assets/scenes/Main.scene: 16.3759765625 ms
+[timeEnd] InitScene: 0.12890625 ms
+[timeEnd] AttachPersist: 0.001953125 ms
+[timeEnd] AutoRelease: 0.058837890625 ms
+[timeEnd] Destroy: 0.077880859375 ms
+[timeEnd] Activate: 2.30908203125 ms
+[log] Success to load scene: db://assets/scenes/Main.scene
+[log] [Bootstrap] GameRoot 已挂载到 Canvas
+[log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1280
+[log] [PageManager] 进入页面 boot
+[log] [GameRoot] 启动完成，可见尺寸 720×1280
+[log] [PageManager] 进入页面 home
+[log] [PageManager] 进入页面 chap
+[log] [PageManager] 进入页面 map
+[log] [PageManager] 进入页面 game
+[log] [Layout] game .play-top x=0.0 y=0.0 w=372.0 h=49.1 db=612.3
+[log] [Layout] game .btn-back x=14.0 y=12.9 w=32.0 h=32.0 db=616.4
+[log] [Layout] game .play-title x=54.8 y=18.3 w=160.2 h=21.2 db=621.8
+[log] [Layout] game .timer x=311.4 y=17.8 w=46.6 h=22.2 db=621.3
+[log] [Layout] game .goal-bar x=0.0 y=49.1 w=372.0 h=39.8 db=572.5
+[log] [Layout] game .goal-chip[0] x=52.5 y=53.2 w=61.3 h=27.9 db=580.2 枪
+[log] [Layout] game .goal-chip[1] x=121.1 y=53.2 w=61.3 h=27.9 db=580.2 棍
+[log] [Layout] game .goal-chip[2] x=189.6 y=53.2 w=61.3 h=27.9 db=580.2 锤
+[log] [Layout] game .goal-chip[3] x=258.2 y=53.2 w=61.3 h=27.9 db=580.2 钩
+[log] [Layout] game .tips x=14.0 y=88.9 w=344.1 h=35.7 db=536.8
+[log] [Layout] game .board-wrap x=0.0 y=128.7 w=372.0 h=380.3 db=152.4
+[log] [Layout] game #board x=11.9 y=173.9 w=348.2 h=289.8 db=197.6
+[log] [Layout] game .tile x=15.0 y=176.7 w=52.7 h=52.7 db=431.9 pitch=112 gap=10
+[log] [Layout] game .made-strip x=14.0 y=508.9 w=344.1 h=62.0 db=90.4
+[log] [Layout] game .tool-bar x=0.0 y=578.7 w=372.0 h=82.7 db=0.0
+[log] [Layout] game .tool[0] x=14.0 y=586.4 w=108.2 h=58.9 db=16.0
+[log] [Layout] game .tool[1] x=131.9 y=586.4 w=108.2 h=58.9 db=16.0
+[log] [Layout] game .tool[2] x=249.9 y=586.4 w=108.2 h=58.9 db=16.0
+[log] [GamePage] L1 开局就绪：21 张牌，棋盘 6×5，格距 112px / 牌 102px，棋盘 674×561，限时 150s
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=23
+[log] [Diag] TILES 木@0,0,radical 钅@0,2,radical 疒@0,3,junk 勾@0,4,part 钅@0,5,radical 垂@1,0,part 彳@1,1,junk 仓@1,2,part 木@1,3,radical 钅@1,4,radical 昆@1,5,part 昆@2,0,part 仓@2,1,part 垂@2,2,part 木@2,4,radical 匚@2,5,junk 仓@3,0,part 钅@3,1,radical 木@4,2,radical 木@4,3,radical 勾@4,4,part
+[log] [Diag] STATE seq=1 开局 步=0 已消=0/9 剩牌=18
+[log] [Diag] SUGGEST 从=垂@2,2 到=3,2 命中=钅
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=23
+[log] [Diag] TILES 木@0,0,radical 钅@0,2,radical 疒@0,3,junk 勾@0,4,part 钅@0,5,radical 垂@1,0,part 彳@1,1,junk 仓@1,2,part 木@1,3,radical 钅@1,4,radical 昆@1,5,part 昆@2,0,part 仓@2,1,part 木@2,4,radical 匚@2,5,junk 仓@3,0,part 木@4,2,radical 木@4,3,radical 勾@4,4,part
+[log] [Diag] STATE seq=2 合成 步=1 已消=1/9 剩牌=16
+[log] [Diag] SUGGEST 从=仓@3,0 到=4,0 命中=木
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=23
+[log] [Diag] TILES 木@0,0,radical 钅@0,2,radical 疒@0,3,junk 勾@0,4,part 钅@0,5,radical 垂@1,0,part 彳@1,1,junk 仓@1,2,part 木@1,3,radical 钅@1,4,radical 昆@1,5,part 昆@2,0,part 仓@2,1,part 木@2,4,radical 匚@2,5,junk 木@4,3,radical 勾@4,4,part
+[log] [Diag] STATE seq=3 合成 步=2 已消=2/9 剩牌=14
+[log] [Diag] SUGGEST 从=木@2,4 到=2,2 命中=仓
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=23
+[log] [Diag] TILES 木@0,0,radical 钅@0,2,radical 疒@0,3,junk 勾@0,4,part 钅@0,5,radical 垂@1,0,part 彳@1,1,junk 木@1,3,radical 钅@1,4,radical 昆@1,5,part 昆@2,0,part 仓@2,1,part 匚@2,5,junk 木@4,3,radical 勾@4,4,part
+[log] [Diag] STATE seq=4 合成 步=3 已消=3/9 剩牌=12
+[log] [Diag] SUGGEST 从=勾@4,4 到=2,4 命中=钅
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=23
+[log] [Diag] TILES 木@0,0,radical 钅@0,2,radical 疒@0,3,junk 勾@0,4,part 钅@0,5,radical 垂@1,0,part 彳@1,1,junk 木@1,3,radical 昆@1,5,part 昆@2,0,part 仓@2,1,part 匚@2,5,junk 木@4,3,radical
+[log] [Diag] STATE seq=5 合成 步=4 已消=4/9 剩牌=10
+[log] [Diag] SUGGEST 从=木@4,3 到=4,0 命中=昆
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=23
+[log] [Diag] TILES 木@0,0,radical 钅@0,2,radical 疒@0,3,junk 勾@0,4,part 钅@0,5,radical 垂@1,0,part 彳@1,1,junk 木@1,3,radical 昆@1,5,part 仓@2,1,part 匚@2,5,junk
+[log] [Diag] STATE seq=6 合成 步=5 已消=5/9 剩牌=8
+[log] [Diag] SUGGEST 从=昆@1,5 到=1,4 命中=木
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=23
+[log] [Diag] TILES 木@0,0,radical 钅@0,2,radical 疒@0,3,junk 勾@0,4,part 钅@0,5,radical 垂@1,0,part 彳@1,1,junk 仓@2,1,part 匚@2,5,junk
+[log] [Diag] STATE seq=7 合成 步=6 已消=6/9 剩牌=6
+[log] [Diag] SUGGEST none
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime

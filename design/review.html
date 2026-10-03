@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>挪字成章 · 水墨视觉与字形设计稿 v1</title>
+<style>/* ============================================================================
+ * 挪字成章 · 水墨画视觉系统（设计令牌）
+ * ----------------------------------------------------------------------------
+ * 水墨画的构成只有四样东西：墨色阶、宣纸、水痕、印章。
+ * 所以整套 UI 只允许用这四样去表达层次，不许出现玻璃拟态/渐变高光/圆角糖果按钮。
+ * 圆角一律收小（3~6px），边框一律用「笔线」而不是「描边」。
+ * ========================================================================== */
+
+:root{
+  /* ── 墨色阶（焦/浓/重/淡/清）—— 水墨画表达层次的唯一手段 ── */
+  --mo-1:#17181c;   /* 焦墨：标题、关键笔画 */
+  --mo-2:#2b2e33;   /* 浓墨：主体笔画 */
+  --mo-3:#4a4e55;   /* 重墨：正文、次要笔画 */
+  --mo-4:#8c9299;   /* 淡墨：提示文字、禁用 */
+  --mo-5:#c3c9ce;   /* 清墨：分隔线、底纹 */
+
+  /* ── 颜料（国画颜料，不是 UI 色）── */
+  --zhe:#9a5b31;    /* 赭石：木质、土 */
+  --zhu:#b23a2e;    /* 朱砂：印章、流苏、花心 */
+  --hua:#2f5570;    /* 花青：水、金属冷光 */
+  --teng:#d3a02a;   /* 藤黄：花蕊、烛焰、提示高亮 */
+  --qing:#4e7f72;   /* 玉青：部件牌、草木 */
+
+  /* ── 宣纸 ── */
+  --zhi-1:#f6f1e4;  /* 生宣（底） */
+  --zhi-2:#efe8d6;  /* 熟宣（卡片） */
+  --zhi-3:#e4dbc4;  /* 陈纸（凹陷/格子） */
+  --zhi-line:rgba(90,84,66,.22);
+
+  --kai:"Kaiti SC","STKaiti","KaiTi","楷体",serif;
+  --song:"Songti SC","STSong","SimSun",serif;
+
+  --radius:5px;
+  --shadow-paper:0 1px 0 rgba(255,255,255,.7) inset, 0 2px 10px rgba(70,62,44,.10);
+  --shadow-float:0 14px 30px rgba(60,50,30,.22), 0 2px 0 rgba(255,255,255,.6) inset;
+}
+
+/* ---------------------------------------------------------------- 宣纸底 */
+.paper{
+  background-color:var(--zhi-1);
+  background-image:
+    /* 水痕：几团极淡的墨晕，让纸不平 */
+    radial-gradient(60% 40% at 12% 8%,   rgba(120,120,110,.055), transparent 70%),
+    radial-gradient(50% 36% at 92% 92%,  rgba(120,120,110,.05),  transparent 70%),
+    radial-gradient(70% 30% at 50% 108%, rgba(90,100,90,.05),   transparent 70%),
+    /* 纸纤维：细密噪点 */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.30'/%3E%3C/svg%3E");
+  background-blend-mode:normal,normal,normal,multiply;
+}
+
+/* ---------------------------------------------------------------- 笔线 */
+/* 用「两头细中间粗」的线代替普通 border，才像毛笔勾的框 */
+.brushline{ position:relative; }
+.brushline::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  border-radius:inherit;
+  background:
+    linear-gradient(to right, transparent 0, var(--mo-3) 6%, var(--mo-3) 94%, transparent 100%) top/100% 1.4px no-repeat,
+    linear-gradient(to right, transparent 0, var(--mo-4) 8%, var(--mo-4) 92%, transparent 100%) bottom/100% 1.2px no-repeat,
+    linear-gradient(to bottom, transparent 0, var(--mo-4) 8%, var(--mo-4) 92%, transparent 100%) left/1.2px 100% no-repeat,
+    linear-gradient(to bottom, transparent 0, var(--mo-3) 6%, var(--mo-3) 94%, transparent 100%) right/1.4px 100% no-repeat;
+  opacity:.7;
+}
+
+/* ---------------------------------------------------------------- 印章 */
+.seal{
+  display:inline-flex; align-items:center; justify-content:center;
+  background:var(--zhu); color:#fdf6ea;
+  font-family:var(--kai); font-weight:700;
+  border-radius:3px;
+  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.35), 0 1px 3px rgba(120,40,30,.3);
+  letter-spacing:.08em;
+}
+
+/* ---------------------------------------------------------------- 字牌 */
+/* 牌面 = 一小片宣纸；不靠渐变靠「纸色深浅 + 墨线」区分类型 */
+.ink-tile{
+  position:relative;
+  background:var(--zhi-2);
+  border-radius:var(--radius);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.85) inset,
+    0 0 0 1px rgba(120,110,86,.32),
+    0 2px 6px rgba(70,62,44,.14);
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+/* 牌面上的纸纹（每张随机感由 nth-child 控制，避免整齐划一） */
+.ink-tile::after{
+  content:''; position:absolute; inset:0; pointer-events:none; opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply;
+}
+
+/* 偏旁牌（表义形旁）—— 赭石角标，像在纸角盖了个小印 */
+.ink-tile.t-radical{
+  background:linear-gradient(160deg,#f8f2e2,#efe3cb);
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 0 0 1px rgba(154,91,49,.42),0 2px 6px rgba(70,62,44,.16);
+}
+.ink-tile.t-radical::before{
+  content:''; position:absolute; right:5px; top:5px; width:5px; height:5px;
+  background:var(--zhe); border-radius:1px; opacity:.75;
+}
+
+/* 部件牌（声旁）—— 花青味，冷一点 */
+.ink-tile.t-part{
+  background:linear-gradient(160deg,#eef3f0,#dfe9e4);
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 0 0 1px rgba(78,127,114,.42),0 2px 6px rgba(60,72,66,.16);
+}
+
+/* 干扰牌 —— 清墨褪色 */
+.ink-tile.t-junk{
+  background:linear-gradient(160deg,#e9e4d8,#dcd5c5);
+  box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 0 0 1px rgba(140,146,153,.4),0 1px 4px rgba(70,62,44,.1);
+  opacity:.72;
+}
+
+/* 可达格高亮 —— 藤黄罩染，像在纸上点了个淡彩 */
+.ink-cell.reach{
+  background:rgba(211,160,42,.20);
+  box-shadow:inset 0 0 0 1.5px rgba(184,138,30,.55);
+}
+.ink-cell.reach::after{
+  content:''; position:absolute; left:50%; top:50%; width:6px; height:6px;
+  margin:-3px 0 0 -3px; border-radius:50%; background:rgba(178,120,20,.5);
+}
+
+/* ---------------------------------------------------------------- 墨按钮 */
+.ink-btn{
+  position:relative;
+  font-family:var(--kai); font-weight:700;
+  color:var(--mo-2);
+  background:var(--zhi-2);
+  border-radius:var(--radius);
+  box-shadow:0 0 0 1.4px var(--mo-3), 0 2px 0 rgba(70,62,44,.14);
+  padding:11px 20px; cursor:pointer;
+  transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+.ink-btn:active{ transform:translateY(1.5px); box-shadow:0 0 0 1.4px var(--mo-3); }
+.ink-btn.primary{
+  color:#fdf6ea; background:var(--mo-2);
+  box-shadow:0 0 0 1.4px var(--mo-1), 0 3px 0 rgba(40,36,28,.3);
+}
+.ink-btn.sealbtn{
+  color:#fdf6ea; background:var(--zhu);
+  box-shadow:0 0 0 1.4px #8e2a20, 0 3px 0 rgba(120,40,30,.34);
+}
+
+/* ---------------------------------------------------------------- 水墨分隔 */
+.ink-rule{
+  height:1px; border:0; margin:16px 0;
+  background:linear-gradient(to right, transparent, var(--mo-4) 18%, var(--mo-3) 50%, var(--mo-4) 82%, transparent);
+  opacity:.55;
+}
+
+/* ---------------------------------------------------------------- 字形容器 */
+.glyph{ width:100%; height:100%; display:block; overflow:visible; }
+</style>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:var(--kai);color:var(--mo-2);-webkit-font-smoothing:antialiased;}
+  .page{max-width:1080px;margin:0 auto;padding:0 22px 90px;}
+
+  /* ── 头版 ── */
+  .hero{padding:46px 0 26px;text-align:center;position:relative;}
+  .hero h1{font-size:44px;letter-spacing:.34em;margin:0 0 10px;color:var(--mo-1);
+           text-indent:.34em;font-weight:700;}
+  .hero .sub{font-size:14px;letter-spacing:.2em;color:var(--mo-4);}
+  .hero .seal{position:absolute;right:8px;top:52px;width:56px;height:56px;font-size:13px;
+              line-height:1.15;flex-direction:column;transform:rotate(-6deg);}
+  .hero .stamp{display:inline-block;margin-top:16px;padding:5px 14px;border-radius:3px;
+               font-size:12.5px;letter-spacing:.16em;color:var(--zhu);
+               box-shadow:inset 0 0 0 1.4px var(--zhu);}
+
+  h2.sec{font-size:21px;letter-spacing:.14em;color:var(--mo-1);margin:44px 0 6px;
+         display:flex;align-items:baseline;gap:12px;}
+  h2.sec .no{font-size:13px;color:var(--zhu);letter-spacing:.1em;
+             box-shadow:inset 0 0 0 1.2px var(--zhu);border-radius:3px;padding:2px 7px;}
+  .sec-note{font-size:13.5px;line-height:1.9;color:var(--mo-3);margin:0 0 20px;max-width:78ch;}
+
+  /* ── 墨色阶 ── */
+  .ramp{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+  .ramp .sw{height:78px;border-radius:4px;display:flex;flex-direction:column;
+            justify-content:flex-end;padding:8px;font-size:12px;letter-spacing:.06em;}
+  .paints{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px;}
+  .paints .sw{height:64px;border-radius:4px;display:flex;flex-direction:column;
+              justify-content:flex-end;padding:8px;font-size:12px;color:#fdf6ea;
+              text-shadow:0 1px 2px rgba(0,0,0,.35);letter-spacing:.06em;}
+
+  /* ── 通用栅格 ── */
+  .grid{display:grid;gap:14px;}
+  .g-tile{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));}
+  .g-word{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
+  .cell{text-align:center;}
+  .cell .box{width:100%;aspect-ratio:1;position:relative;}
+  .cell .cap{margin-top:7px;font-size:14px;color:var(--mo-2);font-weight:700;letter-spacing:.08em;}
+  .cell .cap .orig{font-size:12px;color:var(--mo-4);margin-left:5px;font-weight:400;}
+  .cell .cap .gl{display:block;font-size:11.5px;color:var(--mo-4);font-weight:400;
+                 margin-top:2px;letter-spacing:0;}
+
+  /* ── 手机样张 ── */
+  .phones{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+  .phone{width:296px;border-radius:26px;padding:9px;
+         background:linear-gradient(160deg,#4a4e55,#22242a);
+         box-shadow:0 18px 40px rgba(40,34,22,.28);}
+  .screen{position:relative;border-radius:19px;overflow:hidden;height:552px;
+          display:flex;flex-direction:column;}
+  .p-label{text-align:center;font-size:13px;color:var(--mo-3);margin-top:9px;letter-spacing:.1em;}
+
+  .topbar{display:flex;align-items:center;gap:10px;padding:12px 14px 8px;font-size:13px;color:var(--mo-3);}
+  .topbar .back{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;
+                justify-content:center;box-shadow:inset 0 0 0 1.3px var(--mo-3);font-size:13px;}
+  .topbar .lv{font-weight:700;color:var(--mo-2);letter-spacing:.1em;}
+  .topbar .time{margin-left:auto;font-size:12.5px;color:var(--mo-4);}
+
+  .board{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;padding:0 13px;margin-top:6px;}
+  .bt{aspect-ratio:1;position:relative;}
+  .bt .glyph{width:86%;height:86%;margin:7% auto;display:block;}
+  .hintline{margin:12px 13px 0;font-size:12px;line-height:1.85;color:var(--mo-3);
+            padding:9px 11px;border-radius:4px;background:rgba(255,255,255,.4);
+            box-shadow:inset 0 0 0 1px var(--mo-5);}
+  .tools{display:flex;gap:8px;padding:12px 13px 0;margin-top:auto;}
+  .tools .t{flex:1;text-align:center;padding:9px 0;border-radius:4px;font-size:12.5px;
+            color:var(--mo-3);background:var(--zhi-2);box-shadow:0 0 0 1.2px var(--mo-4);}
+  .tools .t b{display:block;font-size:15px;color:var(--zhu);}
+
+  /* 首页样张 */
+  .home-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+             padding:0 24px;}
+  .home-hero .title{font-size:31px;letter-spacing:.2em;text-indent:.2em;color:var(--mo-1);font-weight:700;white-space:nowrap;}
+  .home-hero .desc{font-size:12.5px;color:var(--mo-4);letter-spacing:.14em;margin-top:12px;text-align:center;line-height:2;}
+  .home-hero .demo{margin-top:24px;display:flex;gap:9px;align-items:center;}
+  .home-hero .demo .arrow{color:var(--mo-4);font-size:15px;}
+  .home-hero .demo .box{width:62px;height:62px;}
+  .home-btns{padding:0 26px 26px;display:flex;flex-direction:column;gap:10px;}
+  .home-btns .ink-btn{width:100%;text-align:center;}
+
+  /* 结算 */
+  .clear-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 22px;}
+  .clear-wrap .big{font-size:24px;letter-spacing:.22em;color:var(--mo-1);margin-bottom:6px;}
+  .clear-wrap .line{font-size:12px;color:var(--mo-4);letter-spacing:.1em;margin-bottom:20px;}
+  .clear-list{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+  .clear-list .box{width:58px;height:58px;}
+  .clear-stats{display:flex;gap:22px;margin-top:26px;}
+  .clear-stats div{text-align:center;font-size:11.5px;color:var(--mo-4);}
+  .clear-stats b{display:block;font-size:20px;color:var(--zhu);font-weight:700;}
+
+  /* ── 规范表 ── */
+  table.rule{width:100%;border-collapse:collapse;font-size:13.5px;line-height:1.85;}
+  table.rule th,table.rule td{padding:11px 12px;text-align:left;vertical-align:top;
+                              border-bottom:1px solid var(--mo-5);}
+  table.rule th{color:var(--mo-1);font-weight:700;letter-spacing:.06em;white-space:nowrap;}
+  table.rule td{color:var(--mo-3);}
+  table.rule tr:last-child td{border-bottom:0;}
+
+  .ask{list-style:none;padding:0;margin:0;}
+  .ask li{padding:13px 15px;margin-bottom:10px;border-radius:4px;background:var(--zhi-2);
+          box-shadow:0 0 0 1px var(--mo-5);font-size:13.5px;line-height:1.9;color:var(--mo-3);}
+  .ask li b{color:var(--mo-1);}
+  .ask li .tag{display:inline-block;font-size:11.5px;color:#fdf6ea;background:var(--zhu);
+               border-radius:3px;padding:1px 7px;margin-right:8px;letter-spacing:.06em;}
+
+  .foot{margin-top:50px;padding-top:18px;border-top:1px solid var(--mo-5);
+        font-size:12px;color:var(--mo-4);line-height:2;}
+  @media (max-width:720px){
+    .hero h1{font-size:32px}
+    .hero .seal{position:static;margin:14px auto 0;transform:none}
+    .ramp,.paints{grid-template-columns:repeat(3,1fr)}
+  }
+</style>
+</head>
+<body class="paper">
+<div class="page">
+
+  <div class="hero">
+    <div class="seal">挪字<br>成章</div>
+    <h1>挪字成章</h1>
+    <div class="sub">水墨视觉基调 &nbsp;·&nbsp; 「字物合一」字形设计稿 &nbsp;·&nbsp; v1 样张</div>
+    <div class="stamp">待 拍 板</div>
+  </div>
+
+  <h2 class="sec"><span class="no">一</span>水墨视觉基调</h2>
+  <p class="sec-note">
+    水墨画的构成只有四样东西：<b>墨色阶、宣纸、水痕、印章</b>。所以整套界面只允许用这四样表达层次——
+    不做玻璃拟态、不做渐变高光、不做糖果色圆角按钮。圆角一律收到 3~6px，边框一律用「笔线」而不是「描边」。
+  </p>
+  <div class="ramp" id="ramp-mo"></div>
+  <p class="sec-note" style="margin-top:18px">
+    国画颜料只做点缀，且每种颜色绑定固定语义，避免「好看但看不懂」：赭石=木土、朱砂=印章与流苏、
+    花青=水与金属冷光、藤黄=花蕊与烛焰、玉青=草木与部件牌。
+  </p>
+  <div class="paints" id="ramp-paint"></div>
+
+  <h2 class="sec"><span class="no">二</span>字牌（把墨色阶用起来）</h2>
+  <p class="sec-note">
+    字牌不再靠渐变色区分类型，改用<b>纸色深浅 + 墨线 + 一个角标</b>：偏旁牌偏暖（赭石角标），
+    部件牌偏冷（花青味），干扰牌用清墨褪色。拿起字牌时，可达格用藤黄罩染，像在纸上点了一笔淡彩。
+  </p>
+  <div class="grid g-tile" id="tile-demo"></div>
+
+  <h2 class="sec"><span class="no">三</span>页面样张（水墨版）</h2>
+  <p class="sec-note">
+    三个关键页面用真实字形渲染，可直接判断「整体风格」是否成立。玩法页里的每一张牌都是本稿的字形引擎实时画出来的，
+    不是贴图——也就是说这套风格一旦拍板，字形与界面是同一套代码产出的。
+  </p>
+  <div class="phones">
+
+    <div>
+      <div class="phone"><div class="screen paper">
+        <div class="home-hero">
+          <div class="title">挪字成章</div>
+          <div class="desc">挪一挪，让偏旁与部件<br>在同一行或同一列相遇</div>
+          <div class="demo">
+            <div class="box" data-ch="木"></div>
+            <div class="arrow">＋</div>
+            <div class="box" data-ch="仓"></div>
+            <div class="arrow">＝</div>
+            <div class="box" data-ch="枪"></div>
+          </div>
+        </div>
+        <div class="home-btns">
+          <div class="ink-btn primary">开 始 拆 字</div>
+          <div class="ink-btn">收 录 一 览</div>
+          <div class="ink-btn">设 置</div>
+        </div>
+      </div></div>
+      <div class="p-label">首页</div>
+    </div>
+
+    <div>
+      <div class="phone"><div class="screen paper">
+        <div class="topbar"><span class="back">‹</span><span class="lv">第 1 关 · 木字营</span><span class="time">02:30</span></div>
+        <div class="board" id="mock-board"></div>
+        <div class="hintline">字牌只能沿 <b style="color:var(--zhu)">本行或本列</b> 滑动，遇到牌即停<br>凑到同一行、中间无遮挡，即可合成</div>
+        <div class="tools"><div class="t"><b>3</b>提示</div><div class="t"><b>1</b>洗牌</div><div class="t"><b>1</b>凑对</div></div>
+      </div></div>
+      <div class="p-label">主玩法（真实字形渲染）</div>
+    </div>
+
+    <div>
+      <div class="phone"><div class="screen paper">
+        <div class="clear-wrap">
+          <div class="big">本 章 已 成</div>
+          <div class="line">木 字 营 · 十 八 般 兵 器</div>
+          <div class="clear-list" id="mock-clear"></div>
+          <div class="clear-stats">
+            <div><b>18</b>挪动</div><div><b>9</b>成字</div><div><b>02:30</b>用时</div>
+          </div>
+        </div>
+        <div class="home-btns" style="padding-top:26px">
+          <div class="ink-btn primary">下 一 关</div>
+          <div class="ink-btn">重 玩 本 关</div>
+        </div>
+      </div></div>
+      <div class="p-label">结算</div>
+    </div>
+
+  </div>
+
+  <h2 class="sec"><span class="no">四</span>表义形旁（17 个）</h2>
+  <p class="sec-note">
+    这是「表义文字」的第一层：<b>偏旁本身就是一个物</b>。木是树（竖为干、横为枝、撇捺为根），
+    钅是叠起的金属锭带刃光，艹是破土的草叶。但笔画位置严格照楷体，所以字仍然认得出来——右边灰色小字是原字对照。
+  </p>
+  <div class="grid g-tile" id="rad-grid"></div>
+
+  <h2 class="sec"><span class="no">五</span>合成字样张（10 个）</h2>
+  <p class="sec-note">
+    第二层：<b>合成之后整体是一个物</b>。你点名的「枪」在这条规则下是：左边的木 → 木质枪杆，
+    右边的仓 → 枪头（人的两笔变成枪刃的两条脊线）＋铜箍＋红缨。物象全部长在笔画上，不额外贴一张插图。
+    每张右侧仍给原字对照，方便你判断「像不像物」与「还认不认得出字」这对矛盾把握得对不对。
+  </p>
+  <div class="grid g-word" id="word-grid"></div>
+
+  <h2 class="sec"><span class="no">六</span>构造规范（这套字形的「宪法」）</h2>
+  <table class="rule">
+    <tr>
+      <th>① 先立楷体骨架</th>
+      <td>每个字的笔画位置＝标准楷体的位置。这是「可辨认」的底线。骨架用折线定义（如 <code>木</code> 的竖是 <code>[50,10]→[50,90]</code>），
+          笔迹由引擎统一生成，所以 119 个字粗细、笔锋、收锋完全一致，不会越画越散。</td>
+    </tr>
+    <tr>
+      <th>② 笔画上生长物象</th>
+      <td>不额外贴插图，而是让笔画本身变成物：木的竖变成树干（向下加粗＋树皮纹），艹的两竖变成草叶，火的两笔变成火舌。
+          <b>物象必须落在笔画外侧</b>（叶子、火星、流苏、蜡泪），不许遮挡笔画交点。</td>
+    </tr>
+    <tr>
+      <th>③ 可辨认度底线</th>
+      <td>判据是：<b>遮住右边的原字，只看字形，能不能认出这是哪个字</b>。认不出就是装饰过头，要往回收。
+          这条比「好看」优先。</td>
+    </tr>
+    <tr>
+      <th>分层策略</th>
+      <td>只做<b>表义形旁 + 合成字</b>（共 119 个）。声旁（仓/昆/奉/每）本就不表义，硬做成物象反而干扰「拆字」认知，
+          所以它们保持干净的水墨书法字形——这也让玩家一眼分得清「哪半是表义的、哪半是表音的」。</td>
+    </tr>
+    <tr>
+      <th>技术形态</th>
+      <td>全部为 <b>SVG 矢量</b>，由一份字形表 + 引擎在运行时生成。好处：① 体积远小于位图，不占小游戏 4MB 主包额度；
+          ② 任意缩放不糊；③ 改一处参数全局生效。缺点：暂时没有笔墨的随机飞白，后续可加一层噪点滤镜补。</td>
+    </tr>
+  </table>
+
+  <h2 class="sec"><span class="no">七</span>请你拍板的四件事</h2>
+  <ul class="ask">
+    <li><span class="tag">A</span><b>水墨的分量够不够？</b>现在偏「清雅」（宣纸底＋墨线＋朱砂印）。
+        可选方向还有：<b>更浓</b>（重墨压底、大面积泼墨，视觉冲击强但字牌对比度会下降）、
+        <b>更绢本</b>（米黄绢底＋青绿设色，更古但更暗）。</li>
+    <li><span class="tag">B</span><b>「像物」与「认字」的配比。</b>本稿主张「认字优先」——物象只加在笔画外侧。
+        如果你希望更像物（例如枪头做得更大更抢眼），字形的可辨认度会下降，需要你给一个倾向。</li>
+    <li><span class="tag">C</span><b>字牌上要不要保留原字小字对照？</b>像本页这样在角落印一个浅灰的原字，
+        对「识字」有正向作用，但会让牌面变满。</li>
+    <li><span class="tag">D</span><b>样张里哪几个最接近你想要的？哪几个要推倒重来？</b>
+        特别想听你对 <b>枪 / 梅 / 狗 / 烛 / 鲤</b> 这五个的评价——它们分别代表「兵器、花草、走兽、火烛、鱼」五种物象路线。</li>
+  </ul>
+
+  <div class="foot">
+    本稿为 <b>样张</b>：形旁 17 个已出全，合成字先出 10 个覆盖各类结构（左右／上下、木／钅／犭／竹／火／虫／艹／鱼）。<br>
+    方向一经确认，即按任务清单分批把剩余 93 个合成字铺满（每批独立超时、独立自测、分批交付），不需要你逐字盯。
+  </div>
+</div>
+
+<script>/* ============================================================================
+ * 挪字成章 · 「字物合一」字形引擎
+ * ----------------------------------------------------------------------------
+ * 设计原则（三条，缺一条就退化成普通美术字）：
+ *   ① 先立楷体骨架 —— 每个字的笔画位置 = 标准楷体的位置，这是「可辨认」的底线
+ *   ② 笔画上生长物象 —— 不额外贴一个插图，而是让笔画本身变成物（木=树干+枝+根）
+ *   ③ 物象不许破坏骨架 —— 加叶子、加火星、加流苏都必须落在笔画外侧，不遮挡结构
+ *
+ * 用法：
+ *   brush([[50,10],[50,90]], 5, 9)   -> 一条带收锋的笔迹 path d
+ *   glyphSVG('木', {ink:'var(--mo-2)'}) -> 完整 <svg> 字符串
+ *
+ * 为什么用「折线 + 自动生成笔迹」而不是手画 path：
+ *   119 个字形要风格统一。手画 path 每个字的笔锋都不一样，越画越散。
+ *   折线好写好调，笔锋由引擎统一算，改一处参数全局生效。
+ * ========================================================================== */
+
+/* ---------------------------------------------------------------- 笔迹生成 */
+/**
+ * 把折线变成「中间粗、两端收锋」的填充笔迹。
+ * @param {Array<[number,number]>} pts 折线顶点
+ * @param {number} w0 起笔宽度  @param {number} w1 收笔宽度
+ * @param {object} [opt] head/tail 收锋区段占比；capS/capE 收锋强度(0~1)
+ */
+function brush(pts, w0, w1, opt) {
+  opt = opt || {};
+  const n = pts.length;
+  if (n < 2) return '';
+
+  // 弧长参数化 —— 收锋要按「走了多远」算，不能按顶点序号算
+  const L = [0];
+  let tot = 0;
+  for (let i = 1; i < n; i++) {
+    tot += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+    L.push(tot);
+  }
+  if (tot < 1e-6) return '';
+
+  const head = opt.head === undefined ? 0.16 : opt.head;
+  const tail = opt.tail === undefined ? 0.26 : opt.tail;
+  const capS = opt.capS === undefined ? 0.50 : opt.capS;
+  const capE = opt.capE === undefined ? 0.72 : opt.capE;
+
+  const Ls = [], Rs = [];
+  for (let i = 0; i < n; i++) {
+    const t = L[i] / tot;
+    let f = 1;
+    if (t < head)            f = (1 - capS) + capS * (t / head);
+    else if (t > 1 - tail)   f = (1 - capE) + capE * ((1 - t) / tail);
+    const w = (w0 + (w1 - w0) * t) * f;
+
+    const p0 = pts[Math.max(0, i - 1)], p1 = pts[Math.min(n - 1, i + 1)];
+    let dx = p1[0] - p0[0], dy = p1[1] - p0[1];
+    const d = Math.hypot(dx, dy) || 1;
+    dx /= d; dy /= d;
+    Ls.push([pts[i][0] - dy * w / 2, pts[i][1] + dx * w / 2]);
+    Rs.push([pts[i][0] + dy * w / 2, pts[i][1] - dx * w / 2]);
+  }
+
+  const r = v => Math.round(v * 100) / 100;
+  const P = p => r(p[0]) + ' ' + r(p[1]);
+
+  let d = 'M' + P(Ls[0]);
+  for (let i = 1; i < n; i++) d += 'L' + P(Ls[i]);
+
+  // 收笔的圆头：用一条二次曲线绕过笔尖（比 arc 命令可靠，不会有 sweep 方向歧义）
+  let ex = pts[n - 1][0] - pts[n - 2][0], ey = pts[n - 1][1] - pts[n - 2][1];
+  let en = Math.hypot(ex, ey) || 1;
+  d += 'Q' + P([pts[n - 1][0] + ex / en * w1 * 0.55, pts[n - 1][1] + ey / en * w1 * 0.55]) + ' ' + P(Rs[n - 1]);
+
+  for (let i = n - 2; i >= 0; i--) d += 'L' + P(Rs[i]);
+
+  // 起笔的圆头
+  let sx = pts[0][0] - pts[1][0], sy = pts[0][1] - pts[1][1];
+  let sn = Math.hypot(sx, sy) || 1;
+  d += 'Q' + P([pts[0][0] + sx / sn * w0 * 0.55, pts[0][1] + sy / sn * w0 * 0.55]) + ' ' + P(Ls[0]);
+
+  return d + 'Z';
+}
+
+/** 笔画简写：S(起宽, 收宽, 顶点1, 顶点2, ...) */
+const S = (w0, w1, ...pts) => ({ p: pts, w: [w0, w1] });
+
+/* ---------------------------------------------------------------- 调色板 */
+const INK = {
+  mo:   'var(--mo-2)',    // 浓墨 —— 主体笔画
+  moD:  'var(--mo-1)',    // 焦墨 —— 关键笔画加深
+  zhe:  'var(--zhe)',     // 赭石 —— 木质
+  zhu:  'var(--zhu)',     // 朱砂 —— 流苏、印章、花心
+  hua:  'var(--hua)',     // 花青 —— 水、金属冷色
+  teng: 'var(--teng)',    // 藤黄 —— 花蕊、烛焰
+  qing: 'var(--qing)'     // 玉青 —— 部件牌
+};
+
+/* ==========================================================================
+ *  字形表 · 第一类：表义形旁（17 个）
+ *  每个形旁的笔画位置 = 标准楷体；deco 里的物象一律落在笔画外侧
+ * ======================================================================== */
+const GLYPHS = {
+
+  /* 木 —— 树：竖为干、横为枝、撇捺为根，树冠小叶子不与笔画打架 */
+  '木': {
+    ink: [
+      S(7.2, 6.2, [9, 34], [91, 34]),                     // 横 = 枝
+      S(7.6, 13.5, [50, 10], [50, 90]),                   // 竖 = 树干，向下加粗
+      S(9.0, 3.0, [50, 34], [34, 60], [19, 86]),          // 撇 = 左根
+      S(7.0, 3.6, [50, 34], [66, 60], [81, 86])           // 捺 = 右根
+    ],
+    deco: [
+      // 树冠：三片小叶，落在竖笔顶端外侧
+      '<path d="M50 12 C46 3 41 1 37 2 C39 8 44 12 50 12Z" fill="var(--zhe)" opacity=".85"/>',
+      '<path d="M50 13 C55 4 60 2 64 3 C62 9 56 13 50 13Z" fill="var(--zhe)" opacity=".75"/>',
+      '<path d="M49 21 C43 14 37 13 33 15 C37 21 43 23 49 21Z" fill="var(--zhe)" opacity=".55"/>',
+      // 树皮纹理：两道短横
+      '<path d="M44 58 L56 58" stroke="rgba(255,255,255,.38)" stroke-width="2" stroke-linecap="round"/>',
+      '<path d="M44 73 L56 73" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-linecap="round"/>'
+    ]
+  },
+
+  /* 艹 —— 草：横为地，两竖为破土而出的草叶 */
+  '艹': {
+    ink: [
+      S(6.4, 6.0, [8, 58], [92, 58]),                     // 横 = 地面
+      S(6.2, 3.4, [33, 58], [30, 34], [26, 12]),          // 左草叶
+      S(6.2, 3.4, [67, 58], [70, 34], [74, 12])           // 右草叶
+    ],
+    deco: [
+      '<path d="M29 34 C19 27 12 26 9 30 C13 36 21 38 29 34Z" fill="var(--qing)" opacity=".75"/>',
+      '<path d="M71 34 C81 27 88 26 91 30 C87 36 79 38 71 34Z" fill="var(--qing)" opacity=".65"/>',
+      '<path d="M12 63 C30 61 70 61 88 63" stroke="rgba(90,100,80,.32)" stroke-width="2.4" fill="none" stroke-linecap="round"/>'
+    ]
+  },
+
+  /* 钅 —— 金属：三横像叠起的金属锭，竖提是刃口，带高光 */
+  '钅': {
+    ink: [
+      S(6.4, 3.6, [20, 12], [40, 32]),                    // 撇
+      S(5.8, 5.8, [14, 35], [66, 35]),                    // 横一
+      S(5.8, 5.8, [16, 52], [64, 52]),                    // 横二
+      S(5.8, 5.8, [18, 69], [62, 69]),                    // 横三
+      S(7.6, 4.4, [40, 32], [38, 74], [38, 84], [62, 73]) // 竖提
+    ],
+    deco: [
+      '<path d="M41 36 L46 36 L43 80 L39 80Z" fill="rgba(255,255,255,.55)"/>',
+      '<circle cx="70" cy="30" r="3" fill="var(--teng)" opacity=".85"/>',
+      '<circle cx="76" cy="45" r="2" fill="var(--teng)" opacity=".6"/>'
+    ]
+  },
+
+  /* 竹 —— 竹：两株竹竿带竹节，撇即竹叶 */
+  '竹': {
+    ink: [
+      S(5.8, 3.0, [17, 42], [36, 15]),                    // 左撇
+      S(4.8, 4.4, [19, 49], [48, 49]),                    // 左横
+      S(6.2, 3.8, [34, 42], [34, 76]),                    // 左竖 = 竹竿
+      S(5.8, 3.0, [56, 42], [75, 15]),                    // 右撇
+      S(4.8, 4.4, [58, 49], [86, 49]),                    // 右横
+      S(6.2, 3.8, [72, 42], [72, 76])                     // 右竖 = 竹竿
+    ],
+    deco: [
+      '<path d="M29.5 56 L38.5 56" stroke="rgba(60,90,70,.6)" stroke-width="2.8" stroke-linecap="round"/>',
+      '<path d="M29.5 68 L38.5 68" stroke="rgba(60,90,70,.48)" stroke-width="2.8" stroke-linecap="round"/>',
+      '<path d="M67.5 56 L76.5 56" stroke="rgba(60,90,70,.6)" stroke-width="2.8" stroke-linecap="round"/>',
+      '<path d="M67.5 68 L76.5 68" stroke="rgba(60,90,70,.48)" stroke-width="2.8" stroke-linecap="round"/>',
+      '<path d="M19 42 C10 37 5 38 3 42 C8 47 15 47 19 42Z" fill="var(--qing)" opacity=".75"/>'
+    ]
+  },
+
+  /* 犭 —— 走兽：弯钩是兽的脊背与尾，撇是腿，顶部撇为耳 */
+  '犭': {
+    ink: [
+      S(6.0, 3.2, [45, 12], [23, 34]),                                  // 撇 = 兽耳（自右上向左下）
+      S(7.0, 4.2, [34, 10], [48, 28], [38, 50], [42, 70], [59, 81]),    // 弯钩 = 脊背+尾
+      S(6.2, 2.6, [44, 42], [30, 63], [20, 81])                         // 撇 = 前腿
+    ],
+    deco: [
+      '<path d="M48 28 C55 23 60 24 62 29 C57 34 51 33 48 28Z" fill="var(--zhe)" opacity=".78"/>',
+      '<path d="M44 50 L54 46 M41 62 L51 58" stroke="rgba(160,110,60,.5)" stroke-width="2.2" stroke-linecap="round"/>',
+      '<circle cx="20" cy="82" r="4" fill="var(--zhe)" opacity=".82"/>'
+    ]
+  },
+
+  /* 鸟 —— 禽：撇是头顶翎，横折钩是头身，点是眼 */
+  '鸟': {
+    ink: [
+      S(5.6, 3.0, [29, 11], [47, 25]),                                   // 撇 = 翎
+      S(6.2, 4.4, [27, 31], [63, 31], [58, 59]),                         // 横折钩 = 头+身
+      S(5.0, 3.8, [46, 40], [51, 46]),                                   // 点 = 眼
+      S(6.8, 4.0, [44, 33], [42, 62], [65, 62], [60, 80], [47, 88]),     // 竖折折钩 = 身+足
+      S(6.2, 6.0, [27, 88], [73, 88])                                    // 横 = 尾
+    ],
+    deco: [
+      '<path d="M27 28 L13 33 L27 39Z" fill="var(--teng)"/>',
+      '<circle cx="49" cy="43" r="3" fill="var(--mo-1)"/>',
+      '<path d="M34 45 C41 50 41 56 36 60" stroke="rgba(255,255,255,.5)" stroke-width="2" fill="none"/>'
+    ]
+  },
+
+  /* 虫 —— 虫豸：口是头胸，竖是躯干，提与点是足 */
+  '虫': {
+    ink: [
+      S(6.0, 5.2, [29, 30], [29, 53]),                    // 口左竖
+      S(6.2, 5.2, [29, 30], [72, 30], [72, 53]),          // 口横折
+      S(6.0, 5.2, [29, 53], [72, 53]),                    // 口底横
+      S(7.4, 5.8, [50, 53], [50, 91]),                    // 竖 = 躯干
+      S(5.0, 3.4, [50, 72], [73, 63]),                    // 提 = 后足
+      S(5.0, 3.8, [61, 80], [67, 86])                     // 点 = 足尖
+    ],
+    deco: [
+      '<path d="M35 26 L25 14 M65 26 L75 14" stroke="var(--mo-3)" stroke-width="2.6" stroke-linecap="round" fill="none"/>',
+      '<path d="M34 42 L67 42 M34 48 L67 48" stroke="rgba(255,255,255,.45)" stroke-width="1.8"/>',
+      '<path d="M50 58 L37 53 M50 68 L37 63" stroke="var(--mo-3)" stroke-width="2.4" stroke-linecap="round"/>'
+    ]
+  },
+
+  /* 鱼 —— 鱼：上部是头，中部田字是鳞格，下部一横是尾 */
+  '鱼': {
+    ink: [
+      S(6.0, 3.6, [48, 10], [28, 30]),                    // 撇 = 鱼头
+      S(6.0, 4.2, [30, 28], [59, 28], [45, 44]),          // 横撇
+      S(5.8, 5.2, [34, 47], [34, 77]),                    // 田左竖
+      S(6.0, 5.2, [34, 47], [67, 47], [67, 77]),          // 田横折
+      S(5.0, 4.6, [34, 61], [67, 61]),                    // 田中横
+      S(5.8, 5.2, [34, 77], [67, 77]),                    // 田底横
+      S(6.4, 6.0, [22, 89], [78, 89])                     // 尾
+    ],
+    deco: [
+      '<circle cx="45" cy="24" r="3" fill="var(--mo-1)"/>',
+      '<path d="M39 54 C43 57 47 57 51 54 M54 54 C58 57 62 57 65 54" stroke="rgba(255,255,255,.48)" stroke-width="1.8" fill="none"/>',
+      '<path d="M79 89 L90 81 L90 97Z" fill="var(--hua)" opacity=".6"/>'
+    ]
+  },
+
+  /* 火 —— 火焰：撇捺是两条火舌，两点是火星 */
+  '火': {
+    ink: [
+      S(4.6, 2.6, [36, 14], [30, 29]),                          // 左点 = 火星
+      S(4.6, 2.6, [64, 14], [72, 30]),                          // 右撇 = 火星
+      S(7.6, 2.4, [54, 22], [45, 52], [25, 87]),                // 撇 = 左火舌
+      S(6.6, 3.0, [46, 22], [55, 52], [79, 87])                 // 捺 = 右火舌
+    ],
+    deco: [
+      // 内焰：一条上尖下圆的水滴形火舌
+      '<path d="M50 34 C58 48 58 62 53 74 C51 79 46 79 44 74 C39 62 41 48 50 34Z" fill="var(--teng)" opacity=".6"/>',
+      '<path d="M50 44 C54 54 54 64 51 72 C49 76 47 76 45 72 C42 64 45 54 50 44Z" fill="var(--zhu)" opacity=".42"/>',
+      '<circle cx="31" cy="38" r="2.6" fill="var(--zhu)" opacity=".7"/>',
+      '<circle cx="70" cy="45" r="2.2" fill="var(--zhu)" opacity=".58"/>',
+      '<circle cx="50" cy="18" r="2.4" fill="var(--zhu)" opacity=".5"/>'
+    ]
+  },
+
+  /* 纟 —— 丝：两道撇折是缠绕的线环，提是绷直的丝 */
+  '纟': {
+    ink: [
+      S(6.4, 4.6, [40, 12], [15, 33], [43, 33]),          // 撇折一
+      S(6.4, 4.6, [45, 45], [19, 66], [47, 66]),          // 撇折二
+      S(4.6, 6.6, [19, 86], [88, 60])                     // 提 = 丝
+    ],
+    deco: [
+      '<path d="M31 22 L21 27 M33 31 L23 36" stroke="rgba(255,255,255,.52)" stroke-width="1.8"/>',
+      '<path d="M36 55 L26 60 M38 64 L28 69" stroke="rgba(255,255,255,.44)" stroke-width="1.8"/>',
+      '<path d="M44 82 L58 78 M62 76 L76 72" stroke="rgba(155,95,143,.5)" stroke-width="2"/>'
+    ]
+  },
+
+  /* 革 —— 皮革：整块皮张的轮廓，边缘带针脚 */
+  '革': {
+    ink: [
+      S(6.2, 5.6, [13, 11], [87, 11]),                    // 廿横
+      S(5.4, 3.8, [30, 11], [26, 34]),                    // 廿左竖
+      S(5.4, 3.8, [70, 11], [74, 34]),                    // 廿右竖
+      S(5.6, 5.2, [19, 34], [81, 34]),                    // 廿底横
+      S(5.6, 5.0, [28, 44], [28, 68]),                    // 口左竖
+      S(5.8, 5.0, [28, 44], [72, 44], [72, 68]),          // 口横折
+      S(5.6, 5.0, [28, 68], [72, 68]),                    // 口底横
+      S(7.2, 5.6, [50, 34], [50, 92]),                    // 中竖
+      S(5.8, 5.6, [25, 79], [75, 79])                     // 底横
+    ],
+    deco: [
+      '<path d="M13 7 C40 1 62 1 87 7 L87 93 C62 99 40 99 13 93Z" fill="var(--zhe)" opacity=".14"/>',
+      '<path d="M19 20 L21 24 M19 34 L21 38 M19 48 L21 52 M19 62 L21 66 M19 76 L21 80" stroke="rgba(122,92,62,.62)" stroke-width="1.6" stroke-linecap="round"/>',
+      '<path d="M81 20 L79 24 M81 34 L79 38 M81 48 L79 52 M81 62 L79 66 M81 76 L79 80" stroke="rgba(122,92,62,.62)" stroke-width="1.6" stroke-linecap="round"/>'
+    ]
+  },
+
+  /* 石 —— 石头：口变成一块带棱面的顽石，横是地平线 */
+  '石': {
+    ink: [
+      S(6.6, 6.0, [9, 22], [91, 22]),                     // 横
+      S(7.2, 3.6, [46, 22], [34, 40], [21, 55]),          // 撇
+      S(6.2, 5.6, [26, 59], [26, 90]),                    // 口左竖
+      S(6.4, 5.6, [26, 59], [76, 59], [76, 90]),          // 口横折
+      S(6.2, 5.6, [26, 90], [76, 90])                     // 口底横
+    ],
+    deco: [
+      '<path d="M32 66 L45 62 L59 68 L50 79Z" fill="rgba(255,255,255,.36)"/>',
+      '<path d="M60 72 L71 85" stroke="rgba(90,96,104,.5)" stroke-width="2" stroke-linecap="round"/>',
+      '<path d="M13 17 C28 14 44 14 58 17" stroke="rgba(120,126,134,.36)" stroke-width="2.4" fill="none"/>',
+      '<path d="M79 17 C83 15 89 15 93 17" stroke="rgba(120,126,134,.32)" stroke-width="2.4" fill="none"/>'
+    ]
+  },
+
+  /* 巾 —— 布帛：中竖是折痕，下部有布纹与垂坠 */
+  '巾': {
+    ink: [
+      S(6.2, 4.2, [30, 15], [26, 86]),                      // 左竖
+      S(6.4, 4.2, [29, 15], [74, 15], [70, 78], [59, 88]),  // 横折钩
+      S(6.6, 4.8, [50, 15], [50, 91])                       // 中竖 = 折痕
+    ],
+    deco: [
+      '<path d="M32 30 L68 30 M32 46 L68 46 M32 62 L68 62" stroke="rgba(168,104,122,.22)" stroke-width="2"/>',
+      '<path d="M29 34 L71 34 M29 50 L71 50 M29 66 L71 66" stroke="rgba(255,255,255,.36)" stroke-width="1.6"/>',
+      '<path d="M26 86 C40 90 60 90 71 84" stroke="rgba(168,104,122,.5)" stroke-width="2.4" fill="none" stroke-linecap="round"/>'
+    ]
+  },
+
+  /* 斤 —— 斧：横是木柄，两撇是斧背，下加金属斧刃 */
+  '斤': {
+    ink: [
+      S(6.0, 3.4, [32, 11], [17, 42]),                    // 撇一
+      S(6.0, 3.4, [56, 11], [49, 40]),                    // 撇二
+      S(6.6, 6.0, [15, 46], [87, 46]),                    // 横 = 柄
+      S(7.4, 4.8, [36, 46], [34, 91])                     // 竖
+    ],
+    deco: [
+      '<path d="M15 46 L62 46 L45 68 L18 59Z" fill="var(--hua)" opacity=".4"/>',
+      '<path d="M15 47 L62 47" stroke="rgba(255,255,255,.65)" stroke-width="2.2"/>',
+      '<path d="M40 53 L57 51" stroke="rgba(255,255,255,.42)" stroke-width="1.8"/>'
+    ]
+  },
+
+  /* 弓 —— 弓：木胎弯弓 + 一根绷紧的弦 */
+  '弓': {
+    ink: [
+      S(6.0, 4.4, [28, 14], [71, 14], [63, 45]),                        // 横折 = 上弓臂
+      S(5.1, 4.9, [34, 45], [68, 45]),                                  // 横 = 中弣
+      S(5.8, 4.2, [63, 45], [43, 55], [66, 55],                         // 竖折折钩 = 下弓臂
+                   [60, 74], [48, 88])                                  //   收尾的钩
+    ],
+    deco: [
+      '<path d="M28 15 L41 88" stroke="var(--mo-4)" stroke-width="1.8" fill="none" opacity=".85"/>',
+      '<path d="M36 45 L64 45" stroke="rgba(60,70,80,.45)" stroke-width="2.6" stroke-linecap="round"/>',
+      '<path d="M39 37 L62 37 M39 53 L60 53" stroke="rgba(122,92,62,.4)" stroke-width="1.8"/>'
+    ]
+  },
+
+  /* 刂 —— 刀：两把立刀，刃口描白 */
+  '刂': {
+    ink: [
+      S(6.0, 5.0, [37, 13], [40, 87]),                    // 竖
+      S(6.2, 4.8, [65, 17], [67, 78], [55, 89])           // 竖钩
+    ],
+    deco: [
+      '<path d="M40 15 L46 15 L49 85 L43 85Z" fill="rgba(255,255,255,.6)"/>',
+      '<path d="M68 19 L73 19 L76 77 L71 77Z" fill="rgba(255,255,255,.5)"/>',
+      '<circle cx="78" cy="34" r="2.8" fill="var(--teng)" opacity=".7"/>'
+    ]
+  },
+
+  /* 皿 —— 器皿：口沿加宽成盘，里面盛着水 */
+  '皿': {
+    ink: [
+      S(5.6, 5.0, [14, 30], [14, 65]),                    // 左竖
+      S(6.6, 5.6, [13, 30], [87, 30], [87, 65]),          // 横折 = 口沿
+      S(5.6, 5.0, [38, 30], [38, 65]),                    // 内竖一
+      S(5.6, 5.0, [62, 30], [62, 65]),                    // 内竖二
+      S(7.2, 6.6, [7, 67], [93, 67])                      // 底横 = 盘底
+    ],
+    deco: [
+      '<path d="M16 34 C40 31 60 31 85 34 L85 43 C60 46 40 46 16 43Z" fill="var(--hua)" opacity=".26"/>',
+      '<path d="M14 32 C40 29 60 29 86 32" stroke="rgba(255,255,255,.58)" stroke-width="2" fill="none"/>',
+      '<circle cx="29" cy="38" r="2.2" fill="var(--hua)" opacity=".5"/>',
+      '<circle cx="51" cy="40" r="1.8" fill="var(--hua)" opacity=".42"/>'
+    ]
+  },
+
+  /* ========================================================================
+   *  字形表 · 第二类：合成字（本批样张 10 个，覆盖 木/钅/犭/竹/火/虫/艹/鱼）
+   *  规则：左（或上）为形旁 -> 画成"物"，右（或下）为声旁 -> 画成"物的另一部分"，
+   *        两半合起来才是一个完整可辨认的物象，同时保住原字的骨架。
+   * ====================================================================== */
+
+  /* 枪 = 木 + 仓 —— 红缨枪：木为枪杆，仓化作枪头与红缨 */
+  '枪': {
+    ink: [
+      // 左 · 木 = 木质枪杆（保留木字旁骨架）
+      S(5.2, 4.6, [5, 35], [44, 35]),
+      S(5.6, 8.6, [25, 11], [25, 91]),
+      S(6.0, 2.4, [25, 35], [11, 62]),
+      S(5.0, 3.0, [25, 35], [39, 60]),
+      // 右 · 仓
+      S(5.6, 3.4, [72, 11], [52, 36]),                    // 人撇
+      S(5.0, 3.0, [72, 11], [90, 32]),                    // 人捺
+      S(5.0, 3.8, [50, 43], [89, 43], [85, 66]),          // 㔾横折钩
+      S(5.4, 3.2, [66, 43], [66, 69], [89, 65])           // 㔾竖弯钩
+    ],
+    deco: [
+      // 枪头：一片叶形金属刃，人以两笔作它的脊线
+      '<path d="M72 3 L49 38 L72 30 L94 38Z" fill="var(--hua)" opacity=".42"/>',
+      '<path d="M72 5 L72 32" stroke="rgba(255,255,255,.62)" stroke-width="2.2"/>',
+      '<path d="M70 8 L58 30" stroke="rgba(255,255,255,.34)" stroke-width="1.6"/>',
+      // 枪头下端的铜箍
+      '<path d="M56 40 L88 40 L88 46 L56 46Z" fill="var(--teng)" opacity=".55"/>',
+      // 红缨：从铜箍向下飘散
+      '<path d="M68 46 C62 62 56 78 52 96" stroke="var(--zhu)" stroke-width="4.4" fill="none" stroke-linecap="round" opacity=".9"/>',
+      '<path d="M72 46 C70 64 70 80 70 96" stroke="var(--zhu)" stroke-width="4" fill="none" stroke-linecap="round" opacity=".78"/>',
+      '<path d="M76 46 C82 62 86 78 88 94" stroke="var(--zhu)" stroke-width="3.6" fill="none" stroke-linecap="round" opacity=".66"/>',
+      '<circle cx="72" cy="45" r="5" fill="var(--zhu)"/>',
+      // 木纹
+      '<path d="M22 62 L28 62 M22 76 L28 76" stroke="rgba(255,255,255,.36)" stroke-width="1.8" stroke-linecap="round"/>'
+    ]
+  },
+
+  /* 棒 = 木 + 奉 —— 木棒：木是棍身，奉化作握柄缠绳 */
+  '棒': {
+    ink: [
+      S(5.2, 4.6, [5, 33], [42, 33]),
+      S(5.6, 9.2, [24, 10], [24, 91]),
+      S(6.0, 2.4, [24, 33], [10, 60]),
+      S(5.0, 3.0, [24, 33], [38, 58]),
+      // 右 · 奉
+      S(5.4, 5.0, [50, 13], [89, 13]),                    // 横一
+      S(5.4, 5.0, [43, 28], [95, 28]),                    // 横二
+      S(5.6, 3.2, [72, 30], [52, 50]),                    // 人撇
+      S(5.2, 3.2, [72, 30], [93, 48]),                    // 人捺
+      S(5.4, 5.0, [39, 58], [98, 58]),                    // 横三（最长）
+      S(6.4, 4.4, [70, 34], [70, 92])                     // 竖
+    ],
+    deco: [
+      // 棍身木纹 + 端头圆头
+      '<path d="M21 46 L27 46 M21 60 L27 60 M21 74 L27 74" stroke="rgba(255,255,255,.36)" stroke-width="1.8" stroke-linecap="round"/>',
+      '<ellipse cx="24" cy="12" rx="5.8" ry="4.2" fill="rgba(255,255,255,.26)"/>',
+      // 握柄缠绳：两道斜缠，压在横三与竖的交界
+      '<path d="M76 62 L92 68 M76 72 L92 78" stroke="rgba(154,91,49,.48)" stroke-width="3.6" stroke-linecap="round"/>'
+    ]
+  },
+
+  /* 梅 = 木 + 每 —— 梅：木是老梅枝干，每化作梅花簇 */
+  '梅': {
+    ink: [
+      S(5.0, 4.4, [5, 31], [41, 31]),
+      S(5.6, 8.0, [23, 9], [21, 50], [25, 91]),           // 略带虬曲的枝干
+      S(5.8, 2.4, [23, 31], [9, 58]),
+      S(4.8, 3.0, [23, 31], [37, 56]),
+      // 右 · 每
+      S(5.0, 3.0, [70, 11], [53, 31]),                    // 人撇
+      S(4.6, 3.0, [70, 11], [88, 29]),                    // 人捺
+      S(5.0, 4.0, [52, 40], [52, 70], [88, 70]),          // 竖折
+      S(4.6, 4.6, [48, 54], [93, 54]),                    // 长横
+      S(5.0, 3.6, [56, 36], [88, 36], [84, 64]),          // 横折钩
+      S(4.0, 3.0, [64, 60], [68, 66]),                    // 点一
+      S(4.0, 3.0, [78, 60], [82, 66])                     // 点二
+    ],
+    deco: [
+      // 三条梅枝，把三朵花串起来
+      '<path d="M56 30 C66 26 78 34 86 42 M86 44 C78 58 70 70 66 80" stroke="rgba(122,72,44,.55)" stroke-width="2.6" fill="none"/>',
+      // 梅花三朵（五瓣 + 朱砂花心）
+      '<g fill="#fbf6ee" stroke="rgba(178,58,46,.55)" stroke-width="1.2">' +
+        '<ellipse cx="55" cy="26" rx="4.2" ry="3"/><ellipse cx="63" cy="23" rx="4.2" ry="3"/>' +
+        '<ellipse cx="68" cy="30" rx="4.2" ry="3"/><ellipse cx="61" cy="33" rx="4.2" ry="3"/>' +
+        '<ellipse cx="52" cy="33" rx="4.2" ry="3"/></g>' +
+      '<circle cx="59" cy="29" r="2.4" fill="var(--zhu)"/>',
+      '<g fill="#fbf6ee" stroke="rgba(178,58,46,.55)" stroke-width="1.2">' +
+        '<ellipse cx="86" cy="40" rx="4" ry="2.9"/><ellipse cx="94" cy="37" rx="4" ry="2.9"/>' +
+        '<ellipse cx="98" cy="44" rx="4" ry="2.9"/><ellipse cx="91" cy="47" rx="4" ry="2.9"/>' +
+        '<ellipse cx="83" cy="47" rx="4" ry="2.9"/></g>' +
+      '<circle cx="90" cy="43" r="2.3" fill="var(--zhu)"/>',
+      '<g fill="#fbf6ee" stroke="rgba(178,58,46,.55)" stroke-width="1.2">' +
+        '<ellipse cx="67" cy="79" rx="4" ry="2.9"/><ellipse cx="75" cy="76" rx="4" ry="2.9"/>' +
+        '<ellipse cx="79" cy="83" rx="4" ry="2.9"/><ellipse cx="72" cy="86" rx="4" ry="2.9"/>' +
+        '<ellipse cx="64" cy="86" rx="4" ry="2.9"/></g>' +
+      '<circle cx="71" cy="82" r="2.3" fill="var(--zhu)"/>'
+    ]
+  },
+
+  /* 铜 = 钅 + 同 —— 铜器：钅是铜锭，同化作一件青铜器的器身 */
+  '铜': {
+    ink: [
+      S(5.4, 3.2, [16, 11], [33, 29]),                    // 撇
+      S(4.8, 4.8, [9, 32], [50, 32]),                     // 横一
+      S(4.8, 4.8, [11, 48], [48, 48]),                    // 横二
+      S(4.8, 4.8, [13, 64], [46, 64]),                    // 横三
+      S(6.2, 3.8, [33, 29], [31, 71], [31, 79], [51, 69]),// 竖提
+      // 右 · 同
+      S(5.6, 4.6, [56, 15], [56, 89]),                    // 左竖
+      S(5.8, 4.6, [56, 15], [95, 15], [93, 87]),          // 横折钩
+      S(4.4, 4.2, [62, 33], [89, 33]),                    // 内横
+      S(4.4, 4.0, [68, 45], [68, 71]),                    // 口左竖
+      S(4.6, 4.0, [68, 45], [84, 45], [84, 71]),          // 口横折
+      S(4.4, 4.0, [68, 71], [84, 71])                     // 口底横
+    ],
+    deco: [
+      // 铜色：给整组笔画压一层暖铜光泽
+      '<path d="M9 30 L50 30 L48 46 L11 46Z" fill="#b87333" opacity=".20"/>',
+      '<path d="M34 32 L38 32 L35 78 L32 78Z" fill="rgba(255,255,255,.5)"/>',
+      // 铜绿：器身上的锈斑
+      '<circle cx="62" cy="24" r="4" fill="var(--qing)" opacity=".34"/>',
+      '<circle cx="88" cy="34" r="3.2" fill="var(--qing)" opacity=".28"/>',
+      '<circle cx="76" cy="80" r="3.6" fill="var(--qing)" opacity=".3"/>',
+      // 器口沿的高光
+      '<path d="M58 17 C72 15 84 15 93 17" stroke="rgba(255,255,255,.55)" stroke-width="1.8" fill="none"/>'
+    ]
+  },
+
+  /* 狗 = 犭 + 句 —— 狗：犭是犬身，句化作犬首与项圈 */
+  '狗': {
+    ink: [
+      S(5.6, 3.0, [41, 11], [21, 32]),                    // 撇 = 犬耳
+      S(6.6, 4.0, [31, 9], [44, 27], [35, 48], [38, 69], [53, 80]),  // 弯钩 = 犬脊
+      S(5.8, 2.4, [40, 41], [28, 61], [19, 80]),          // 撇 = 前腿
+      // 右 · 句（勹为犬首轮廓，口为项圈铜牌）
+      S(5.6, 3.4, [84, 9], [50, 36]),                     // 勹撇
+      S(5.6, 4.0, [52, 32], [96, 34], [89, 66]),          // 勹横折钩
+      S(5.0, 4.4, [60, 44], [60, 66]),                    // 口左竖
+      S(5.4, 4.4, [60, 44], [81, 44], [81, 66]),          // 口横折
+      S(5.0, 4.4, [60, 66], [81, 66])                     // 口底横
+    ],
+    deco: [
+      // 犬首：犬耳 + 鼻头 + 眼
+      '<path d="M84 8 C91 13 93 22 89 29 C83 24 80 15 84 8Z" fill="var(--zhe)" opacity=".72"/>',
+      '<circle cx="78" cy="24" r="3" fill="var(--mo-1)"/>',
+      '<circle cx="55" cy="34" r="3.2" fill="var(--zhe)" opacity=".7"/>',
+      // 项圈：细红线压在黄铜牌（那个「口」）上方
+      '<path d="M56 40 C68 43 82 43 94 41" stroke="var(--zhu)" stroke-width="2.6" fill="none" stroke-linecap="round"/>',
+      '<rect x="62" y="46" width="17" height="18" rx="2.5" fill="var(--teng)" opacity=".42"/>'
+    ]
+  },
+
+  /* 笼 = 竹 + 龙 —— 竹笼：上为竹骨，下为编笼 */
+  '笼': {
+    ink: [
+      // 上 · 竹
+      S(5.0, 3.0, [12, 37], [28, 13]),                    // 左撇
+      S(4.4, 4.2, [14, 43], [43, 43]),                    // 左横
+      S(5.4, 3.4, [28, 37], [28, 57]),                    // 左竖
+      S(5.0, 3.0, [52, 37], [68, 13]),                    // 右撇
+      S(4.4, 4.2, [54, 43], [83, 43]),                    // 右横
+      S(5.4, 3.4, [68, 37], [68, 57]),                    // 右竖
+      // 下 · 龙
+      S(5.0, 4.6, [14, 61], [86, 61]),                    // 横
+      S(5.6, 3.0, [50, 68], [28, 93]),                    // 撇
+      S(6.0, 4.0, [62, 61], [66, 84], [90, 76]),          // 竖弯钩
+      S(4.4, 3.0, [76, 64], [82, 71])                     // 点
+    ],
+    deco: [
+      // 笼身：竖向竹骨
+      '<path d="M20 61 L18 92 M32 61 L31 94 M44 61 L44 95 M56 61 L57 94 M68 61 L70 92 M80 61 L82 90" stroke="rgba(90,140,110,.5)" stroke-width="2" stroke-linecap="round"/>',
+      // 笼身：横向编篾
+      '<path d="M16 70 C40 74 66 74 88 69 M16 80 C40 84 66 84 88 79" stroke="rgba(90,140,110,.42)" stroke-width="2" fill="none"/>',
+      // 提梁
+      '<path d="M34 44 C40 24 62 24 68 44" stroke="rgba(122,92,62,.6)" stroke-width="3" fill="none"/>'
+    ]
+  },
+
+  /* 烛 = 火 + 虫 —— 蜡烛：火是烛焰，虫化作烛身与蜡泪 */
+  '烛': {
+    ink: [
+      // 左 · 火字旁（火舌要足够粗才读得出来）
+      S(5.4, 3.0, [36, 10], [24, 25]),                    // 点
+      S(5.4, 3.0, [50, 14], [56, 29]),                    // 撇
+      S(8.0, 2.6, [38, 19], [29, 50], [15, 87]),          // 撇 = 火舌
+      S(6.4, 3.4, [36, 21], [43, 48], [49, 63]),          // 点 = 火舌（右）
+      // 右 · 虫
+      S(5.2, 4.6, [58, 30], [58, 53]),                    // 口左竖
+      S(5.4, 4.6, [58, 30], [91, 30], [91, 53]),          // 口横折
+      S(5.2, 4.6, [58, 53], [91, 53]),                    // 口底横
+      S(6.8, 4.8, [74, 53], [74, 91]),                    // 竖 = 烛身
+      S(4.6, 3.0, [74, 72], [92, 64]),                    // 提
+      S(4.6, 3.4, [84, 80], [89, 87])                     // 点 = 蜡滴
+    ],
+    deco: [
+      // 焰心：一条上尖下圆的水滴形，外侧再罩一层光晕
+      '<circle cx="29" cy="34" r="17" fill="var(--teng)" opacity=".13"/>',
+      '<path d="M33 17 C41 31 42 48 37 60 C34 67 26 67 22 60 C17 48 22 31 33 17Z" fill="var(--zhu)" opacity=".5"/>',
+      '<path d="M33 28 C37 38 37 48 34 56 C32 60 28 60 26 56 C23 48 26 38 33 28Z" fill="var(--teng)" opacity=".78"/>',
+      // 烛口熔蜡：口的上沿被蜡填平
+      '<path d="M59 33 C70 29 80 29 90 33 L90 40 C80 44 70 44 59 40Z" fill="#fbf6ee" opacity=".7"/>',
+      // 蜡泪顺烛身流下
+      '<path d="M70 40 C68 50 68 58 69 66" stroke="#fbf6ee" stroke-width="3.4" fill="none" stroke-linecap="round" opacity=".8"/>',
+      '<path d="M80 40 C82 48 82 54 81 60" stroke="#fbf6ee" stroke-width="2.8" fill="none" stroke-linecap="round" opacity=".66"/>',
+      '<path d="M74 55 L74 88" stroke="rgba(255,255,255,.5)" stroke-width="2"/>'
+    ]
+  },
+
+  /* 虾 = 虫 + 下 —— 虾：虫是虾身，下化作尾扇 */
+  '虾': {
+    ink: [
+      S(4.8, 4.2, [14, 30], [14, 53]),                    // 口左竖
+      S(5.0, 4.2, [14, 30], [45, 30], [45, 53]),          // 口横折
+      S(4.8, 4.2, [14, 53], [45, 53]),                    // 口底横
+      S(6.0, 4.4, [30, 53], [30, 90]),                    // 竖 = 虾身
+      S(4.2, 2.8, [30, 72], [46, 64]),                    // 提 = 足
+      S(4.2, 3.2, [40, 80], [45, 87]),                    // 点 = 足尖
+      // 右 · 下
+      S(5.6, 5.0, [52, 34], [98, 34]),                    // 横 = 尾扇
+      S(6.0, 4.2, [75, 34], [75, 92]),                    // 竖 = 尾柄
+      S(4.4, 3.2, [81, 42], [87, 53])                     // 点 = 后足
+    ],
+    deco: [
+      // 虾须
+      '<path d="M14 28 C6 20 2 14 3 8 M45 28 C52 19 56 13 56 7" stroke="rgba(160,90,70,.5)" stroke-width="1.8" fill="none"/>',
+      // 环节
+      '<path d="M16 42 L43 42 M16 48 L43 48" stroke="rgba(255,255,255,.5)" stroke-width="1.8"/>',
+      '<path d="M30 60 L44 56 M30 70 L44 66" stroke="rgba(178,58,46,.42)" stroke-width="2.2"/>',
+      // 尾扇的扇褶
+      '<path d="M54 40 L74 48 L96 40 M54 50 L74 56 L96 50" stroke="rgba(178,58,46,.42)" stroke-width="2.4" fill="none"/>',
+      '<circle cx="30" cy="24" r="2.8" fill="var(--mo-1)"/>'
+    ]
+  },
+
+  /* 莲 = 艹 + 连 —— 莲花：上为荷叶，下为莲瓣与涟漪 */
+  '莲': {
+    ink: [
+      // 上 · 艹
+      S(5.6, 5.2, [7, 40], [93, 40]),                     // 横 = 水面
+      S(5.4, 3.0, [30, 40], [27, 14]),                    // 左茎
+      S(5.4, 3.0, [70, 40], [73, 14]),                    // 右茎
+      // 下 · 连
+      S(4.8, 4.4, [22, 54], [74, 54]),                    // 车横
+      S(4.8, 3.4, [58, 54], [34, 70]),                    // 撇折
+      S(4.8, 4.4, [26, 72], [68, 72]),                    // 车横二
+      S(5.6, 4.0, [48, 54], [45, 91]),                    // 车竖
+      S(4.4, 3.0, [30, 60], [24, 68]),                    // 辶点
+      S(4.4, 3.4, [24, 78], [34, 84], [26, 90]),          // 辶折
+      S(4.2, 6.4, [28, 90], [60, 93], [92, 87])           // 平捺 = 水波
+    ],
+    deco: [
+      // 两片荷叶（圆盘带缺口）
+      '<path d="M27 12 C18 4 28 -2 38 2 C46 5 44 15 36 17 C33 18 30 16 27 12Z" fill="var(--qing)" opacity=".42"/>',
+      '<path d="M73 12 C64 4 74 -2 84 2 C92 5 90 15 82 17 C79 18 76 16 73 12Z" fill="var(--qing)" opacity=".36"/>',
+      // 莲瓣：五片尖瓣
+      '<g fill="#f7e6ea" stroke="rgba(178,58,46,.5)" stroke-width="1.3">' +
+        '<path d="M48 30 C44 40 44 50 48 58 C52 50 52 40 48 30Z"/>' +
+        '<path d="M36 36 C34 46 36 54 42 60 C44 50 42 42 36 36Z"/>' +
+        '<path d="M60 36 C62 46 60 54 54 60 C52 50 54 42 60 36Z"/>' +
+        '<path d="M28 46 C28 54 32 60 38 64 C36 56 33 50 28 46Z"/>' +
+        '<path d="M68 46 C68 54 64 60 58 64 C60 56 63 50 68 46Z"/></g>',
+      '<circle cx="48" cy="52" r="3.4" fill="var(--teng)"/>',
+      // 涟漪
+      '<path d="M14 80 C34 76 66 76 88 80" stroke="rgba(47,85,112,.32)" stroke-width="2" fill="none"/>'
+    ]
+  },
+
+  /* 鲤 = 鱼 + 里 —— 鲤鱼：鱼是头身鳞格，里化作尾鳍 */
+  '鲤': {
+    ink: [
+      S(5.2, 3.2, [31, 9], [14, 29]),                     // 鱼头撇
+      S(5.2, 3.6, [16, 27], [40, 27], [27, 44]),          // 横撇
+      S(4.8, 4.2, [20, 47], [20, 77]),                    // 田左竖
+      S(5.0, 4.2, [20, 47], [44, 47], [44, 77]),          // 田横折
+      S(4.2, 3.8, [20, 62], [44, 62]),                    // 田中横
+      S(4.8, 4.2, [20, 77], [44, 77]),                    // 田底横
+      S(5.4, 5.0, [9, 89], [46, 89]),                     // 尾
+      // 右 · 里
+      S(5.0, 4.4, [55, 27], [55, 57]),                    // 日左竖
+      S(5.2, 4.4, [55, 27], [96, 27], [96, 57]),          // 日横折
+      S(4.2, 3.8, [55, 42], [96, 42]),                    // 日中横
+      S(5.0, 4.4, [55, 57], [96, 57]),                    // 日底横
+      S(5.6, 4.2, [75, 57], [75, 92]),                    // 土竖
+      S(5.0, 4.6, [57, 73], [94, 73]),                    // 土横
+      S(5.6, 5.0, [51, 92], [98, 92])                     // 土底横
+    ],
+    deco: [
+      '<circle cx="28" cy="22" r="3" fill="var(--mo-1)"/>',
+      // 鱼须
+      '<path d="M14 30 C6 34 2 42 3 50" stroke="rgba(160,90,70,.5)" stroke-width="1.8" fill="none"/>',
+      // 鳞格高光
+      '<path d="M25 55 C29 58 33 58 37 55 M25 69 C29 72 33 72 37 69" stroke="rgba(255,255,255,.48)" stroke-width="1.8" fill="none"/>',
+      '<path d="M62 35 C65 38 68 38 71 35 M84 35 C87 38 90 38 93 35" stroke="rgba(255,255,255,.46)" stroke-width="1.6" fill="none"/>',
+      // 尾鳍：土的三横变成鳍条散开
+      '<path d="M54 88 C46 94 42 98 40 99 M62 90 C58 95 56 98 55 99 M72 90 C74 95 76 98 77 99" stroke="var(--zhu)" stroke-width="3" fill="none" stroke-linecap="round" opacity=".62"/>'
+    ]
+  }
+};
+
+/* ---------------------------------------------------------------- 输出 */
+let __uid = 0;
+
+/**
+ * 生成字形 SVG。
+ * @param {string} ch 汉字
+ * @param {object} [o] { ink: 笔画颜色, cls: 附加 class }
+ * @returns {string} <svg> 字符串；表里没有的字返回 null（调用方回退成文字）
+ */
+function glyphSVG(ch, o) {
+  o = o || {};
+  const g = GLYPHS[ch];
+  if (!g) return null;
+  const id = 'k' + (++__uid);
+  const inkColor = o.ink || INK.mo;
+
+  let body = '';
+  for (const s of g.ink) {
+    body += '<path d="' + brush(s.p, s.w[0], s.w[1], s) + '" fill="' + inkColor + '"/>';
+  }
+  for (const d of (g.deco || [])) body += d;
+
+  return '<svg viewBox="0 0 100 100" class="glyph ' + (o.cls || '') + '" ' +
+         'aria-hidden="true" focusable="false">' + body + '</svg>';
+}
+</script>
+<script>
+/* ---------------------------------------------------------- 渲染评审页 */
+const MO = [
+  ['--mo-1','焦墨','标题、关键笔画'], ['--mo-2','浓墨','主体笔画'],
+  ['--mo-3','重墨','正文'], ['--mo-4','淡墨','提示、禁用'], ['--mo-5','清墨','分隔线']
+];
+const PAINT = [
+  ['--zhe','赭石','木 · 土'], ['--zhu','朱砂','印 · 流苏'],
+  ['--hua','花青','水 · 金属冷光'], ['--teng','藤黄','蕊 · 焰'], ['--qing','玉青','草木 · 部件牌']
+];
+
+document.getElementById('ramp-mo').innerHTML = MO.map(([v,n,d]) =>
+  `<div class="sw" style="background:var(${v});color:${n==='清墨'||n==='淡墨'?'#2b2e33':'#f6f1e4'}">
+     <b style="font-size:13px">${n}</b><span style="font-size:11px;opacity:.75">${d}</span></div>`).join('');
+
+document.getElementById('ramp-paint').innerHTML = PAINT.map(([v,n,d]) =>
+  `<div class="sw" style="background:var(${v})"><b style="font-size:13px">${n}</b>
+     <span style="font-size:11px;opacity:.85">${d}</span></div>`).join('');
+
+/* 字牌三态 */
+document.getElementById('tile-demo').innerHTML = [
+  ['木','t-radical','偏旁牌 · 赭石角标'], ['仓','t-part','部件牌 · 花青味'],
+  ['昆','t-junk','干扰牌 · 清墨褪色']
+].map(([ch,cls,cap]) =>
+  `<div class="cell"><div class="box ink-tile ${cls}" data-ch="${ch}"></div>
+   <div class="cap" style="font-size:12px;font-weight:400;color:var(--mo-4)">${cap}</div></div>`).join('');
+
+/* 形旁（17） */
+const RADS = [['木','树'],['艹','草叶'],['钅','金属锭'],['竹','竹竿'],['犭','走兽'],['鸟','禽'],
+              ['虫','虫豸'],['鱼','鱼'],['火','火焰'],['纟','丝线'],['革','皮张'],['石','顽石'],
+              ['巾','布帛'],['斤','斧'],['弓','弓'],['刂','刀'],['皿','器皿']];
+document.getElementById('rad-grid').innerHTML = RADS.map(([ch,g]) =>
+  `<div class="cell"><div class="box ink-tile t-radical" data-ch="${ch}"></div>
+   <div class="cap">${ch}<span class="orig">${ch}</span><span class="gl">${g}</span></div></div>`).join('');
+
+/* 合成字（10） */
+const WORDS = [['枪','红缨枪'],['棒','木棒'],['梅','梅枝'],['铜','铜器'],['狗','犬'],
+               ['笼','竹笼'],['烛','蜡烛'],['虾','虾'],['莲','莲花'],['鲤','鲤鱼']];
+document.getElementById('word-grid').innerHTML = WORDS.map(([ch,g]) =>
+  `<div class="cell"><div class="box ink-tile" style="background:linear-gradient(160deg,#f8f2e2,#efe6cf)"
+     data-ch="${ch}"></div>
+   <div class="cap">${ch}<span class="orig">${ch}</span><span class="gl">${g}</span></div></div>`).join('');
+
+/* 首页样张的三个小牌 */
+document.querySelectorAll('.home-hero .box').forEach(b => {
+  b.classList.add('ink-tile'); b.style.width = '62px'; b.style.height = '62px';
+});
+
+/* 玩法页样张：真的排一个 5×6 的盘 */
+const BOARD = [
+  ['枪','木','棍','仓','棒','奉'],
+  ['昆','木','槌','追','杖','丈'],
+  ['钅','垂','锤','勾','镰','廉'],
+  ['箭','竹','前','铠','岂','锏'],
+  ['间','革','鞭','便','靶','巴']
+];
+document.getElementById('mock-board').innerHTML = BOARD.flat().map(ch => {
+  // 只有形旁与已画出的部件才有字形，其余用文字兜底
+  const isRad = ['木','钅','竹','革','艹','犭','虫','火','纟','鱼','石','巾','斤','弓','刂','皿','鸟'].includes(ch);
+  const cls = isRad ? 't-radical' : 't-part';
+  return `<div class="bt ink-tile ${cls}" data-ch="${ch}"></div>`;
+}).join('');
+
+/* 结算样张 */
+document.getElementById('mock-clear').innerHTML = ['枪','棍','棒','槌','锤','镰']
+  .map(ch => `<div class="box ink-tile" data-ch="${ch}"></div>`).join('');
+
+/* 统一填字形；表里没有的字回退成楷体文字，绝不留空白 */
+document.querySelectorAll('[data-ch]').forEach(el => {
+  const ch = el.dataset.ch;
+  const svg = glyphSVG(ch);
+  if (svg) { el.innerHTML = svg; }
+  else {
+    el.innerHTML = `<span style="font-family:var(--kai);font-weight:700;color:var(--mo-3);
+      font-size:${Math.max(18, Math.round(el.clientWidth * 0.52))}px;line-height:1">${ch}</span>`;
+    el.style.display = 'flex'; el.style.alignItems = 'center'; el.style.justifyContent = 'center';
+  }
+});
+</script>
+</body>
+</html>

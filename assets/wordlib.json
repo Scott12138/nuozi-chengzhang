@@ -1,0 +1,1399 @@
+{
+  "meta": {
+    "game": "挪字成章",
+    "libVersion": "1.0.0",
+    "updated": "2026-10-01",
+    "totalWords": 103,
+    "structureCode": {
+      "lr": "左右结构（偏旁在左，部件在右）—— 如 枪 = 木 + 仓",
+      "tb": "上下结构（偏旁在上，部件在下）—— 如 箭 = 竹 + 前",
+      "ob": "半包围结构，本作暂不收录"
+    },
+    "authoringRule": "拆分依据《现代汉语词典》部首检字法 + 形声字「形旁+声旁」结构。所有条目必须人工校验，禁止用算法自动推导。新增字必须同时补全 pinyin / gloss / tag 三项，缺一不可。",
+    "tagUsage": "tag 用于第三章「逛三园」结算念白与图鉴分组，取值见 tagGroups。",
+    "fieldSemantics": {
+      "radical": "牌面第一个部件，对应结构中靠左/靠上的那一半。注意：它【不一定】是形旁。例：鸽=合+鸟（形旁在右），radical 记「合」、part 记「鸟」。",
+      "part": "牌面第二个部件，对应结构中靠右/靠下的那一半。",
+      "structure": "lr=左右（radical 在左） / tb=上下（radical 在上）。仅用于拼字动画的合成方向，不参与配对判定。",
+      "pairRule": "配对判定【不区分左右顺序、不区分形旁声旁】：只要两张牌能组成本章目标字库中的某一个字（或某一张彩蛋字），即判定合法。组合「木+仓」与「仓+木」等价，因为玩家连线的先后顺序是随机的。"
+    }
+  },
+  "tagGroups": {
+    "兵器": [
+      "枪",
+      "棍",
+      "棒",
+      "杖",
+      "柄",
+      "槌",
+      "杵",
+      "锤",
+      "钩",
+      "镰",
+      "锏",
+      "箭",
+      "鞭",
+      "鞘",
+      "靶",
+      "斧",
+      "弩",
+      "剑",
+      "铠"
+    ],
+    "花卉": [
+      "花",
+      "莲",
+      "莉",
+      "茉",
+      "蓉",
+      "苇",
+      "萍",
+      "萝",
+      "蕾",
+      "荷"
+    ],
+    "树木": [
+      "桃",
+      "柳",
+      "梅",
+      "桂",
+      "枫",
+      "桦",
+      "樱",
+      "松",
+      "柏",
+      "桐"
+    ],
+    "水果": [
+      "杏",
+      "李",
+      "柿",
+      "柚",
+      "柑",
+      "橙",
+      "榴",
+      "蕉",
+      "莓",
+      "蔗",
+      "柠"
+    ],
+    "走兽": [
+      "猫",
+      "狗",
+      "狐",
+      "狼",
+      "猴",
+      "狮",
+      "猪",
+      "狸"
+    ],
+    "飞禽": [
+      "鸽",
+      "鹅",
+      "鹊",
+      "鸭"
+    ],
+    "虫豸": [
+      "蚂",
+      "蚁",
+      "蜘",
+      "蛛"
+    ],
+    "鳞介": [
+      "鲤",
+      "鲸",
+      "鲨"
+    ],
+    "植物": [
+      "苔",
+      "梧",
+      "榆",
+      "杉",
+      "芦",
+      "蒲",
+      "藻",
+      "蓬",
+      "茅",
+      "苍"
+    ],
+    "器物": [
+      "灯",
+      "炉",
+      "烛",
+      "烧",
+      "烤",
+      "炸",
+      "针",
+      "钉",
+      "钟",
+      "钥",
+      "箱",
+      "筐",
+      "篮",
+      "筷",
+      "笼",
+      "纸",
+      "纱",
+      "绸",
+      "帐",
+      "柜",
+      "椅",
+      "杯",
+      "碗",
+      "盆"
+    ]
+  },
+  "chapters": [
+    {
+      "id": "ch1",
+      "index": 1,
+      "name": "十八般兵器",
+      "subtitle": "木字旁的热血江湖",
+      "hook": "枪棍棒，十八般武艺，件件拆得开",
+      "radicalFocus": [
+        "木",
+        "钅",
+        "竹",
+        "革"
+      ],
+      "unlockStars": 0,
+      "levels": 8,
+      "words": [
+        {
+          "word": "枪",
+          "pinyin": "qiāng",
+          "gloss": "长柄刺击的兵器",
+          "structure": "lr",
+          "radical": "木",
+          "part": "仓",
+          "tag": "兵器",
+          "tier": 1
+        },
+        {
+          "word": "棍",
+          "pinyin": "gùn",
+          "gloss": "棒状的兵器",
+          "structure": "lr",
+          "radical": "木",
+          "part": "昆",
+          "tag": "兵器",
+          "tier": 1
+        },
+        {
+          "word": "棒",
+          "pinyin": "bàng",
+          "gloss": "较粗的棍子",
+          "structure": "lr",
+          "radical": "木",
+          "part": "奉",
+          "tag": "兵器",
+          "tier": 1
+        },
+        {
+          "word": "杖",
+          "pinyin": "zhàng",
+          "gloss": "手杖，也可作兵器",
+          "structure": "lr",
+          "radical": "木",
+          "part": "丈",
+          "tag": "兵器",
+          "tier": 1
+        },
+        {
+          "word": "柄",
+          "pinyin": "bǐng",
+          "gloss": "器物的把儿",
+          "structure": "lr",
+          "radical": "木",
+          "part": "丙",
+          "tag": "兵器",
+          "tier": 1
+        },
+        {
+          "word": "槌",
+          "pinyin": "chuí",
+          "gloss": "敲打的用具",
+          "structure": "lr",
+          "radical": "木",
+          "part": "追",
+          "tag": "兵器",
+          "tier": 2
+        },
+        {
+          "word": "杵",
+          "pinyin": "chǔ",
+          "gloss": "捣物的棒槌",
+          "structure": "lr",
+          "radical": "木",
+          "part": "午",
+          "tag": "兵器",
+          "tier": 2
+        },
+        {
+          "word": "锤",
+          "pinyin": "chuí",
+          "gloss": "金属敲击兵器",
+          "structure": "lr",
+          "radical": "钅",
+          "part": "垂",
+          "tag": "兵器",
+          "tier": 2
+        },
+        {
+          "word": "钩",
+          "pinyin": "gōu",
+          "gloss": "弯曲带尖的兵器",
+          "structure": "lr",
+          "radical": "钅",
+          "part": "勾",
+          "tag": "兵器",
+          "tier": 2
+        },
+        {
+          "word": "镰",
+          "pinyin": "lián",
+          "gloss": "割草的弯刀",
+          "structure": "lr",
+          "radical": "钅",
+          "part": "廉",
+          "tag": "兵器",
+          "tier": 3
+        },
+        {
+          "word": "锏",
+          "pinyin": "jiǎn",
+          "gloss": "古代的一种短兵器",
+          "structure": "lr",
+          "radical": "钅",
+          "part": "间",
+          "tag": "兵器",
+          "tier": 3
+        },
+        {
+          "word": "箭",
+          "pinyin": "jiàn",
+          "gloss": "搭在弓上发射的武器",
+          "structure": "tb",
+          "radical": "竹",
+          "part": "前",
+          "tag": "兵器",
+          "tier": 2
+        },
+        {
+          "word": "鞭",
+          "pinyin": "biān",
+          "gloss": "长条形软兵器",
+          "structure": "lr",
+          "radical": "革",
+          "part": "便",
+          "tag": "兵器",
+          "tier": 3
+        },
+        {
+          "word": "鞘",
+          "pinyin": "qiào",
+          "gloss": "装刀剑的套子",
+          "structure": "lr",
+          "radical": "革",
+          "part": "肖",
+          "tag": "兵器",
+          "tier": 3
+        },
+        {
+          "word": "靶",
+          "pinyin": "bǎ",
+          "gloss": "射击练习的目标",
+          "structure": "lr",
+          "radical": "革",
+          "part": "巴",
+          "tag": "兵器",
+          "tier": 3
+        },
+        {
+          "word": "斧",
+          "pinyin": "fǔ",
+          "gloss": "劈砍用的工具或兵器",
+          "structure": "tb",
+          "radical": "父",
+          "part": "斤",
+          "tag": "兵器",
+          "tier": 3
+        },
+        {
+          "word": "弩",
+          "pinyin": "nǔ",
+          "gloss": "用机关射箭的弓",
+          "structure": "tb",
+          "radical": "奴",
+          "part": "弓",
+          "tag": "兵器",
+          "tier": 3
+        },
+        {
+          "word": "剑",
+          "pinyin": "jiàn",
+          "gloss": "双刃的直兵器",
+          "structure": "lr",
+          "radical": "佥",
+          "part": "刂",
+          "tag": "兵器",
+          "tier": 3
+        },
+        {
+          "word": "铠",
+          "pinyin": "kǎi",
+          "gloss": "护身的铁甲",
+          "structure": "lr",
+          "radical": "钅",
+          "part": "岂",
+          "tag": "兵器",
+          "tier": 3
+        }
+      ]
+    },
+    {
+      "id": "ch2",
+      "index": 2,
+      "name": "百花园",
+      "subtitle": "草字头与木字旁的温柔",
+      "hook": "花有化，木有公，一朵一朵拆出来",
+      "radicalFocus": [
+        "艹",
+        "木"
+      ],
+      "unlockStars": 8,
+      "levels": 8,
+      "words": [
+        {
+          "word": "花",
+          "pinyin": "huā",
+          "gloss": "植物的花朵",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "化",
+          "tag": "花卉",
+          "tier": 1
+        },
+        {
+          "word": "莲",
+          "pinyin": "lián",
+          "gloss": "荷花",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "连",
+          "tag": "花卉",
+          "tier": 1
+        },
+        {
+          "word": "莉",
+          "pinyin": "lì",
+          "gloss": "茉莉",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "利",
+          "tag": "花卉",
+          "tier": 1
+        },
+        {
+          "word": "茉",
+          "pinyin": "mò",
+          "gloss": "茉莉",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "末",
+          "tag": "花卉",
+          "tier": 1
+        },
+        {
+          "word": "蓉",
+          "pinyin": "róng",
+          "gloss": "芙蓉",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "容",
+          "tag": "花卉",
+          "tier": 2
+        },
+        {
+          "word": "苇",
+          "pinyin": "wěi",
+          "gloss": "芦苇",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "韦",
+          "tag": "花卉",
+          "tier": 2
+        },
+        {
+          "word": "萍",
+          "pinyin": "píng",
+          "gloss": "浮萍",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "平",
+          "tag": "花卉",
+          "tier": 2
+        },
+        {
+          "word": "萝",
+          "pinyin": "luó",
+          "gloss": "藤萝",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "罗",
+          "tag": "花卉",
+          "tier": 2
+        },
+        {
+          "word": "蕾",
+          "pinyin": "lěi",
+          "gloss": "含苞未放的花",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "雷",
+          "tag": "花卉",
+          "tier": 3
+        },
+        {
+          "word": "荷",
+          "pinyin": "hé",
+          "gloss": "荷花",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "何",
+          "tag": "花卉",
+          "tier": 3
+        },
+        {
+          "word": "桃",
+          "pinyin": "táo",
+          "gloss": "桃树，桃花",
+          "structure": "lr",
+          "radical": "木",
+          "part": "兆",
+          "tag": "树木",
+          "tier": 1
+        },
+        {
+          "word": "柳",
+          "pinyin": "liǔ",
+          "gloss": "柳树",
+          "structure": "lr",
+          "radical": "木",
+          "part": "卯",
+          "tag": "树木",
+          "tier": 1
+        },
+        {
+          "word": "梅",
+          "pinyin": "méi",
+          "gloss": "梅花，梅树",
+          "structure": "lr",
+          "radical": "木",
+          "part": "每",
+          "tag": "树木",
+          "tier": 1
+        },
+        {
+          "word": "桂",
+          "pinyin": "guì",
+          "gloss": "桂花树",
+          "structure": "lr",
+          "radical": "木",
+          "part": "圭",
+          "tag": "树木",
+          "tier": 2
+        },
+        {
+          "word": "枫",
+          "pinyin": "fēng",
+          "gloss": "枫树",
+          "structure": "lr",
+          "radical": "木",
+          "part": "风",
+          "tag": "树木",
+          "tier": 2
+        },
+        {
+          "word": "桦",
+          "pinyin": "huà",
+          "gloss": "白桦树",
+          "structure": "lr",
+          "radical": "木",
+          "part": "华",
+          "tag": "树木",
+          "tier": 2
+        },
+        {
+          "word": "樱",
+          "pinyin": "yīng",
+          "gloss": "樱花，樱桃",
+          "structure": "lr",
+          "radical": "木",
+          "part": "婴",
+          "tag": "树木",
+          "tier": 3
+        },
+        {
+          "word": "松",
+          "pinyin": "sōng",
+          "gloss": "松树",
+          "structure": "lr",
+          "radical": "木",
+          "part": "公",
+          "tag": "树木",
+          "tier": 1
+        },
+        {
+          "word": "柏",
+          "pinyin": "bǎi",
+          "gloss": "柏树",
+          "structure": "lr",
+          "radical": "木",
+          "part": "白",
+          "tag": "树木",
+          "tier": 1
+        },
+        {
+          "word": "桐",
+          "pinyin": "tóng",
+          "gloss": "梧桐，泡桐",
+          "structure": "lr",
+          "radical": "木",
+          "part": "同",
+          "tag": "树木",
+          "tier": 2
+        }
+      ]
+    },
+    {
+      "id": "ch3",
+      "index": 3,
+      "name": "逛三园",
+      "subtitle": "果园、动物园、植物园，一路走一路报",
+      "hook": "果园里有什么？动物园里有什么？一路连下去",
+      "radicalFocus": [
+        "木",
+        "艹",
+        "犭",
+        "鸟",
+        "虫",
+        "鱼"
+      ],
+      "unlockStars": 22,
+      "levels": 12,
+      "subParks": [
+        {
+          "id": "ch3a",
+          "name": "果园",
+          "call": "果园里有什么？",
+          "levels": 4,
+          "words": [
+            "杏",
+            "李",
+            "柿",
+            "柚",
+            "柑",
+            "橙",
+            "榴",
+            "蕉",
+            "莓",
+            "蔗",
+            "柠"
+          ]
+        },
+        {
+          "id": "ch3b",
+          "name": "动物园",
+          "call": "动物园里有什么？",
+          "levels": 5,
+          "words": [
+            "猫",
+            "狗",
+            "狐",
+            "狼",
+            "猴",
+            "狮",
+            "猪",
+            "狸",
+            "鸽",
+            "鹅",
+            "鹊",
+            "鸭",
+            "蚂",
+            "蚁",
+            "蜘",
+            "蛛",
+            "鲤",
+            "鲸",
+            "鲨"
+          ]
+        },
+        {
+          "id": "ch3c",
+          "name": "植物园",
+          "call": "植物园里有什么？",
+          "levels": 3,
+          "words": [
+            "苔",
+            "梧",
+            "榆",
+            "杉",
+            "芦",
+            "蒲",
+            "藻",
+            "蓬",
+            "茅",
+            "苍"
+          ]
+        }
+      ],
+      "words": [
+        {
+          "word": "杏",
+          "pinyin": "xìng",
+          "gloss": "杏树，杏子",
+          "structure": "tb",
+          "radical": "木",
+          "part": "口",
+          "tag": "水果",
+          "tier": 1
+        },
+        {
+          "word": "李",
+          "pinyin": "lǐ",
+          "gloss": "李子",
+          "structure": "tb",
+          "radical": "木",
+          "part": "子",
+          "tag": "水果",
+          "tier": 1
+        },
+        {
+          "word": "柿",
+          "pinyin": "shì",
+          "gloss": "柿子",
+          "structure": "lr",
+          "radical": "木",
+          "part": "市",
+          "tag": "水果",
+          "tier": 1
+        },
+        {
+          "word": "柚",
+          "pinyin": "yòu",
+          "gloss": "柚子",
+          "structure": "lr",
+          "radical": "木",
+          "part": "由",
+          "tag": "水果",
+          "tier": 1
+        },
+        {
+          "word": "柑",
+          "pinyin": "gān",
+          "gloss": "柑橘",
+          "structure": "lr",
+          "radical": "木",
+          "part": "甘",
+          "tag": "水果",
+          "tier": 2
+        },
+        {
+          "word": "橙",
+          "pinyin": "chéng",
+          "gloss": "橙子",
+          "structure": "lr",
+          "radical": "木",
+          "part": "登",
+          "tag": "水果",
+          "tier": 2
+        },
+        {
+          "word": "榴",
+          "pinyin": "liú",
+          "gloss": "石榴",
+          "structure": "lr",
+          "radical": "木",
+          "part": "留",
+          "tag": "水果",
+          "tier": 3
+        },
+        {
+          "word": "蕉",
+          "pinyin": "jiāo",
+          "gloss": "香蕉",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "焦",
+          "tag": "水果",
+          "tier": 2
+        },
+        {
+          "word": "莓",
+          "pinyin": "méi",
+          "gloss": "草莓",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "每",
+          "tag": "水果",
+          "tier": 2
+        },
+        {
+          "word": "蔗",
+          "pinyin": "zhè",
+          "gloss": "甘蔗",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "庶",
+          "tag": "水果",
+          "tier": 3
+        },
+        {
+          "word": "柠",
+          "pinyin": "níng",
+          "gloss": "柠檬",
+          "structure": "lr",
+          "radical": "木",
+          "part": "宁",
+          "tag": "水果",
+          "tier": 2
+        },
+        {
+          "word": "猫",
+          "pinyin": "māo",
+          "gloss": "家猫",
+          "structure": "lr",
+          "radical": "犭",
+          "part": "苗",
+          "tag": "走兽",
+          "tier": 1
+        },
+        {
+          "word": "狗",
+          "pinyin": "gǒu",
+          "gloss": "犬",
+          "structure": "lr",
+          "radical": "犭",
+          "part": "句",
+          "tag": "走兽",
+          "tier": 1
+        },
+        {
+          "word": "狐",
+          "pinyin": "hú",
+          "gloss": "狐狸",
+          "structure": "lr",
+          "radical": "犭",
+          "part": "瓜",
+          "tag": "走兽",
+          "tier": 1
+        },
+        {
+          "word": "狼",
+          "pinyin": "láng",
+          "gloss": "狼",
+          "structure": "lr",
+          "radical": "犭",
+          "part": "良",
+          "tag": "走兽",
+          "tier": 1
+        },
+        {
+          "word": "猴",
+          "pinyin": "hóu",
+          "gloss": "猴子",
+          "structure": "lr",
+          "radical": "犭",
+          "part": "侯",
+          "tag": "走兽",
+          "tier": 2
+        },
+        {
+          "word": "狮",
+          "pinyin": "shī",
+          "gloss": "狮子",
+          "structure": "lr",
+          "radical": "犭",
+          "part": "师",
+          "tag": "走兽",
+          "tier": 2
+        },
+        {
+          "word": "猪",
+          "pinyin": "zhū",
+          "gloss": "猪",
+          "structure": "lr",
+          "radical": "犭",
+          "part": "者",
+          "tag": "走兽",
+          "tier": 2
+        },
+        {
+          "word": "狸",
+          "pinyin": "lí",
+          "gloss": "狸猫",
+          "structure": "lr",
+          "radical": "犭",
+          "part": "里",
+          "tag": "走兽",
+          "tier": 2
+        },
+        {
+          "word": "鸽",
+          "pinyin": "gē",
+          "gloss": "鸽子",
+          "structure": "lr",
+          "radical": "合",
+          "part": "鸟",
+          "tag": "飞禽",
+          "tier": 2
+        },
+        {
+          "word": "鹅",
+          "pinyin": "é",
+          "gloss": "鹅",
+          "structure": "lr",
+          "radical": "我",
+          "part": "鸟",
+          "tag": "飞禽",
+          "tier": 2
+        },
+        {
+          "word": "鹊",
+          "pinyin": "què",
+          "gloss": "喜鹊",
+          "structure": "lr",
+          "radical": "昔",
+          "part": "鸟",
+          "tag": "飞禽",
+          "tier": 3
+        },
+        {
+          "word": "鸭",
+          "pinyin": "yā",
+          "gloss": "鸭子",
+          "structure": "lr",
+          "radical": "甲",
+          "part": "鸟",
+          "tag": "飞禽",
+          "tier": 2
+        },
+        {
+          "word": "蚂",
+          "pinyin": "mǎ",
+          "gloss": "蚂蚁",
+          "structure": "lr",
+          "radical": "虫",
+          "part": "马",
+          "tag": "虫豸",
+          "tier": 2
+        },
+        {
+          "word": "蚁",
+          "pinyin": "yǐ",
+          "gloss": "蚂蚁",
+          "structure": "lr",
+          "radical": "虫",
+          "part": "义",
+          "tag": "虫豸",
+          "tier": 2
+        },
+        {
+          "word": "蜘",
+          "pinyin": "zhī",
+          "gloss": "蜘蛛",
+          "structure": "lr",
+          "radical": "虫",
+          "part": "知",
+          "tag": "虫豸",
+          "tier": 3
+        },
+        {
+          "word": "蛛",
+          "pinyin": "zhū",
+          "gloss": "蜘蛛",
+          "structure": "lr",
+          "radical": "虫",
+          "part": "朱",
+          "tag": "虫豸",
+          "tier": 3
+        },
+        {
+          "word": "鲤",
+          "pinyin": "lǐ",
+          "gloss": "鲤鱼",
+          "structure": "lr",
+          "radical": "鱼",
+          "part": "里",
+          "tag": "鳞介",
+          "tier": 2
+        },
+        {
+          "word": "鲸",
+          "pinyin": "jīng",
+          "gloss": "鲸鱼",
+          "structure": "lr",
+          "radical": "鱼",
+          "part": "京",
+          "tag": "鳞介",
+          "tier": 2
+        },
+        {
+          "word": "鲨",
+          "pinyin": "shā",
+          "gloss": "鲨鱼",
+          "structure": "tb",
+          "radical": "沙",
+          "part": "鱼",
+          "tag": "鳞介",
+          "tier": 3
+        },
+        {
+          "word": "苔",
+          "pinyin": "tái",
+          "gloss": "青苔",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "台",
+          "tag": "植物",
+          "tier": 2
+        },
+        {
+          "word": "梧",
+          "pinyin": "wú",
+          "gloss": "梧桐",
+          "structure": "lr",
+          "radical": "木",
+          "part": "吾",
+          "tag": "植物",
+          "tier": 3
+        },
+        {
+          "word": "榆",
+          "pinyin": "yú",
+          "gloss": "榆树",
+          "structure": "lr",
+          "radical": "木",
+          "part": "俞",
+          "tag": "植物",
+          "tier": 3
+        },
+        {
+          "word": "杉",
+          "pinyin": "shān",
+          "gloss": "杉树",
+          "structure": "lr",
+          "radical": "木",
+          "part": "彡",
+          "tag": "植物",
+          "tier": 2
+        },
+        {
+          "word": "芦",
+          "pinyin": "lú",
+          "gloss": "芦苇",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "户",
+          "tag": "植物",
+          "tier": 2
+        },
+        {
+          "word": "蒲",
+          "pinyin": "pú",
+          "gloss": "蒲草",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "浦",
+          "tag": "植物",
+          "tier": 3
+        },
+        {
+          "word": "藻",
+          "pinyin": "zǎo",
+          "gloss": "水藻",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "澡",
+          "tag": "植物",
+          "tier": 3
+        },
+        {
+          "word": "蓬",
+          "pinyin": "péng",
+          "gloss": "蓬草",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "逢",
+          "tag": "植物",
+          "tier": 3
+        },
+        {
+          "word": "茅",
+          "pinyin": "máo",
+          "gloss": "茅草",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "矛",
+          "tag": "植物",
+          "tier": 2
+        },
+        {
+          "word": "苍",
+          "pinyin": "cāng",
+          "gloss": "苍松，青色",
+          "structure": "tb",
+          "radical": "艹",
+          "part": "仓",
+          "tag": "植物",
+          "tier": 2
+        }
+      ]
+    },
+    {
+      "id": "ch4",
+      "index": 4,
+      "name": "居家器物",
+      "subtitle": "灯炉烛、箱筐篮，家什也能拆",
+      "hook": "火丁为灯，竹相为箱，日子里的汉字",
+      "radicalFocus": [
+        "火",
+        "钅",
+        "竹",
+        "纟"
+      ],
+      "unlockStars": 40,
+      "levels": 10,
+      "words": [
+        {
+          "word": "灯",
+          "pinyin": "dēng",
+          "gloss": "照明用具",
+          "structure": "lr",
+          "radical": "火",
+          "part": "丁",
+          "tag": "器物",
+          "tier": 1
+        },
+        {
+          "word": "炉",
+          "pinyin": "lú",
+          "gloss": "取暖做饭的器具",
+          "structure": "lr",
+          "radical": "火",
+          "part": "户",
+          "tag": "器物",
+          "tier": 1
+        },
+        {
+          "word": "烛",
+          "pinyin": "zhú",
+          "gloss": "蜡烛",
+          "structure": "lr",
+          "radical": "火",
+          "part": "虫",
+          "tag": "器物",
+          "tier": 1
+        },
+        {
+          "word": "烧",
+          "pinyin": "shāo",
+          "gloss": "使东西着火受热",
+          "structure": "lr",
+          "radical": "火",
+          "part": "尧",
+          "tag": "器物",
+          "tier": 2
+        },
+        {
+          "word": "烤",
+          "pinyin": "kǎo",
+          "gloss": "用火烘熟",
+          "structure": "lr",
+          "radical": "火",
+          "part": "考",
+          "tag": "器物",
+          "tier": 2
+        },
+        {
+          "word": "炸",
+          "pinyin": "zhá",
+          "gloss": "把食物放进滚油里弄熟",
+          "structure": "lr",
+          "radical": "火",
+          "part": "乍",
+          "tag": "器物",
+          "tier": 2
+        },
+        {
+          "word": "针",
+          "pinyin": "zhēn",
+          "gloss": "缝纫用的细长工具",
+          "structure": "lr",
+          "radical": "钅",
+          "part": "十",
+          "tag": "器物",
+          "tier": 1
+        },
+        {
+          "word": "钉",
+          "pinyin": "dīng",
+          "gloss": "钉子",
+          "structure": "lr",
+          "radical": "钅",
+          "part": "丁",
+          "tag": "器物",
+          "tier": 1
+        },
+        {
+          "word": "钟",
+          "pinyin": "zhōng",
+          "gloss": "计时的器具",
+          "structure": "lr",
+          "radical": "钅",
+          "part": "中",
+          "tag": "器物",
+          "tier": 1
+        },
+        {
+          "word": "钥",
+          "pinyin": "yào",
+          "gloss": "钥匙",
+          "structure": "lr",
+          "radical": "钅",
+          "part": "月",
+          "tag": "器物",
+          "tier": 2
+        },
+        {
+          "word": "箱",
+          "pinyin": "xiāng",
+          "gloss": "箱子",
+          "structure": "tb",
+          "radical": "竹",
+          "part": "相",
+          "tag": "器物",
+          "tier": 1
+        },
+        {
+          "word": "筐",
+          "pinyin": "kuāng",
+          "gloss": "筐子",
+          "structure": "tb",
+          "radical": "竹",
+          "part": "匡",
+          "tag": "器物",
+          "tier": 2
+        },
+        {
+          "word": "篮",
+          "pinyin": "lán",
+          "gloss": "篮子",
+          "structure": "tb",
+          "radical": "竹",
+          "part": "监",
+          "tag": "器物",
+          "tier": 2
+        },
+        {
+          "word": "筷",
+          "pinyin": "kuài",
+          "gloss": "筷子",
+          "structure": "tb",
+          "radical": "竹",
+          "part": "快",
+          "tag": "器物",
+          "tier": 2
+        },
+        {
+          "word": "笼",
+          "pinyin": "lóng",
+          "gloss": "笼子",
+          "structure": "tb",
+          "radical": "竹",
+          "part": "龙",
+          "tag": "器物",
+          "tier": 2
+        },
+        {
+          "word": "纸",
+          "pinyin": "zhǐ",
+          "gloss": "纸张",
+          "structure": "lr",
+          "radical": "纟",
+          "part": "氏",
+          "tag": "器物",
+          "tier": 1
+        },
+        {
+          "word": "纱",
+          "pinyin": "shā",
+          "gloss": "棉纱，纱布",
+          "structure": "lr",
+          "radical": "纟",
+          "part": "少",
+          "tag": "器物",
+          "tier": 1
+        },
+        {
+          "word": "绸",
+          "pinyin": "chóu",
+          "gloss": "绸子",
+          "structure": "lr",
+          "radical": "纟",
+          "part": "周",
+          "tag": "器物",
+          "tier": 2
+        },
+        {
+          "word": "帐",
+          "pinyin": "zhàng",
+          "gloss": "帐子",
+          "structure": "lr",
+          "radical": "巾",
+          "part": "长",
+          "tag": "器物",
+          "tier": 2
+        },
+        {
+          "word": "柜",
+          "pinyin": "guì",
+          "gloss": "柜子",
+          "structure": "lr",
+          "radical": "木",
+          "part": "巨",
+          "tag": "器物",
+          "tier": 1
+        },
+        {
+          "word": "椅",
+          "pinyin": "yǐ",
+          "gloss": "椅子",
+          "structure": "lr",
+          "radical": "木",
+          "part": "奇",
+          "tag": "器物",
+          "tier": 2
+        },
+        {
+          "word": "杯",
+          "pinyin": "bēi",
+          "gloss": "杯子",
+          "structure": "lr",
+          "radical": "木",
+          "part": "不",
+          "tag": "器物",
+          "tier": 1
+        },
+        {
+          "word": "碗",
+          "pinyin": "wǎn",
+          "gloss": "碗",
+          "structure": "lr",
+          "radical": "石",
+          "part": "宛",
+          "tag": "器物",
+          "tier": 2
+        },
+        {
+          "word": "盆",
+          "pinyin": "pén",
+          "gloss": "盆子",
+          "structure": "tb",
+          "radical": "分",
+          "part": "皿",
+          "tag": "器物",
+          "tier": 1
+        }
+      ]
+    }
+  ],
+  "radicalMeta": {
+    "木": {
+      "name": "木字旁",
+      "pinyin": "mù",
+      "meaning": "与树木、木料有关",
+      "color": "#8B5E3C"
+    },
+    "艹": {
+      "name": "草字头",
+      "pinyin": "cǎo",
+      "meaning": "与草木有关",
+      "color": "#4E8A4E"
+    },
+    "钅": {
+      "name": "金字旁",
+      "pinyin": "jīn",
+      "meaning": "与金属有关",
+      "color": "#8A8F98"
+    },
+    "竹": {
+      "name": "竹字头",
+      "pinyin": "zhú",
+      "meaning": "与竹制品有关",
+      "color": "#4E8A6A"
+    },
+    "犭": {
+      "name": "反犬旁",
+      "pinyin": "quǎn",
+      "meaning": "与走兽有关",
+      "color": "#B0763A"
+    },
+    "鸟": {
+      "name": "鸟字旁",
+      "pinyin": "niǎo",
+      "meaning": "与禽类有关",
+      "color": "#3E7FA8"
+    },
+    "虫": {
+      "name": "虫字旁",
+      "pinyin": "chóng",
+      "meaning": "与虫豸有关",
+      "color": "#6E8B3D"
+    },
+    "鱼": {
+      "name": "鱼字旁",
+      "pinyin": "yú",
+      "meaning": "与鱼类有关",
+      "color": "#2F7F9E"
+    },
+    "火": {
+      "name": "火字旁",
+      "pinyin": "huǒ",
+      "meaning": "与火、热有关",
+      "color": "#C0563A"
+    },
+    "纟": {
+      "name": "绞丝旁",
+      "pinyin": "sī",
+      "meaning": "与丝线有关",
+      "color": "#9B5F8F"
+    },
+    "革": {
+      "name": "革字旁",
+      "pinyin": "gé",
+      "meaning": "与皮革有关",
+      "color": "#7A5C3E"
+    },
+    "石": {
+      "name": "石字旁",
+      "pinyin": "shí",
+      "meaning": "与石头有关",
+      "color": "#6B7076"
+    },
+    "巾": {
+      "name": "巾字旁",
+      "pinyin": "jīn",
+      "meaning": "与布帛有关",
+      "color": "#A8687A"
+    }
+  },
+  "riskNotes": [
+    "「剑」的右部件「刂」是立刀旁，需在牌面明确显示为两竖，不可误写成「刀」。",
+    "「弩」上下结构为「奴+弓」，「斧」上下结构为「父+斤」，拼字动画需按 tb 类型处理。",
+    "「鲨」为上下结构「沙+鱼」，「鲤」「鲸」为左右结构「鱼+里 / 鱼+京」，同一偏旁出现两种结构，需 tier>=3 的关卡才混排。",
+    "「杉」的部件「彡」为三撇，笔画少易与干扰牌混淆，建议牌面加注拼音首字母。",
+    "同部件跨字复用是本作的核心教学点（每：梅/莓；里：狸/鲤；仓：枪/苍；丁：灯/钉），设计关卡时应刻意让它们同屏出现，制造「偏旁定类别」的认知冲击。"
+  ]
+}

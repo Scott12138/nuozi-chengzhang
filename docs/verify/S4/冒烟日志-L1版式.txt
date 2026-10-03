@@ -1,0 +1,131 @@
+==> 静态服务器就绪（HTTP 200）
+==> 产物自检通过（含标记「挪字成章」）
+==> 启动无头 Chrome 打开 http://127.0.0.1:8123/index.html
+    窗口 600×1380（外框）· profile /tmp/cocos-cdp-profile-88927
+==> CDP 已连接
+==> 等待游戏加载渲染（9 秒）…
+    视口/画布/引擎可见尺寸： {"inner":[600,1260],"canvas":{"cssW":600,"cssH":1260,"left":0,"top":0,"attrW":600,"attrH":1260},"visible":[720,1512]}
+    ✅ 引擎可见尺寸 720×1512 设计单位 = 372×781 设计px（窗口 600×1260）
+    （点击换算中心：300,630　设计单位→屏幕px 缩放 PS=0.8333）
+    已截图：/tmp/s4-l1/00-before.png
+==> 直写存档：标记第 1..1 关已通关（每关 0 星），然后重载页面
+==> 等待游戏加载渲染（9 秒） · unlock 后重载…
+    视口/画布/引擎可见尺寸： {"inner":[600,1260],"canvas":{"cssW":600,"cssH":1260,"left":0,"top":0,"attrW":600,"attrH":1260},"visible":[720,1512]}
+    ✅ 引擎可见尺寸 720×1512 设计单位 = 372×781 设计px（窗口 600×1260）
+    已截图：/tmp/s4-l1/01-unlock.png
+==> 等待 2200ms → 截图 /tmp/s4-l1/02-wait-2200.png
+==> 固定发牌种子：globalThis.__CHA_SEED__ = 4（进入对局页时生效；"开局就绪"那行日志会以「种子=force:…」回显）
+==> 点击 设计坐标(0, -534) → 屏幕(300, 1075)
+    已截图：/tmp/s4-l1/04-click-d_0,-534.png
+==> ✅ 页面断言通过：确在「chap」页
+    已截图：/tmp/s4-l1/05-p_chap.png
+==> 点击 设计坐标(0, 335) → 屏幕(300, 351)
+    已截图：/tmp/s4-l1/06-click-d_0,335.png
+==> ✅ 页面断言通过：确在「map」页
+    已截图：/tmp/s4-l1/07-p_map.png
+==> 点击 设计坐标(-255, 433) → 屏幕(88, 269)
+    已截图：/tmp/s4-l1/08-click-d_-255,433.png
+==> ✅ 页面断言通过：确在「game」页
+    已截图：/tmp/s4-l1/09-p_game.png
+==> 等待 3000ms → 截图 /tmp/s4-l1/10-wait-3000.png
+==> ✅ 坐标基准自检通过：格(0,0) 游戏(66.7,458.8) vs 工装(66.7,458.3)，差 (0.0,0.4)px
+    性能：峰值 draw call 48 / 平均帧 16.73ms → 约 60 FPS
+
+===== 页面控制台输出 =====
+  [timeEnd] Init Base: 3.45703125 ms
+  [timeEnd] Init Infrastructure: 15.22607421875 ms
+  [timeEnd] Init Base: 0.976806640625 ms
+  [timeEnd] Init Infrastructure: 10.824951171875 ms
+  [timeEnd] Init SubSystem: 27.43896484375 ms
+  [log] Cocos Creator v3.8.8
+  [log] Using custom pipeline: Builtin
+  [timeEnd] Init Project: 29.39013671875 ms
+  [timeEnd] LoadScene db://assets/scenes/Main.scene: 16.94677734375 ms
+  [timeEnd] InitScene: 0.1279296875 ms
+  [timeEnd] AttachPersist: 0.0009765625 ms
+  [timeEnd] AutoRelease: 0.057861328125 ms
+  [timeEnd] Destroy: 0.08203125 ms
+  [timeEnd] Activate: 2.33203125 ms
+  [log] Success to load scene: db://assets/scenes/Main.scene
+  [log] [Bootstrap] GameRoot 已挂载到 Canvas
+  [log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 boot
+  [log] [GameRoot] 启动完成，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 home
+  [timeEnd] Init Base: 2.025146484375 ms
+  [timeEnd] Init Infrastructure: 9.006103515625 ms
+  [timeEnd] Init SubSystem: 23.52197265625 ms
+  [log] Cocos Creator v3.8.8
+  [log] Using custom pipeline: Builtin
+  [timeEnd] Init Project: 21.107177734375 ms
+  [timeEnd] LoadScene db://assets/scenes/Main.scene: 17.64501953125 ms
+  [timeEnd] InitScene: 0.102783203125 ms
+  [timeEnd] AttachPersist: 0.0068359375 ms
+  [timeEnd] AutoRelease: 0.033935546875 ms
+  [timeEnd] Destroy: 0.112060546875 ms
+  [timeEnd] Activate: 1.955078125 ms
+  [log] Success to load scene: db://assets/scenes/Main.scene
+  [log] [Bootstrap] GameRoot 已挂载到 Canvas
+  [log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 boot
+  [log] [GameRoot] 启动完成，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 home
+  [log] [Layout] chap .topbar x=0.0 y=0.0 w=372.0 h=95.6 db=685.6
+  [log] [Layout] chap .btn-back x=16.0 y=55.8 w=32.0 h=32.0 db=693.4
+  [log] [Layout] chap .chap-list x=0.0 y=149.8 w=372.0 h=577.1 db=54.3
+  [log] [Layout] chap .chap[0] x=16.0 y=149.8 w=340.0 h=135.4 db=496.0 r=17
+  [log] [Layout] chap .chap[1] x=16.0 y=297.1 w=340.0 h=135.4 db=348.8 r=17
+  [log] [Layout] chap .chap[2] x=16.0 y=444.3 w=340.0 h=135.4 db=201.5 r=17
+  [log] [Layout] chap .chap[3] x=16.0 y=591.6 w=340.0 h=135.4 db=54.3 r=17
+  [log] [PageManager] 进入页面 chap
+  [log] [Layout] map .topbar x=0.0 y=0.0 w=372.0 h=95.6 db=685.6
+  [log] [Layout] map .btn-back x=16.0 y=55.8 w=32.0 h=32.0 db=693.4
+  [log] [Layout] map .map-info x=0.0 y=95.6 w=372.0 h=31.0 db=654.6
+  [log] [Layout] map .map-wrap x=0.0 y=126.6 w=372.0 h=654.6 db=0.0
+  [log] [Layout] map .map-content x=0.0 y=126.6 w=372.0 h=660.3 db=-5.7
+  [log] [Layout] map .node-row[0] x=0.0 y=132.8 w=372.0 h=68.2 db=580.2
+  [log] [Layout] map .node[0] x=20.2 y=132.8 w=68.2 h=68.2 db=580.2 L1
+  [log] [Layout] map .node-row[1] x=0.0 y=210.8 w=372.0 h=68.2 db=502.2
+  [log] [Layout] map .node[1] x=151.9 y=210.8 w=68.2 h=68.2 db=502.2 L2
+  [log] [Layout] map .node-row[2] x=0.0 y=288.8 w=372.0 h=68.2 db=424.2
+  [log] [Layout] map .node[2] x=283.7 y=288.8 w=68.2 h=68.2 db=424.2 L3
+  [log] [Layout] map .node-row[3] x=0.0 y=366.8 w=372.0 h=68.2 db=346.2
+  [log] [Layout] map .node[3] x=20.2 y=366.8 w=68.2 h=68.2 db=346.2 L4
+  [log] [Layout] map .node-row[4] x=0.0 y=444.9 w=372.0 h=68.2 db=268.2
+  [log] [Layout] map .node[4] x=151.9 y=444.9 w=68.2 h=68.2 db=268.2 L5
+  [log] [Layout] map .node-row[5] x=0.0 y=522.9 w=372.0 h=68.2 db=190.1
+  [log] [Layout] map .node[5] x=283.7 y=522.9 w=68.2 h=68.2 db=190.1 L6
+  [log] [Layout] map .node-row[6] x=0.0 y=600.9 w=372.0 h=68.2 db=112.1
+  [log] [Layout] map .node[6] x=20.2 y=600.9 w=68.2 h=68.2 db=112.1 L7
+  [log] [Layout] map .node-row[7] x=0.0 y=678.9 w=372.0 h=68.2 db=34.1
+  [log] [Layout] map .node[7] x=151.9 y=678.9 w=68.2 h=68.2 db=34.1 L8
+  [log] [PageManager] 进入页面 map
+  [log] [PageManager] 进入页面 game
+  [log] [Layout] game .play-top x=0.0 y=0.0 w=372.0 h=92.0 db=689.2
+  [log] [Layout] game .btn-back x=14.0 y=55.8 w=32.0 h=32.0 db=693.4
+  [log] [Layout] game .play-title x=54.8 y=61.2 w=160.2 h=21.2 db=698.8
+  [log] [Layout] game .timer x=311.4 y=60.7 w=46.6 h=22.2 db=698.3
+  [log] [Layout] game .goal-bar x=0.0 y=92.0 w=372.0 h=39.8 db=649.4
+  [log] [Layout] game .goal-chip[0] x=52.5 y=96.1 w=61.3 h=27.9 db=657.2 枪
+  [log] [Layout] game .goal-chip[1] x=121.1 y=96.1 w=61.3 h=27.9 db=657.2 棍
+  [log] [Layout] game .goal-chip[2] x=189.6 y=96.1 w=61.3 h=27.9 db=657.2 锤
+  [log] [Layout] game .goal-chip[3] x=258.2 y=96.1 w=61.3 h=27.9 db=657.2 钩
+  [log] [Layout] game .tips x=14.0 y=131.8 w=344.1 h=35.7 db=613.8
+  [log] [Layout] game .board-wrap x=0.0 y=171.5 w=372.0 h=457.3 db=152.4
+  [log] [Layout] game #board x=11.9 y=255.2 w=348.2 h=289.8 db=236.1
+  [log] [Layout] game .tile x=15.0 y=258.1 w=52.7 h=52.7 db=470.4 pitch=112 gap=10
+  [log] [Layout] game .made-strip x=14.0 y=628.8 w=344.1 h=62.0 db=90.4
+  [log] [Layout] game .tool-bar x=0.0 y=698.5 w=372.0 h=82.7 db=0.0
+  [log] [Layout] game .tool[0] x=14.0 y=706.3 w=108.2 h=58.9 db=16.0
+  [log] [Layout] game .tool[1] x=131.9 y=706.3 w=108.2 h=58.9 db=16.0
+  [log] [Layout] game .tool[2] x=249.9 y=706.3 w=108.2 h=58.9 db=16.0
+  [log] [Diag] XFORM cell=0,0 screen=66.67,458.75 win=600×1260 scale=0.8333
+  [log] [GamePage] L1 开局就绪：21 张牌，棋盘 6×5，格距 112px / 牌 102px，棋盘 674×561，限时 150s · 种子=force:4
+  [log] [Diag] BOARD cols=6 rows=5 pitch=112 gap=10 cell=102 cx=0 cy=-18
+  [log] [Diag] TILES 匚@0,0,junk 昆@0,1,part 木@0,2,radical 木@0,3,radical 垂@0,4,part 彳@0,5,junk 仓@1,0,part 疒@1,2,junk 垂@1,5,part 昆@2,2,part 钅@2,3,radical 勾@2,4,part 木@2,5,radical 木@3,1,radical 钅@3,2,radical 勾@3,4,part 木@3,5,radical 仓@4,0,part 钅@4,2,radical 钅@4,3,radical 仓@4,4,part
+  [log] [Diag] STATE seq=1 开局 步=0 已消=0/9 剩牌=18
+  [log] [Diag] SUGGEST 从=仓@1,0 到=1,1 命中=木
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] NONMATCH 从=勾@2,4 到=1,4
+
+✅ 冒烟测试完成，全部硬断言通过，产物目录：/tmp/s4-l1

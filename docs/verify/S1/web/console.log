@@ -1,0 +1,144 @@
+[timeEnd] Init Base: 8.2998046875 ms
+[timeEnd] Init Infrastructure: 26.9609375 ms
+[timeEnd] Init SubSystem: 32.822021484375 ms
+[log] Cocos Creator v3.8.8
+[log] Using custom pipeline: Builtin
+[timeEnd] Init Project: 36.44189453125 ms
+[timeEnd] LoadScene db://assets/scenes/Main.scene: 18.501953125 ms
+[timeEnd] InitScene: 0.125 ms
+[timeEnd] AttachPersist: 0.001953125 ms
+[timeEnd] AutoRelease: 0.058837890625 ms
+[timeEnd] Destroy: 0.074951171875 ms
+[timeEnd] Activate: 2.2490234375 ms
+[log] Success to load scene: db://assets/scenes/Main.scene
+[log] [Bootstrap] GameRoot 已挂载到 Canvas
+[log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1280
+[log] [PageManager] 进入页面 boot
+[log] [GameRoot] 启动完成，可见尺寸 720×1280
+[log] [PageManager] 进入页面 home
+[timeEnd] Init Base: 5.60302734375 ms
+[timeEnd] Init Infrastructure: 9.02099609375 ms
+[timeEnd] Init SubSystem: 29.04296875 ms
+[log] Cocos Creator v3.8.8
+[log] Using custom pipeline: Builtin
+[timeEnd] Init Project: 19.069091796875 ms
+[timeEnd] LoadScene db://assets/scenes/Main.scene: 17.98486328125 ms
+[timeEnd] InitScene: 0.03515625 ms
+[timeEnd] AttachPersist: 0.001953125 ms
+[timeEnd] AutoRelease: 0.008056640625 ms
+[timeEnd] Destroy: 0.030029296875 ms
+[timeEnd] Activate: 0.950927734375 ms
+[log] Success to load scene: db://assets/scenes/Main.scene
+[log] [Bootstrap] GameRoot 已挂载到 Canvas
+[log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1280
+[log] [PageManager] 进入页面 boot
+[log] [GameRoot] 启动完成，可见尺寸 720×1280
+[log] [PageManager] 进入页面 home
+[log] [PageManager] 进入页面 level
+[log] [Toast] 先通关上一章才能来这里
+[log] [Toast] 先通过前面的关卡
+[log] [Toast] 第 4 关还在做 —— 首版先开放第 1~3 关
+[log] [PageManager] 进入页面 game
+[log] [GamePage] L1 开局就绪：21 张牌，棋盘 6×5，格位 112px / 牌 99px，限时 150s
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 钅@0,0,radical 仓@0,2,part 垂@0,3,part 木@0,4,radical 钅@0,5,radical 昆@1,0,part 木@1,1,radical 昆@1,2,part 木@1,3,radical 钅@1,4,radical 垂@2,0,part 勾@2,3,part 疒@2,4,junk 钅@2,5,radical 木@3,0,radical 彳@3,1,junk 仓@3,4,part 匚@4,0,junk 木@4,2,radical 勾@4,3,part 仓@4,4,part
+[log] [Diag] STATE seq=1 开局 步=0 已消=0/9 剩牌=18
+[log] [Diag] SUGGEST 从=木@1,1 到=0,1 命中=仓
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 钅@0,0,radical 垂@0,3,part 木@0,4,radical 钅@0,5,radical 昆@1,0,part 昆@1,2,part 木@1,3,radical 钅@1,4,radical 垂@2,0,part 勾@2,3,part 疒@2,4,junk 钅@2,5,radical 木@3,0,radical 彳@3,1,junk 仓@3,4,part 匚@4,0,junk 木@4,2,radical 勾@4,3,part 仓@4,4,part
+[log] [Diag] STATE seq=2 合成 步=1 已消=1/9 剩牌=16
+[log] [Diag] SUGGEST 从=昆@1,2 到=3,2 命中=木
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 钅@0,0,radical 垂@0,3,part 木@0,4,radical 钅@0,5,radical 昆@1,0,part 木@1,3,radical 钅@1,4,radical 垂@2,0,part 勾@2,3,part 疒@2,4,junk 钅@2,5,radical 木@3,0,radical 彳@3,1,junk 仓@3,4,part 匚@4,0,junk 勾@4,3,part 仓@4,4,part
+[log] [Diag] STATE seq=3 合成 步=2 已消=2/9 剩牌=14
+[log] [Diag] SUGGEST 从=木@1,3 到=1,1 命中=昆
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 钅@0,0,radical 垂@0,3,part 木@0,4,radical 钅@0,5,radical 钅@1,4,radical 垂@2,0,part 勾@2,3,part 疒@2,4,junk 钅@2,5,radical 木@3,0,radical 彳@3,1,junk 仓@3,4,part 匚@4,0,junk 勾@4,3,part 仓@4,4,part
+[log] [Diag] STATE seq=4 合成 步=3 已消=3/9 剩牌=12
+[log] [Diag] SUGGEST 从=垂@0,3 到=0,1 命中=钅
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 木@0,4,radical 钅@0,5,radical 钅@1,4,radical 垂@2,0,part 勾@2,3,part 疒@2,4,junk 钅@2,5,radical 木@3,0,radical 彳@3,1,junk 仓@3,4,part 匚@4,0,junk 勾@4,3,part 仓@4,4,part
+[log] [Diag] STATE seq=5 合成 步=4 已消=4/9 剩牌=10
+[log] [Diag] SUGGEST 从=勾@2,3 到=1,3 命中=钅
+[log] [GamePage] 检测到死局 → 自动重排
+[log] [Toast] 没有可挪动的组合了，自动重排一次
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 钅@0,4,radical 钅@0,5,radical 疒@2,0,junk 垂@2,4,part 木@2,5,radical 彳@3,0,junk 仓@3,1,part 仓@3,4,part 勾@4,0,part 木@4,3,radical 匚@4,4,junk
+[log] [Diag] STATE seq=6 合成 步=5 已消=5/9 剩牌=8
+[log] [Diag] SUGGEST 从=仓@3,1 到=4,1 命中=木
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 钅@0,4,radical 钅@0,5,radical 疒@2,0,junk 垂@2,4,part 木@2,5,radical 彳@3,0,junk 仓@3,4,part 勾@4,0,part 匚@4,4,junk
+[log] [Diag] STATE seq=7 合成 步=6 已消=6/9 剩牌=6
+[log] [Diag] SUGGEST 从=木@2,5 到=3,5 命中=仓
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 钅@0,4,radical 钅@0,5,radical 疒@2,0,junk 垂@2,4,part 彳@3,0,junk 勾@4,0,part 匚@4,4,junk
+[log] [Diag] STATE seq=8 合成 步=7 已消=7/9 剩牌=4
+[log] [Diag] SUGGEST 从=垂@2,4 到=3,4 命中=钅
+[log] [GamePage] 检测到死局 → 自动重排
+[log] [Toast] 没有可挪动的组合了，自动重排一次
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 彳@0,5,junk 匚@2,0,junk 疒@3,0,junk 勾@4,0,part 钅@4,4,radical
+[log] [Diag] STATE seq=9 合成 步=8 已消=8/9 剩牌=2
+[log] [Diag] SUGGEST 从=钅@4,4 到=4,2 命中=勾
+[log] [GamePage] L1 通关：3 星，用时 18s，挪了 9 步
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 彳@0,5,junk 匚@2,0,junk 疒@3,0,junk
+[log] [Diag] STATE seq=10 通关 步=9 已消=9/9 剩牌=0
+[log] [Diag] SUGGEST none
+[log] [PageManager] 进入页面 result
+[log] [PageManager] 进入页面 game
+[log] [GamePage] L2 开局就绪：21 张牌，棋盘 6×5，格位 112px / 牌 99px，限时 146s
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 勾@0,0,part 钅@0,4,radical 钅@0,5,radical 垂@1,0,part 匚@1,1,junk 钅@1,2,radical 钅@1,3,radical 仓@2,0,part 木@2,3,radical 奉@2,4,part 垂@2,5,part 木@3,1,radical 疒@3,2,junk 木@3,3,radical 钅@3,4,radical 彳@3,5,junk 奉@4,1,part 木@4,2,radical 廉@4,3,part 勾@4,4,part 仓@4,5,part
+[log] [Diag] STATE seq=1 开局 步=0 已消=0/9 剩牌=18
+[log] [Diag] SUGGEST 从=钅@1,3 到=1,5 命中=垂
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 勾@0,0,part 钅@0,4,radical 钅@0,5,radical 垂@1,0,part 匚@1,1,junk 钅@1,2,radical 仓@2,0,part 木@2,3,radical 奉@2,4,part 木@3,1,radical 疒@3,2,junk 木@3,3,radical 钅@3,4,radical 彳@3,5,junk 奉@4,1,part 木@4,2,radical 廉@4,3,part 勾@4,4,part 仓@4,5,part
+[log] [Diag] STATE seq=2 合成 步=1 已消=1/9 剩牌=16
+[log] [Diag] SUGGEST 从=奉@2,4 到=2,5 命中=木
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 勾@0,0,part 钅@0,4,radical 钅@0,5,radical 垂@1,0,part 匚@1,1,junk 钅@1,2,radical 仓@2,0,part 木@3,1,radical 疒@3,2,junk 木@3,3,radical 钅@3,4,radical 彳@3,5,junk 奉@4,1,part 木@4,2,radical 廉@4,3,part 勾@4,4,part 仓@4,5,part
+[log] [Diag] STATE seq=3 合成 步=2 已消=2/9 剩牌=14
+[log] [Diag] SUGGEST 从=仓@2,0 到=2,3 命中=木
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 勾@0,0,part 钅@0,4,radical 钅@0,5,radical 垂@1,0,part 匚@1,1,junk 钅@1,2,radical 木@3,1,radical 疒@3,2,junk 钅@3,4,radical 彳@3,5,junk 奉@4,1,part 木@4,2,radical 廉@4,3,part 勾@4,4,part 仓@4,5,part
+[log] [Diag] STATE seq=4 合成 步=3 已消=3/9 剩牌=12
+[log] [Diag] SUGGEST 从=廉@4,3 到=1,3 命中=钅
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 勾@0,0,part 钅@0,4,radical 钅@0,5,radical 垂@1,0,part 匚@1,1,junk 木@3,1,radical 疒@3,2,junk 钅@3,4,radical 彳@3,5,junk 奉@4,1,part 木@4,2,radical 勾@4,4,part 仓@4,5,part
+[log] [Diag] STATE seq=5 合成 步=4 已消=4/9 剩牌=10
+[log] [Diag] SUGGEST 从=勾@0,0 到=0,3 命中=钅
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 钅@0,5,radical 垂@1,0,part 匚@1,1,junk 木@3,1,radical 疒@3,2,junk 钅@3,4,radical 彳@3,5,junk 奉@4,1,part 木@4,2,radical 勾@4,4,part 仓@4,5,part
+[log] [Diag] STATE seq=6 合成 步=5 已消=5/9 剩牌=8
+[log] [Diag] SUGGEST 从=垂@1,0 到=0,0 命中=钅
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 匚@1,1,junk 木@3,1,radical 疒@3,2,junk 钅@3,4,radical 彳@3,5,junk 奉@4,1,part 木@4,2,radical 勾@4,4,part 仓@4,5,part
+[log] [Diag] STATE seq=7 合成 步=6 已消=6/9 剩牌=6
+[log] [Diag] SUGGEST 从=木@3,1 到=2,1 命中=奉
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 匚@1,1,junk 疒@3,2,junk 钅@3,4,radical 彳@3,5,junk 木@4,2,radical 勾@4,4,part 仓@4,5,part
+[log] [Diag] STATE seq=8 合成 步=7 已消=7/9 剩牌=4
+[log] [Diag] SUGGEST 从=钅@3,4 到=2,4 命中=勾
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 匚@1,1,junk 疒@3,2,junk 彳@3,5,junk 木@4,2,radical 仓@4,5,part
+[log] [Diag] STATE seq=9 合成 步=8 已消=8/9 剩牌=2
+[log] [Diag] SUGGEST 从=木@4,2 到=4,0 命中=仓
+[log] [GamePage] L2 通关：3 星，用时 18s，挪了 9 步
+[log] [Diag] BOARD cols=6 rows=5 pitch=112 cell=99 cx=0 cy=67
+[log] [Diag] TILES 匚@1,1,junk 疒@3,2,junk 彳@3,5,junk
+[log] [Diag] STATE seq=10 通关 步=9 已消=9/9 剩牌=0
+[log] [Diag] SUGGEST none
+[log] [PageManager] 进入页面 result
+[log] [PageManager] 进入页面 level
+[log] [PageManager] 进入页面 home
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime
+[warning] '%s' is deprecated. (Use game.deltaTime instead) director.getDeltaTime

@@ -1,0 +1,16 @@
+{
+  "_说明": "Cocos 微信小游戏构建配置。tools/cocos-build.sh 会把它通过 --build configPath= 传给 Creator —— 这是唯一能可靠写入 AppID 的通道（命令行顶层的 appid= 与 --build '{\"json\":...}' 都会被静默忽略，回落成模板 demo 号）。",
+  "platform": "wechatgame",
+  "debug": false,
+  "outputName": "wechatgame",
+  "startScene": "45f58335-3b1a-4e7c-b25a-b955b61e7227",
+  "packages": {
+    "wechatgame": {
+      "appid": "wx817f07150e00efa1",
+      "orientation": "portrait",
+      "separateEngine": false,
+      "highPerformanceMode": false,
+      "buildOpenDataContextTemplate": ""
+    }
+  }
+}
