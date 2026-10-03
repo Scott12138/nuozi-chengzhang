@@ -224,8 +224,12 @@ const BOTTOM_BLOCKS = BAR_H + MADE_MB + MADE_H;               // 153
 
 /** 工具禁用态 `.tool:disabled{opacity:.42}` */
 const TOOL_OFF_ALPHA = Math.round(255 * 0.42);
-/** 拖动中牌的放大与倾斜（原型 `scale(1.1) rotate(±6deg)`） */
-const DRAG_SCALE = 1.1, DRAG_TILT_MAX = 6;
+/**
+ * 拖动中牌的放大（原型 `scale(1.1)`）。
+ * ★ 2026-10-03 真机试玩后，**原型的 `rotate(±6deg)` 被去掉了**（用户原话"格子会歪掉"）——
+ *   所以这里只剩放大。别再照着原型把倾斜抄回来，见 onMove 里的说明。
+ */
+const DRAG_SCALE = 1.1;
 /**
  * 「拎起来」的补间时长（秒）。
  * ★ 别改回"按下瞬间就把 scale 设成 DRAG_SCALE"：那种硬跳变在手感上像"牌被替换了"，
@@ -234,11 +238,17 @@ const DRAG_SCALE = 1.1, DRAG_TILT_MAX = 6;
  */
 const LIFT_MS = 0.08;
 /**
- * 越界橡皮筋：拖出滑动范围后，牌还能被拉着走多少（设计px）与其衰减系数。
- *   offset = MAX * over / (over + MAX)   ← 渐近饱和，手指拉到天边也只多走 MAX
- * 取 20 的理由：一格是 58 设计px，20 刚好"看得出被拉住了"，又不足以盖住旁边的格。
+ * ~~越界橡皮筋~~ **已在 2026-10-03 移除**。
+ *
+ * 原实现：拖出滑动范围后牌还能被拉着多走最多 20 设计px（渐近饱和），
+ * 设计意图是"让人感到被拉住了而不是硬切"。
+ * 真机上这条直接被读成 bug —— 用户原话：「而且能拉出边界之外」，
+ * 截图实测：牌越出棋盘左边界约半张牌宽。
+ *
+ * 现在位置一律取 `clampSlide` 给的那一格的**格心**（见 onMove），
+ * 而那个格恒在 `range` 内 ⇒ 牌永远落在格心上、永远在棋盘内，不需要额外的边界夹取。
+ * ⚠️ 别再引入"超出范围时还能多走一点"的任何形式：那在玩法上就等于"牌离开了棋盘"。
  */
-const RUBBER_MAX = 20;
 /** 落位补间（秒）：松手后牌滑进目标格，别用瞬移（瞬移会有"啪一下"的断裂感） */
 const SEAT_MS = 0.09;
 /** 点击落空时的"一点"回弹幅度与时长（秒） */
@@ -327,6 +337,21 @@ interface DragState {
     axis: DragAxis | null;
     moved: boolean;
     last: Cell | null;
+    /**
+     * ★ 上一次**诊断采样**时牌节点的位置（棋盘局部坐标）。只服务于 `[Diag] DRAG`
+     * 那一行的采样规则，不参与任何玩法判定。
+     *
+     * 【为什么不能只按"跨格"采样】（2026-10-03 负控实验揪出来的）
+     * 旧实现在手指还按着时是"跟手自由滑"，牌可以一路滑到画布边 ——
+     * 但**落点格 `p` 被 clampSlide 夹住**，到了棋盘最外一格就不再变了。
+     * 于是"只在跨格时打印"意味着：**牌已经跑出棋盘的那几百毫秒里一行都不打**，
+     * 冒烟的 `dragcell:` 想断言的"出界"永远取不到样本 —— 判据写着却永远不报警。
+     * ⇒ 采样规则改成「跨格 **或** 节点位置比上次采样又多走了半格」。
+     *   · 整格吸附（当前实现）：位置只在跨格时变 ⇒ 不会多出一行，零额外噪声；
+     *   · 跟手自由滑（错的实现）：位置一直在变 ⇒ 反而能把越界那一段如实记下来。
+     *   一句话：**采样规则要跟着"能变的东西"走，不能跟着"我们以为会变的东西"走**。
+     */
+    lastNode: { x: number; y: number } | null;
     /**
      * ★ 此刻正被这一手推着走的牌 → 它被推到的格（2026-10-03 推箱）。
      *
@@ -1254,6 +1279,9 @@ export class GamePage extends PageBase {
             //   （若留 null，第一格会因为没有可比的前值而沉默 —— 而第一格恰恰是
             //   玩家确认"我在拖了"的那一声）。onUp 的落点判定读的也是它，语义不变。
             axis: null, moved: false, last: { r: t.r, c: t.c },
+            // ★ 初值是"牌此刻的真实位置"（= 原格格心），不是 null。
+            //   给 null 的话第一次 onMove 会拿它当"无前值"，白打一行没意义的采样。
+            lastNode: { x: n.position.x, y: n.position.y },
             pushed: new Map(),
         };
 
@@ -1301,29 +1329,68 @@ export class GamePage extends PageBase {
         const p = this._board.clampSlide(
             d.range, d.axis, d.homeR, d.homeC, left, topDist, this._pitch, this._gap);
 
-        // ★★ 但**显示位置跟手**，不再摆到整数格中心 ★★
-        //   原来这里是 `setPosition(cellX(p.c), cellY(p.r))` —— 牌永远精确落在格心上，
-        //   于是手指滑了半格牌还不动、过半格"啪"地跳一整格，手感像在拖一张表格。
-        //   现在沿锁定轴用**手指的真实位置**，另一轴锁死在拿起时的行/列；
-        //   超出滑动范围时走橡皮筋（渐近饱和），让人感到"被拉住了"而不是硬切。
-        //   落点判定与显示位置解耦：判定仍走 clampSlide，所以玩法与断言完全不变。
-        if (d.axis === 'h') {
-            d.node.setPosition(
-                this.rubber(cx, this.cellX(d.range.left), this.cellX(d.range.right)),
-                this.cellY(d.homeR), 0);
-            // 横拖时给一点倾斜，纸片被"带着走"的感觉（原型 ±6° 封顶）
-            d.node.angle = Math.max(-DRAG_TILT_MAX,
-                Math.min(DRAG_TILT_MAX, dx * 0.05 / px(1)));
-        } else {
-            d.node.setPosition(this.cellX(d.homeC),
-                this.rubber(cy, this.cellY(d.range.down), this.cellY(d.range.up)), 0);
-            d.node.angle = 0;
-        }
+        // ★★ 显示位置 = 落点那一格的**格心**（2026-10-03 真机试玩后回到原型口径）★★
+        //
+        // 之前这里是「跟手自由滑 + 越界橡皮筋」：沿锁定轴用**手指的真实位置**，
+        // 超出 range 时走橡皮筋。真机试玩一眼看出三个问题（三条都是用户原话）：
+        //   ① 「拖动的时候不像原来的格子」——
+        //      牌会停在两格之间。截图实测：「革」的纸面顶边在 y=565，
+        //      而它所在行的正常顶边是 y=518 ⇒ 牌跨在 row1/row2 正中，上方露出了棋盘底。
+        //   ② 「格子会歪掉」——横拖时那句 `rotate(±6°)`。截图实测倾角 5.45°。
+        //   ③ 「能拉出边界之外」——橡皮筋允许超出 range 最多 20 设计px，
+        //      截图实测：牌越出棋盘左边界约半张牌宽。
+        //
+        // 而原型 `prototype/index.html` 的 onMove 本来就是**整格吸附**：
+        //   `const p = clampSlide(d, nx, ny);`
+        //   `tileXY(d.el, p.c*G.cell + G.gap/2, p.r*G.cell + G.gap/2, 'scale(1.1) rotate(tilt)');`
+        // —— 位置直接取 `clampSlide` 算出来的那一格。所以这一改不是"新设计"，是**回口径**：
+        //   Cocos 这版当初把它"优化"成了跟手，反而把三个问题一起引进来了。
+        //
+        // ★ 出界问题顺手就没了，不需要另写边界夹取：`p` 恒等于 range 内的合法格
+        //   （clampSlide 里 `Math.max(range.up, Math.min(range.down, r))` 夹过），
+        //   而 range 只含空格 ⇒ 牌永远落在格心上、永远在棋盘内。
+        // ★ 另一轴锁死在拿起时的行/列，所以牌只会沿锁定轴一格格走，不会斜着飞。
+        // ★ 这同时让"判定"与"显示"**完全同源**：判定用 p，显示也用 p，
+        //   再不会出现"看着落在这一格、算的却是那一格"。
+        // ★ 手感上也是更稳的：真机的 touchmove 有抖动，跟手会把抖动**如实画出来**，
+        //   而吸附只在**跨格那一刻**动一次 —— 手机上吸附比跟手顺。
+        if (d.axis === 'h') d.node.setPosition(this.cellX(p.c), this.cellY(d.homeR), 0);
+        else d.node.setPosition(this.cellX(d.homeC), this.cellY(p.r), 0);
+        // ★ 不倾斜 —— 这是**有意偏离原型**的一处。
+        //   原型那句 `rotate(tilt)` 在真机上手感是"格子歪了"，用户明确要求去掉。
+        //   以后重读原型时别又把它抄回来。
+        d.node.angle = 0;
         // ★ 珠子滑过格子的"嗒"：只在**跨格那一刻**响，不是每帧响。
-        //   判据是落点格与上一帧不同 —— 显示位置是跟手的（可能停在两格之间），
-        //   而"过了几格"必须用整数格来数，否则手指慢慢挪时会连成一串。
+        //   判据是落点格与上一帧不同。★ 2026-10-03 起显示位置就是 p（整格吸附），
+        //   两者同源 ⇒ "响的那一格"与"牌停的那一格"永远一致，不会出现
+        //   "声音走了一格、牌还在半路上"的错位。
         //   节流 60ms 由 AudioService 里 BEAD_GAP_MS 兜住（一次拖动最多响 6 下左右）。
-        if (d.last && (d.last.r !== p.r || d.last.c !== p.c)) AudioService.play('bead');
+        const crossed = !d.last || d.last.r !== p.r || d.last.c !== p.c;
+        if (crossed) AudioService.play('bead');
+        // ★→ 采样规则：**跨格 或 节点位置又走了半格**（见 DragState.lastNode 的长注释）。
+        //   整格吸附下位置只在跨格时变 ⇒ 这条不会带来任何额外输出；
+        //   "跟手自由滑"下才会把越界的那一段如实记下来 —— 而那正是要抓的。
+        const nodeMoved = d.lastNode
+            ? Math.abs(d.node.position.x - d.lastNode.x)
+              + Math.abs(d.node.position.y - d.lastNode.y)
+            : 0;
+        //   半格的门槛用 `this._tile / 2`（= 牌宽的一半）。它随关卡尺寸一起更新，
+        //   与 cellX/cellY 用的是同一套设计单位。
+        if (crossed || nodeMoved >= this._tile / 2) {
+            // ★ 「拖动中牌停在哪一格 / 走了多远」的**可测入口**（2026-10-03 加）。
+            //   冒烟的 `dragcell:` 动作靠这一行断言用户报的三件事：
+            //     ① `节点=` 必须恰好等于 `期望=`（即格心）—— 不是"两格之间"；
+            //     ② `角度=` 必须恒为 0.00 —— 没歪；
+            //     ③ `节点=` 必须落在棋盘范围内 —— 没被拉出边界。
+            //   ⚠️ ③ 判的是**节点位置**，不是 `格=`。`格=` 是 clampSlide 的输出，
+            //      天然被夹在棋盘内，"格越界"是个恒假判据（负控实验实测过）。
+            //   键名被 tools/web-smoke.mjs 的 parseDrag 解析，改名必须同步改脚本。
+            log(`[Diag] DRAG 字=${d.tile.char} 格=${p.r},${p.c} `
+                + `节点=(${Math.round(d.node.position.x)},${Math.round(d.node.position.y)}) `
+                + `期望=(${Math.round(this.cellX(p.c))},${Math.round(this.cellY(p.r))}) `
+                + `角度=${d.node.angle.toFixed(2)}`);
+            d.lastNode = { x: d.node.position.x, y: d.node.position.y };
+        }
         d.last = p;
         this.paintPush(d, p);      // ★ 推箱：被推的那一串必须**跟着一起动**
         this.previewMatch(d, p);
@@ -1344,7 +1411,8 @@ export class GamePage extends PageBase {
      *
      * 【为什么用瞬移而不是补间】
      * 这些牌是"被手指推着走的"，跟手才叫推；给它补间会变成慢半拍地跟。
-     * 手里那张牌本身走的是"跟手 + 橡皮筋"（见 onMove），两者风格一致。
+     * 手里那张牌本身走的是"整格吸附"（见 onMove），两者读起来是同一件事：
+     * 手指走到哪一格，整段牌就一起停到那一格。
      */
     private paintPush(d: DragState, p: Cell): void {
         const mv = this._board.dragMoves(d.tile, p.r, p.c);
@@ -1408,9 +1476,11 @@ export class GamePage extends PageBase {
 
         const p = d.last || { r: d.homeR, c: d.homeC };
         if (p.r === d.homeR && p.c === d.homeC) {
-            // 落点回到原格（玩家拖出去了又拖回来）。★ 现在拖动是全程跟手的，
-            // 所以"回到原格"不等于"节点就在格心上"（可能还带着橡皮筋的偏移）——
-            // 用 seatTile 补间滑回去，而不是 snapTile 瞬移。
+            // 落点回到原格（玩家拖出去了又拖回来）。
+            // ★ 2026-10-03 起拖动是**整格吸附**的（见 onMove），所以"落点回到原格"
+            //   时节点本来就在格心上，这条 seatTile 实际是个空补间。留着是为了
+            //   兜住"拖动中途被别的补间写过位置"这类残留（幂等、代价近乎零）。
+            //   ⚠️ 别据此认为"拖动时节点可能不在格心"——那是吸附之前的旧行为。
             this.resetPush(d);            // ★ 半路上被推过的牌也要回原位
             this.seatTile(d.tile);
             // 整张牌被堵死 → 明确告诉玩家，别让人以为是 bug
@@ -1445,8 +1515,9 @@ export class GamePage extends PageBase {
      * 也正因为如此，本次操作**不 +1 步、不写 diag 日志、不触发死局检测**。
      *
      * 【为什么要 setScale / 收角度】
-     * onDown 里把牌放大到 DRAG_SCALE、onMove 里给了 ±6° 的倾斜。
-     * 这两个都在 onUp 开头复位了；这里只负责横向位移那一段。
+     * onDown 里把牌放大到 DRAG_SCALE，onUp 开头已经复位。
+     * 角度则**从头到尾都是 0**（2026-10-03 去掉了原型的 ±6° 倾斜，见 onMove），
+     * 这里收一次只是为了兜住将来的残留。本函数负责的是横向/纵向位移那一段。
      *
      * 【toast 节流】
      * 玩家探索时会连续拖好几张都弹回，每次都弹一句会非常吵。
@@ -1523,9 +1594,10 @@ export class GamePage extends PageBase {
         this._board.applyDrag(mv);
         this._moves++;
         // ★ 不瞬移：从松手的位置补间滑进目标格（SEAT_MS = 90ms）。
-        //   瞬移会有"啪一下"的断裂感 —— 尤其现在拖动是全程跟手的，
-        //   松手瞬间更应该看到牌"自己滑进去"。
-        //   ★ 被推的牌同理，一起走同一条补间 —— 它们刚才跟着手指走了，
+        //   瞬移会有"啪一下"的断裂感 —— 拖动时牌是**整格吸附**的（见 onMove），
+        //   所以"松手位置"本就等于某个格心，这条补间就是把"最后那一格的格心"
+        //   滑到"数据上的目标格心"（推箱时会差一格），读起来是牌自己收进去。
+        //   ★ 被推的牌同理，一起走同一条补间 —— 它们刚才跟着整段挪了，
         //     松手瞬间也该整段停稳。
         // 「落位」。与 90ms 的落位补间**同一时刻**发出去 ——
         //   声音比动作晚一点点人耳就觉得"对不上"，而落位这一下是"啪"的收尾感。
@@ -1558,29 +1630,6 @@ export class GamePage extends PageBase {
             .to(SEAT_MS, { position: new Vec3(this.cellX(t.c), this.cellY(t.r), 0), scale: new Vec3(1, 1, 1) },
                 { easing: 'quadOut' })
             .start();
-    }
-
-    /**
-     * 越界橡皮筋：v 超出 [lo, hi] 时不是硬切到边界，而是让牌继续走一小段、
-     * 但位移**渐近饱和**（拉得越远增量越小）。
-     *
-     *   offset = MAX · over / (over + MAX)
-     *
-     * 取这个式子而不是 `min(MAX, over × k)` 的理由：线性式在 `over = MAX/k` 处
-     * 有一阶不连续（位移曲线出现折角），手指继续拉会突然"卡住不动"；
-     * 渐近式处处可导，读起来就是"被皮筋拉住"。
-     */
-    private rubber(v: number, lo: number, hi: number): number {
-        const M = px(RUBBER_MAX);
-        if (v < lo) {
-            const over = lo - v;
-            return lo - M * over / (over + M);
-        }
-        if (v > hi) {
-            const over = v - hi;
-            return hi + M * over / (over + M);
-        }
-        return v;
     }
 
     /**

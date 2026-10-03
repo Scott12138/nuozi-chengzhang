@@ -68,13 +68,18 @@
  *               ★ 判据是 `[Diag] STATE seq` 变大 —— 不是"牌还在不在"。
  *    drag:<x1>,<y1>,<x2>,<y2>  手动拖，用于精确验证边界。
  *    impact[:<ms,ms,...>]  **手感取证**：照当前 SUGGEST 拖一手（严格回弹下
- *               必然合成）→ 松手前 55% 处截「跟手帧」→ 松手后按偏移连拍「撞击帧」。
+ *               必然合成）→ 松手前 55% 处截「拖动帧」→ 松手后按偏移连拍「撞击帧」。
  *               默认偏移 0,40,80,…,520（梳齿式，见下方时间线）。
  *               产出 `<n>-feel-mid.png` / `<n>-feel-<off>ms.png`。
+ *               ⚠️ 「拖动帧」自 2026-10-03 起证明的是**整格吸附**（牌正好在格心、
+ *                  角度 0、不出棋盘），**不再是**"牌停在手指处" —— 详见下面
+ *                  「手感三处怎么取证」的 ②，别照抄旧口径。
  *               ★ 松手之后的**真实时间线**（2026-10-02 从代码里量出来的，
  *                 改 GamePage 的 SEAT_MS / IMPACT_* 必须回来同步这张表）：
  *                   +0ms    释放 → applyMove：seatTile 补间启动（90ms quadOut）
- *                   +0~90   牌从"手指处"滑进目标格（这一段的截图就是跟手证据）
+ *                   +0~90   牌滑进目标格 —— ★ 自 2026-10-03 起拖动已是整格吸附，
+ *                           松手瞬间牌**本来就在目标格心**，这段补间基本是空跑
+ *                           （只兜住"中途被别的补间写过位置"的残留）
  *                   +130    resolveMatch：金环 + 棋盘微震 + **挤压补间启动（70ms）**
  *                   +130~200 挤压窗口 ←← 想抓的就是这里（横撞 1.18 宽 / 竖撞反之）
  *                   +130~470 合成字从中点 backOut 放大浮现
@@ -100,6 +105,19 @@
  *   rebound[:<n>]  **严格回弹的硬断言**：按 `[Diag] NONMATCH` 拖一次
  *               "凑不成字"的走法，断言牌弹回原格、且 STATE seq 与步数都不变。
  *               ★ 这条规则只有"拖了不消"会触发，drag:<n> 永远测不到它。
+ *   dragcell[:<n>]  **「拖动中牌是否始终落在格心」的硬断言**（2026-10-03 加，默认 1 轮）。
+ *               按 `[Diag] SUGGEST` 的轴一路拖到**画布边**（比棋盘边界更远），
+ *               然后逐条检查拖动途中每一行 `[Diag] DRAG`：
+ *                 ① 节点 === 期望（两边都是格心）→ 破 = "不像原来的格子"
+ *                 ② |角度| ≤ 0.01               → 破 = "格子会歪掉"
+ *                 ③ |节点| ≤ 最外一格的中心      → 破 = "拉出边界之外"
+ *               ⚠️ ③ 看的是**节点位置**，不是落点格 —— 落点格是 clampSlide 的输出、
+ *                 天然在棋盘内，"格越界"是个恒真判据（见 chaiziDragCellTest 注释）。
+ *               ★ 这三条是用户 2026-10-03 真机试玩报的原话，**全都只发生在手指还按着
+ *                 的那段时间里** —— 松手之后牌要么回弹要么落子，一切都恢复正常。
+ *                 所以此前所有断言（只看终局）都测不到它们，三个问题一路活到真机。
+ *               ⚠️ 必须**逐条**查，不能只看最后一行：牌完全可以在中途跑出棋盘再回来。
+ *               ⚠️ 一行 DRAG 都没有 = 牌整段没跨过格 → 判失败（"零覆盖"不能冒充绿灯）。
  *   push[:<n>]  **推箱的硬断言**（2026-10-03 加）。一轮里跑两条，缺一不可：
  *                 A. 按 `[Diag] PUSH` 拖一手"推着相邻牌走、且落位凑成字"的走法 →
  *                    断言**被推的那串牌永久停在新位置**（步数 +1、已消 +1）；
@@ -220,11 +238,23 @@
  *        环外沿在 +252ms 落在 x 102.5~217.5，与设计值逐像素吻合。
  *        想加醒目只需调大 `rippleAt` 的 alpha / lineWidth 系数。
  *
- *   ② 拖动跟手（沿锁定轴跟手指 + 超界橡皮筋 + 落位 90ms 补间）
- *      `impact:` 的 `<n>-feel-mid.png`（松手前那一帧），或录屏里松手前的帧。
- *      验收：牌**停在手指所在的位置**（半格之间），不是吸附在某个格中心。
- *      本轮实测：手指在屏幕 x=290.7，牌纸面中心落在 289（差 ~2px）；
- *      而两个候选格中心是 346.7 与 253.3 —— 眼就能分辨。
+ *   ② 拖动**整格吸附**（沿锁定轴逐格吸附到格心 + 全程不倾斜 + 不越出棋盘）
+ *      `impact:` 的 `<n>-feel-mid.png`（松手前那一帧），或录屏里松手前的帧；
+ *      更严格的是 `dragcell:` —— 它不看图，直接逐条断言拖动途中的每一格。
+ *      验收：牌**正好停在某一格的格心**上，角度为 0，且始终在棋盘内。
+ *
+ *      ⚠️ 这一条在 2026-10-03 **被真机试玩推翻过一次**，务必读完再改回去：
+ *        在此之前这里是「跟手自由滑 + 越界橡皮筋 + rotate(±6°)」，验收口径写的
+ *        正是"牌停在手指所在的位置（半格之间），不是吸附在格中心"。那段口径
+ *        与当时的实现自洽，但**实现本身是错的** —— 用户真机试玩三条原话：
+ *          · "这个操作不够丝滑，拖动的时候不像原来的格子"（牌停在两格之间）
+ *          · "拖动的时候格子会歪掉"（截图实测倾角 5.45°）
+ *          · "而且能拉出边界之外"（实测越出左边界约半张牌宽）
+ *        ⇒ 已改回原型 `prototype/index.html` 的**整格吸附**口径（原型本来就是
+ *          `const p = clampSlide(...)` 之后直接把牌摆到 p 那一格）。
+ *        ⚠️ 所以**别再照抄"牌必须停在手指处"那条验收标准**，它是旧实现的产物；
+ *          也别再抄原型的 `rotate(tilt)` —— 倾斜在手机上手感就是"格子歪了"。
+ *          现在的硬判据在 `dragcell:` 的说明里（三条，逐格查）。
  *
  *   ③ 合并撞击（沿运动轴挤压 70ms + 金环 + 棋盘微震 + 飞向中点淡出 + 合成字弹出）
  *      按 `impact` 说明里那条时间线在录屏帧上对号入座。
@@ -503,7 +533,16 @@ const ACTIONS = process.argv.slice(4).map((s) => {
     //     玩家一个都点不动。截图与自动演示都会绕过事件层，只有
     //     "派真事件 → 状态真的变了"才证明得了。
     // ----------------------------------------------------------
-    if (s.startsWith('drag')) {
+    //  ⚠️ `&& !s.startsWith('dragcell')` 不能省 —— 这个块用的是**前缀**匹配，
+    //     而 `dragcell:3` 也以 `drag` 开头。不加这一条的话它会被这里先吃掉，
+    //     被当成 `drag` 去解析：`s.slice(4)` = `cell:3` → `Number('cell:3')` = NaN
+    //     → 静默退化成默认的 `drag:8`。
+    //     ★ 2026-10-03 实际踩到过：`dragcell:3` 打完，日志里是完整的 8 步自动拖拽，
+    //       一行 dragcell 的输出都没有 —— 而**退出码是 0、屏幕上一片绿**，
+    //       只因末尾恰好顺带打出了若干 DRAG 行，看起来"像是测了"。
+    //       这就是"动作没匹配上"最危险的形态：静默降级成另一个合法动作。
+    //     同 `push` / `pushidx` 的处理（见 push 块的 `!s.startsWith('pushidx')`）。
+    if (s.startsWith('drag') && !s.startsWith('dragcell')) {
         let body = s.slice(4).replace(/^:/, '');
         let gap = 420;
         const at = body.indexOf('@');
@@ -531,8 +570,10 @@ const ACTIONS = process.argv.slice(4).map((s) => {
     //  【为什么不能靠"点完等 1.6s 再截图"】
     //  本轮要验收的三处手感，全都活在**动效中间那一两百毫秒**里：
     //    · 点击拎起来的补间 80ms、扩散波纹 320ms
-    //    · 拖动跟手 —— 要证明"牌停在手指处"而不是"吸附到格中心"，
-    //      必须在**松手前**、指针停在半格位置时截一帧
+    //    · 拖动中的落位 —— 2026-10-03 起口径是**整格吸附**，
+    //      "牌落在哪一格"必须在**松手前**截一帧才看得到（松手后牌要么滑进
+    //      目标格、要么弹回原格，两个终局都"正常"，看不出拖动中途的问题）。
+    //      ⚠️ 更严格的判据是 `dragcell:`：它不靠图，直接逐条断言每一格。
     //    · 合并撞击 —— 沿运动轴挤压只有 70ms，飞行 230ms
     //  默认动作的时间线是断的（每次点击之间隔着 1.6s），拍到的永远是"已经结束"。
     //
@@ -542,8 +583,11 @@ const ACTIONS = process.argv.slice(4).map((s) => {
     //  这也让它和 `rebound:` 互为镜像：一个必消、一个必不消。
     //
     //  【产出】
-    //    <n>-feel-mid.png      松手前 55% 处（跟手帧）
+    //    <n>-feel-mid.png      松手前 55% 处（拖动帧：牌应正好在格心、角度 0）
     //    <n>-feel-<off>ms.png  松手后各偏移（撞击帧）
+    //
+    //  ⚠️ 文件名里的 `-mid` 与"拖动帧"这个叫法保留不动 —— 归档里 S16 之前的横评
+    //     还按这个名字引用它，改名会让旧报告对不上。只是**口径**换了（见上）。
     //
     //  ⚠️ 只做第一步就结束 —— 这一步拖完盘面就变了，SUGGEST 也换了新值，
     //     连做多步会让截图与"哪一步"对不上号，取证价值反而下降。
@@ -632,6 +676,47 @@ const ACTIONS = process.argv.slice(4).map((s) => {
         const n = Number(body);
         return {
             kind: 'rebound',
+            times: Number.isFinite(n) && n > 0 ? n : 1,
+            label: s.replace(/[:.]/g, '_'),
+        };
+    }
+
+    // ----------------------------------------------------------
+    //  dragcell[:<n>] —— **「拖动中牌是否始终落在格心」的硬断言**（2026-10-03 加，默认 1 轮）
+    //
+    //  【为什么必须补这一条】
+    //  2026-10-03 真机试玩报了三个手感问题，**全都发生在"手指还按着、拖动进行中"**
+    //  这一瞬间，而当时全部断言都只看**松手之后**（STATE 变没变、牌有没有回原位）：
+    //    · 「拖动的时候不像原来的格子」——牌停在两格之间，格缝里露出棋盘底色
+    //    · 「拖动的时候格子会歪掉」——横拖时挂 ±6° 倾斜（截图实测 5.45°）
+    //    · 「而且能拉出边界之外」——越界橡皮筋让牌滑出棋盘（实测越出左边界约半张牌）
+    //  ⇒ 三个问题一路活到真机才被看见。**只验终局不验过程**，就是它们能活下来的原因。
+    //
+    //  【判据来自游戏打印的 `[Diag] DRAG` 行】
+    //  GamePage.onMove 只在**跨格那一刻**打一行（位置也只在跨格时变，所以这几行
+    //  已经覆盖整段拖动的全部取值；逐帧打会把归档日志淹掉）：
+    //      `[Diag] DRAG 字=革 格=2,1 节点=(0,-112) 期望=(0,-112) 角度=0.00`
+    //  于是三件事都能**逐条**断言，不靠看图：
+    //    ① 节点 === 期望（两边都是格心）  → 不存在"停在两格之间"
+    //    ② 角度 === 0.00                  → 不存在倾斜
+    //    ③ |节点| ≤ 最外一格的中心         → 不存在出界
+    //  ⚠️ ③ **必须看节点位置**。一开始写的是"落点格在 rows×cols 之内"，那是错的：
+    //     `格=` 就是 clampSlide 的输出，被内部夹过 range，所以"格越界"**恒假**，
+    //     这条判据永远不可能报警 = 等于没写。2026-10-03 的负控实验才把它揪出来。
+    //  ⚠️ 只断言最后一条是不够的：牌完全可以在**中途**跑出棋盘再回来，末条照样合法。
+    //  ⚠️ 实际执行的"覆盖度"底线只有一条：**至少要有 1 行 DRAG**（= 牌真的跨过格）。
+    //     跨 1 格也算有效（被挡住的走法本来就只能跨 1 格，它恰好证明"停在了合法格"），
+    //     所以没有硬性要求"必须跨 2 格以上" —— 那会把正常的被挡走法误判成失败。
+    //     但如果**每一轮都只跨 1 格**，覆盖度就偏薄；输出里会把每轮跨的格子数列出来，
+    //     判读时看那一行，别只看"✅"。
+    //  ⚠️ 落点一律拖到**棋盘之外**（沿同一轴越过边界若干格）—— 专门撞"出界"那一条；
+    //     既然拖出棋盘都不出界，那不打到边界中间的拖动自然也安全。
+    // ----------------------------------------------------------
+    if (s.startsWith('dragcell')) {
+        const body = s.slice(8).replace(/^:/, '');
+        const n = Number(body);
+        return {
+            kind: 'dragcell',
             times: Number.isFinite(n) && n > 0 ? n : 1,
             label: s.replace(/[:.]/g, '_'),
         };
@@ -1092,9 +1177,13 @@ class CDP {
      *
      * 【hooks：动效取证用的两个截帧点（2026-10-02 加）】
      *   midShot: { atT, name } —— 拖到插值进度 atT（0~1）时**松手前**截一张。
-     *     它的用途是证明"拖动跟手"：这一帧里牌必须停在**手指所在的位置**，
-     *     而不是被吸附到某个格子的中心。若还停在格中心，截图能直接看出来
-     *     （牌与手指之间会有一段可见的空隙/错位）。
+     *     ★ 口径 2026-10-03 换过，别照抄旧版：现在是**整格吸附**，所以这一帧的
+     *       正确判读是"牌**正好落在某一格的格心**、角度为 0、且仍在棋盘内"。
+     *       旧版口径是"牌必须停在**手指所在的位置**（而不是被吸附到格中心）"，
+     *       那条与"跟手自由滑 + 越界橡皮筋"的旧实现自洽，但**旧实现是错的**
+     *       （用户真机试玩三条原话，见文件头「手感三处怎么取证」的 ②）。
+     *     ⚠️ 想拿硬判据就别看图，用 `dragcell:` —— 它逐格断言
+     *        `[Diag] DRAG` 的 节点===期望 / 角度===0 / 格在棋盘内。
      *   burst: [{off, name}] —— 松手后按 off 毫秒偏移连拍。
      *     撞击动效只有 ~70ms 的挤压窗 + ~230ms 的飞行，靠普通"点完等 1.6s 再截"
      *     永远只能拍到已经结束的画面，必须按偏移连拍。
@@ -2036,6 +2125,285 @@ async function chaiziPushTest(cdp, cx, cy, times) {
     return { ok, fail, skipped };
 }
 
+/**
+ * 解析一行 `[Diag] DRAG`（拖动过程中的逐格取样）。
+ *
+ * 行格式（由 GamePage.onMove 打印）：
+ *   [Diag] DRAG 字=革 格=2,1 节点=(0,-112) 期望=(0,-112) 角度=0.00
+ *   字     = 被拖的牌面
+ *   格     = 当前落点格（行,列）
+ *   节点   = 被拖那张牌的**实际节点位置**（棋盘局部坐标，设计单位）
+ *   期望   = 那一格的**格心**（游戏自己用 cellX / cellY 算出来的）
+ *   角度   = 节点旋转角（度）
+ *
+ * ★ 这一行只在**跨格**时打印（位置也只在跨格时变，所以这几行已经覆盖了整段拖动
+ *   的全部取值；逐帧打会把归档的 console.log 淹掉 —— 一次拖动有几百帧）。
+ * ★ 它是"拖动中牌是否落在格心 / 有没有歪 / 有没有出界"三件事的**唯一可测入口**。
+ *   松手之后的那些断言（rebound / push）都只看终局，正是这个盲区让三个手感问题
+ *   一路活到了真机试玩。
+ */
+function parseDrag(line) {
+    if (!line || !line.includes('[Diag] DRAG')) return null;
+    const m = line.match(/字=(\S+)\s+格=(\d+),(\d+)\s+节点=\((-?\d+),(-?\d+)\)\s+期望=\((-?\d+),(-?\d+)\)\s+角度=(-?[\d.]+)/);
+    if (!m) return null;
+    return {
+        char: m[1], r: +m[2], c: +m[3],
+        nx: +m[4], ny: +m[5], ex: +m[6], ey: +m[7], angle: +m[8],
+    };
+}
+
+/**
+ * 取**最新一个完整的 diag 快照**（同一盘的 BOARD / TILES / STATE / SUGGEST 一起返回）。
+ *
+ * 【为什么必须"整盘一起取"，而不是每样各取一条】
+ * 游戏一次 dump 的打印顺序是**固定**的（见 GamePage 的 dumpDiag）：
+ *   BOARD → TILES → STATE → SUGGEST → REACH → DIRECT → NONMATCH → PUSH → PUSHNM → TREASURE
+ * 而 CDP 是**逐行**送达的。所以任何时刻都可能停在"这一盘只打了一半"的位置，
+ * 于是分别调 `lastDiag('TILES')` / `lastDiag('SUGGEST')` 会拿到**两盘混起来的**数据 ——
+ * 而这种"混盘"组合恰好能骗过所有基于内容的自洽检查（两边都旧、彼此自洽）。
+ * ⇒ 判据是"从最后一条 BOARD 起、到下一盘之前"这一段，缺任何一样就算**这一盘还没打完**。
+ *
+ * 【返回 null 的含义】拿不到完整一盘的样本 —— 调用方应当**等**，而不是拿旧数据凑合。
+ */
+function lastDiagPass(cdp) {
+    const start = gameAnchor(cdp);
+    let i0 = -1;
+    for (let i = cdp.consoleLines.length - 1; i >= start; i--) {
+        if (cdp.consoleLines[i].includes('[Diag] BOARD')) { i0 = i; break; }
+    }
+    if (i0 < 0) return null;
+    const seg = cdp.consoleLines.slice(i0);
+    const pick = (needle) => seg.find((l) => l.includes(needle)) || null;
+    const geoLine = pick('[Diag] BOARD');
+    const tilesLine = pick('[Diag] TILES');
+    const stateLine = pick('[Diag] STATE');
+    const sugLine = pick('[Diag] SUGGEST');
+    if (!geoLine || !tilesLine || !stateLine || !sugLine) return null;   // 这一盘还没打完
+    const m = stateLine.match(/seq=(\d+)/);
+    return { geoLine, tilesLine, stateLine, sugLine, seq: m ? Number(m[1]) : -1 };
+}
+
+/**
+ * 等**比 `seqBefore` 更新的一整盘**打出来（返回那一盘；超时则返回当前那一盘）。
+ *
+ * 【它修的是哪一类假红 —— 三版修法，前两版都是错的，全部留档】
+ * 症状：间歇性报"整段拖动一条 DRAG 行都没打"，6 轮里挂 1 轮，复跑又全绿。
+ * 真因：`lastDiag(cdp, needle)` 是"**最后一条**含 needle 的行"，**不区分是哪一盘的**。
+ *   上一手消掉牌之后，新盘的 SUGGEST 还没打出来就读它 ⇒ 拿到**上一盘**的走法；
+ *   照着它拖 = 按在一个**已经空掉**的格子上 ⇒ `onDown` 找不到牌 ⇒ 零 DRAG 行。
+ *   ★ 触发条件是**宝牌成对**那一手：它是**链式延迟结算**的（本体 + 额外送掉一对），
+ *     实测**超过 700ms** 新的 STATE/SUGGEST 才落盘 —— 所以"拖动后 sleep 700ms"
+ *     这种按时间猜的等待必然会漏。
+ *
+ * ⚠️ 第一版修法（按"控制台行号 >= 某个 mark"判定）是错的：
+ *    mark 记在"取样**之前**"，于是**取样过程中才到达**的那条 SUGGEST 也算"新行"，
+ *    下一轮等它时立刻假通过。6 轮里仍会挂 1 轮。
+ * ⚠️ 第二版修法（等"最后那条 SUGGEST 换成另一条"）也是错的：
+ *    它依赖"上一手改了盘面"这个前提，而**判断前提本身**用的是同一个不牢靠的时机
+ *    （`waitState(…, 700)` 超时 → 认定"没改盘面"→ 直接读旧样本）。宝牌那手就是
+ *    拖延超过 700ms 才让前提判断误判的。实测仍会挂。
+ * ⇒ 第三版（本函数）：**不看时间、不看行号，只看内容** ——
+ *   等"最新一整盘的 `seq` 真的比上次用掉的那盘大"。它慢到多晚都能等到；
+ *   而那手若**真的没改盘面**（严格回弹），等不到新盘时**旧那一盘依然是对的**
+ *   （盘面没变），所以超时返回当前那一盘是安全的，不是将就。
+ *
+ * @param seqBefore 上一轮用掉的那一盘的 seq（首轮传 -1）
+ */
+async function waitPassAfter(cdp, seqBefore, timeoutMs = 2500) {
+    const t0 = Date.now();
+    while (Date.now() - t0 < timeoutMs) {
+        const p = lastDiagPass(cdp);
+        if (p && p.seq > seqBefore) return p;
+        if (pageOf(cdp) !== 'game') break;
+        await sleep(60);
+    }
+    return lastDiagPass(cdp);
+}
+
+/**
+ * 拖动中"牌是否始终落在格心"的硬断言（2026-10-03 加）。
+ *
+ * 【它测的是什么】三条都是用户真机试玩的原话：
+ *   ① 「这个操作不够丝滑，拖动的时候不像原来的格子」
+ *      —— 牌停在两格之间，格缝里露出棋盘底色。截图实测：「革」纸面顶边 y=565，
+ *         而它所在行的正常顶边是 y=518 ⇒ 牌跨在 row1/row2 正中。
+ *   ② 「拖动的时候格子会歪掉」
+ *      —— 横拖时挂 ±6° 倾斜。截图实测倾角 5.45°。
+ *   ③ 「而且能拉出边界之外」
+ *      —— 越界橡皮筋让牌滑出棋盘。截图实测越出左边界约半张牌宽。
+ * 三条都只发生在**手指还按着**的那段时间里。松手之后牌要么回弹、要么落子，
+ * 一切都恢复正常 —— 所以判据必须落在**拖动过程中**，看终局永远看不出来。
+ *
+ * 【怎么拖】照 `[Diag] SUGGEST` 给出的轴与方向，一路拖到**贴着画布边**
+ * （比棋盘边界更远），然后松手。这样"往棋盘外拖"这件事一定会被撞到。
+ *
+ * 【样本必须"整盘一起取"，且必须是新的一盘】
+ * 每轮开跑前用 `waitPassAfter` 等一整盘**更新的**快照（BOARD/TILES/STATE/SUGGEST
+ * 取自同一次 dump），不是分别 `lastDiag` 各取一条 —— 后者会拿到**两盘混起来**的
+ * 数据（比如 TILES 是新的、SUGGEST 是旧的），而且这种混盘恰好能骗过所有
+ * "两边对比"型的自洽检查。来龙去脉（含两个失败的修法）见 `waitPassAfter` 的注释。
+ * ★ 这不是"多一层保险"，而是**必须**：实测不这么做时，6 轮里会间歇性挂 1 轮，
+ *   报的还是"整段拖动一条 DRAG 行都没打"，看着像拖拽坏了。
+ *
+ * 【判据】逐条检查拖动途中的每一行 `[Diag] DRAG`：
+ *   · 节点 === 期望（±1 取整误差）→ 破 = "不像原来的格子"
+ *   · |角度| ≤ 0.01               → 破 = "格子会歪掉"
+ *   · |节点| ≤ 最外一格的中心      → 破 = "拉出边界之外"
+ * ⚠️ 第三条务必看**节点位置**，不是看落点格 —— 落点格是 clampSlide 的输出，
+ *   天然被夹在棋盘内，"格越界"这个判据**永远不可能成立**（详见循环里的长注释，
+ *   2026-10-03 的负控实验实测到过）。
+ *
+ * 【负控实验：证明这些判据不是摆设】（2026-10-03 实际跑过一次）
+ *   把 GamePage.onMove 的显示位置临时改回旧实现（跟手自由滑 + rotate 5.45°）后
+ *   重跑本动作，应当**逐条报红**：① 节点≠格心 ② 角度=5.45° ③ 节点超出棋盘范围。
+ *   负控的价值在于：只跑正控时，"结构上恒真"的假判据与真判据看起来一模一样。
+ *   ★ 上面第三条判据就是这么被揪出来的。
+ *
+ * ⚠️ 必须**逐条**查，不能只看最后一条：牌完全可以在中途跑出去再回来，
+ *   末条照样合法 —— 只查末条等于把这一整轮变成摆设。
+ * ⚠️ 一行 DRAG 都没有 = 牌整段没跨过一次格 → 判失败。那是事件层或吸附逻辑坏了，
+ *   不能让"零覆盖"冒充绿灯（空转的一轮比红灯更坏）。
+ * ⚠️ 拖动必须真的跨过若干格，否则三条判据平凡成立、这一轮等于空转。
+ *
+ * @param m bootAndCheck 拿到的尺寸信息（`{ canvas: { cssW, cssH, left, top } }`）。
+ *          只需要 `canvas.cssH` —— 用它换算出画布在**设计单位**下的半高，
+ *          好让"拖到画布边"这个终点落在画布内、指针不会中途离开 canvas。
+ *          ⚠️ 执行段那个变量叫 `m`（`const m = await bootAndCheck('')`），
+ *             **不叫 `mm`** —— `mm` 是 bootAndCheck 内部的局部名，外面看不见。
+ */
+async function chaiziDragCellTest(cdp, cx, cy, times, m) {
+    let ok = 0, fail = 0, skipped = 0;
+    let maxCells = 0;      // 所有轮次里单轮跨过的最多格数（覆盖度信号，见函数尾）
+    // 画布边界（设计单位）。留 8 设计px 的余量，保证指针**始终不离开 canvas** ——
+    // 指针一旦离开 canvas，浏览器就不再往 canvas 派 mousemove，拖动会半路断掉，
+    // 那会伪装成"牌不跟手"，反而把这一轮的结论带偏。
+    const halfW = UNIT_W / 2 - 8;
+    const halfH = (m.canvas.cssH / PS) / 2 - 8;
+
+    let passSeq = -1;   // 上一轮用掉的那一盘的 STATE seq（判"有没有更新的一盘"的判据）
+
+    for (let k = 0; k < times; k++) {
+        // ★ 取样本之前先等到"**比上一轮更新的一整盘**"打出来 —— 这一步不能省。
+        //   判据是**内容**（同一盘的 STATE seq），不是时间、也不是行号；
+        //   三版修法的来龙去脉见 waitPassAfter 的注释（前两版都是错的，别再写回去）。
+        const pass = await waitPassAfter(cdp, passSeq, 2500);
+        if (!pass) {
+            skipped++;
+            console.log(`    （第 ${k + 1} 轮拿不到完整的 diag 快照 —— 跳过）`);
+            break;
+        }
+        passSeq = pass.seq;
+
+        const geo = parseBoardGeo(pass.geoLine);
+        const sug = parseSuggest(pass.sugLine);
+        if (!geo || !sug) {
+            skipped++;
+            console.log(`    （第 ${k + 1} 轮：seq=${pass.seq} 这一盘没有可拖的走法 —— 跳过）`);
+            break;
+        }
+
+        // ★ 自洽检查（**同一盘内**）：SUGGEST 说的起点格上必须真有那张牌。
+        //   因为 TILES 与 SUGGEST 现在取自**同一盘**（见 lastDiagPass），这一条
+        //   不再用来挡竞态，而是挡"游戏给出的 SUGGEST 与自己的盘面对不上"。
+        //   那属于真问题，但判成**跳过**（取不到样本）而不是"手感坏了"，
+        //   免得把性质完全不同的事混成同一个红。全轮都跳过时执行段会整体判失败。
+        const tilesNow = parseTiles(pass.tilesLine);
+        if (!tilesNow || !tileAt(tilesNow, sug.char, sug.fromR, sug.fromC)) {
+            skipped++;
+            console.log(`    （第 ${k + 1} 轮：seq=${pass.seq} 这一盘的 SUGGEST 起点 `
+                + `(${sug.fromR},${sug.fromC}) 上没有「${sug.char}」—— 取不到样本，跳过）`);
+            continue;
+        }
+
+        // 起点 = 那张牌所在格的格心；终点 = 沿同一轴贴到画布边
+        const fromDX = geo.cx + cellLocalX(geo, sug.fromC);
+        const fromDY = geo.cy + cellLocalY(geo, sug.fromR);
+        const horiz = sug.toR === sug.fromR;
+        const dir = horiz ? Math.sign(sug.toC - sug.fromC) : Math.sign(sug.toR - sug.fromR);
+        // 屏幕坐标 y 轴朝下、棋盘局部坐标 y 轴朝上 ⇒ 纵向要取负号
+        const toDX = horiz ? (dir > 0 ? halfW : -halfW) : fromDX;
+        const toDY = horiz ? fromDY : (dir > 0 ? -halfH : halfH);
+
+        console.log(`    [${k + 1}] 拖「${sug.char}」(${sug.fromR},${sug.fromC}) 沿`
+            + `${horiz ? '横' : '竖'}轴一路拖到画布边（比棋盘边界更远），途中逐条查 DRAG 行`);
+
+        const mark = cdp.consoleLines.length;
+        await cdp.dragAt(cx + fromDX * PS, cy - fromDY * PS,
+            cx + toDX * PS, cy - toDY * PS, 14);
+        await sleep(700);
+
+        const rows = cdp.consoleLines.slice(mark).map(parseDrag).filter(Boolean);
+        const problems = [];
+        if (rows.length === 0) {
+            problems.push('整段拖动一条 DRAG 行都没打 —— 牌根本没跨过格'
+                + '（事件层没接上？还是吸附逻辑把位移吞掉了？）');
+        }
+        // 棋盘允许的**节点位置**范围：最外一格的中心。
+        // 例（L1 实测 cols=6 rows=7 pitch=112）：x ∈ [-280, 280]、y ∈ [-336, 336]。
+        const maxX = (geo.cols - 1) / 2 * geo.pitch;
+        const maxY = (geo.rows - 1) / 2 * geo.pitch;
+        for (const d of rows) {
+            if (Math.abs(d.nx - d.ex) > 1 || Math.abs(d.ny - d.ey) > 1) {
+                problems.push(`跨到格(${d.r},${d.c})时节点在(${d.nx},${d.ny})，`
+                    + `格心是(${d.ex},${d.ey}) —— 牌没落在格心上（"不像原来的格子"）`);
+            }
+            if (Math.abs(d.angle) > 0.01) {
+                problems.push(`跨到格(${d.r},${d.c})时角度=${d.angle}° —— `
+                    + '牌被倾斜了（"格子会歪掉"）');
+            }
+            // ★ ③「能拉出边界之外」—— 判据是**节点位置**，不是落点格。
+            //
+            // ⚠️⚠️ 这里 2026-10-03 写过一版错的，留档免得再写回去：
+            //   一开始写的是"落点格 (r,c) 必须在 rows×cols 之内"，看着很对，其实
+            //   **永远不可能成立**。原因：`格=` 就是 clampSlide 的输出，而 clampSlide
+            //   内部已经把 r/c 夹在 range 里（`Math.max(range.up, Math.min(range.down, r))`），
+            //   所以"格越界"这个判据恒真 —— 等于没测。
+            //   ★ 这条是**负控实验**逼出来的：把显示改回"跟手自由滑 + 倾斜"再跑，
+            //     ①（节点≠格心）和②（角度 5.45°）都乖乖报红，
+            //     唯独"格在棋盘内"那一行**依然全绿**，而牌明明已经跑到画布边上了。
+            //     若不做负控、只看"正控全绿"，这条空转的判据会一直冒充有效断言。
+            //   ⇒ 正确的判据是"牌的**节点位置**不得超过最外一格的中心"。
+            if (Math.abs(d.nx) > maxX + 1 || Math.abs(d.ny) > maxY + 1) {
+                problems.push(`跨到格(${d.r},${d.c})时节点在(${d.nx},${d.ny})，`
+                    + `超出棋盘范围 x∈[${-maxX},${maxX}] y∈[${-maxY},${maxY}]`
+                    + '（"能拉出边界之外"）');
+            }
+            // 下面这条只是便宜的自检（见上：它被 clampSlide 结构性保证，
+            // 正常永远不触发）。留着是为了万一将来 diag 行的口径被改，
+            // 能立刻看出来，而不是让整个判据悄悄失效。
+            if (d.r < 0 || d.r >= geo.rows || d.c < 0 || d.c >= geo.cols) {
+                problems.push(`落点格(${d.r},${d.c})跑到 ${geo.rows}×${geo.cols} 棋盘之外`
+                    + '（这条被 clampSlide 结构性保证，触发即说明诊断口径被改过）');
+            }
+        }
+        if (problems.length === 0) {
+            ok++;
+            if (rows.length > maxCells) maxCells = rows.length;
+            // 打出实际跨过的格子序列 —— 这是"这一轮真的动了"的凭据，
+            // 不是"没报错所以大概没问题"。
+            const cells = rows.map((d) => `${d.r},${d.c}`).join(' → ');
+            console.log(`       ✅ 跨了 ${rows.length} 格，每格都正好落在格心、`
+                + `角度恒 0、且全在棋盘内：${cells}`);
+        } else {
+            fail++;
+            for (const p of problems) console.log(`       ❌ ${p}`);
+            // 失败时把原始取样整段倒出来，便于直接对照 GamePage.onMove 的输出
+            console.log('       ── 原始 DRAG 取样 ──');
+            for (const d of rows) {
+                console.log(`         字=${d.char} 格=${d.r},${d.c} `
+                    + `节点=(${d.nx},${d.ny}) 期望=(${d.ex},${d.ey}) 角度=${d.angle}`);
+            }
+        }
+    }
+    // 覆盖度信号：如果每一轮都只跨 1 格，"三条判据全绿"的信息量其实很薄 ——
+    // 那种情况下多跑几轮、或换一关再跑，比盯着这个 ✅ 更有意义。
+    if (ok > 0 && maxCells <= 1) {
+        console.log(`    ⚠️ 覆盖度偏薄：${times} 轮里单轮最多只跨过 ${maxCells} 格。`
+            + '判据本身没错（被挡住的走法就是只能跨 1 格），但建议加轮次或换关再跑一遍。');
+    }
+    return { ok, fail, skipped };
+}
+
 //  gapMs：两次点击之间的间隔。默认 800（悠闲地玩），但**消除动效的验收**
 //  （碰的撞击 ≈0.5s、"吃"的流水汇合 ≈0.4s）需要按动效时长对齐节奏，
 //  260~450ms 比较合适。所以它必须是参数，不能写死。
@@ -2733,6 +3101,28 @@ try {
             i++;
             continue;
         }
+        if (a.kind === 'dragcell') {
+            console.log(`==> 拖动中格心断言 ${a.times} 轮（逐条查拖动途中的 [Diag] DRAG）`);
+            const r = await chaiziDragCellTest(cdp, cx, cy, a.times, m);
+            console.log(`    小结：通过 ${r.ok} 轮，失败 ${r.fail} 轮，跳过 ${r.skipped} 轮`);
+            // ★ 硬断言：三条都是用户真机试玩报过的手感问题（2026-10-03），
+            //   破了就是"手感回退"，必须进 FAILURES，不能只打印一行。
+            //   "跳过"（拿不到几何 / 没有可拖的走法）不算失败，但必须至少跑起来一轮 ——
+            //   否则整轮空转，那种"绿灯的假象"比红灯更坏。
+            if (r.fail > 0) {
+                const msg = `拖动中格心断言失败 ${r.fail} 轮：牌没落在格心上、或歪了、或跑出棋盘`;
+                FAILURES.push(msg);
+                console.log(`    ❌ ${msg}`);
+            } else if (r.ok === 0) {
+                const msg = '拖动中格心断言一轮都没跑起来（拿不到棋盘几何，或没有可拖的走法）';
+                FAILURES.push(msg);
+                console.log(`    ❌ ${msg}`);
+            }
+            const p = await cdp.shot(`${String(i).padStart(2, '0')}-dragcell-${a.label}`);
+            console.log(`    已截图：${p}`);
+            i++;
+            continue;
+        }
         if (a.kind === 'push') {
             console.log(`==> 推箱断言 ${a.times} 轮（坐标取自游戏打印的 PUSH / PUSHNM）`);
             const r = await chaiziPushTest(cdp, cx, cy, a.times);
@@ -2811,8 +3201,9 @@ try {
             if (a.none) {
                 console.log('    （impact:none —— 只拖不拍；配合 rec:on/off 用录屏取证）');
             } else {
-                console.log(`    跟手帧：${OUT_DIR}/${tag}-feel-mid.png`
-                    + `（松手前 55% 处，裁剪 ${Math.round(clip.width)}×${Math.round(clip.height)}）`);
+                console.log(`    拖动帧：${OUT_DIR}/${tag}-feel-mid.png`
+                    + `（松手前 55% 处，裁剪 ${Math.round(clip.width)}×${Math.round(clip.height)}；`
+                    + '整格吸附下应是"牌正好在格心、角度 0"）');
                 console.log(`    撞击帧：${burst.map((b) => `${b.off}ms`).join(' / ')}`);
             }
             const changed = await waitState(cdp, seq0, 3000);

@@ -165,8 +165,31 @@ echo "    $PAYLOAD"
 [[ "$PAYLOAD" == OK* ]] || { echo "⚠️  二维码解码失败，这张码可能扫不出来"; }
 
 # ---------------------------------------------------------------- 归档 README
-SIZE_BYTES=$(python3 -c "import json;print(json.load(open('$ARCHIVE/preview-info.json'))['size']['total'])" 2>/dev/null || echo "?")
-SIZE_MB=$(python3 -c "print(f'{${SIZE_BYTES:-0}/1048576:.2f}')" 2>/dev/null || echo "?")
+#
+# ⚠️ 这里曾经把「**合计**包体」和「**主包**红线 4MB」写在同一行，形如
+#   `包体 | 7052703 字节（6.73 MB，红线 4MB）`
+#   —— 那是**误导性**的：4MB 红线管的是**主包**，而 7 MB 是主包+全部分包的合计。
+#   本项目实测主包只有 3.19 MB（在红线内），但按上面那行读起来像是"已超红线一倍"，
+#   足以让人做出错误的决定（比如去砍本不需要砍的资源）。
+#   ⇒ 拆成两行，各自带各自的口径，并且主包那行直接标出"是否在红线内"。
+SIZE_TOTAL=$(python3 -c "import json;print(json.load(open('$ARCHIVE/preview-info.json'))['size']['total'])" 2>/dev/null || echo "?")
+SIZE_MAIN=$(python3 -c "
+import json
+d=json.load(open('$ARCHIVE/preview-info.json'))['size']
+print(next((p['size'] for p in d.get('packages',[]) if p.get('name')=='main'), '?'))
+" 2>/dev/null || echo "?")
+MB_OF() { python3 -c "print(f'{${1:-0}/1048576:.2f}')" 2>/dev/null || echo "?"; }
+SIZE_TOTAL_MB=$(MB_OF "$SIZE_TOTAL")
+SIZE_MAIN_MB=$(MB_OF "$SIZE_MAIN")
+# 主包红线的**机器判据**（4MB = 4*1048576）。★ 不要把它和"合计"混着看。
+MAIN_LIMIT=$((4 * 1048576))
+if [ "$SIZE_MAIN" = "?" ]; then
+    MAIN_VERDICT="（未取到主包大小）"
+elif [ "$SIZE_MAIN" -le "$MAIN_LIMIT" ]; then
+    MAIN_VERDICT="✅ 在红线内（余量 $(( (MAIN_LIMIT - SIZE_MAIN) / 1024 )) KB）"
+else
+    MAIN_VERDICT="❌ **超出红线** $(( (SIZE_MAIN - MAIN_LIMIT) / 1024 )) KB"
+fi
 NOW=$(date '+%Y-%m-%d %H:%M:%S')
 cat > "$ARCHIVE/README.md" <<EOF
 # 真机试玩二维码（微信小游戏）
@@ -177,9 +200,13 @@ cat > "$ARCHIVE/README.md" <<EOF
 |---|---|
 | 生成时间 | $NOW |
 | AppID | \`$(python3 -c "import json;print(json.load(open('$BUILD_DIR/project.config.json')).get('appid','?'))" 2>/dev/null)\` |
-| 包体 | ${SIZE_BYTES} 字节（${SIZE_MB} MB，红线 4MB） |
+| **主包**（4MB 红线只管这个） | ${SIZE_MAIN} 字节（${SIZE_MAIN_MB} MB）${MAIN_VERDICT} |
+| 主包 + 全部分包合计（上限 30MB） | ${SIZE_TOTAL} 字节（${SIZE_TOTAL_MB} MB） |
 | 构建模式 | $MODE |
 | 解码内容 | \`${PAYLOAD#OK }\` |
+
+> ⚠️ 别把"合计"当成"主包"：微信的 4MB 首包红线只约束**主包**，
+> 分包与合计另有上限。这两行刻意分开写，且各带各的口径。
 
 ## ★ 扫码须知
 微信预览码**有且只有最新一张有效**：再跑一次 \`tools/wechat-preview.sh\`，
@@ -198,7 +225,8 @@ EOF
 echo "============================================================"
 echo "✅ 真机试玩码已生成"
 echo "   图片：$PNG"
-echo "   包体：${SIZE_BYTES} 字节（${SIZE_MB} MB）"
+echo "   主包：${SIZE_MAIN} 字节（${SIZE_MAIN_MB} MB）${MAIN_VERDICT}"
+echo "   合计：${SIZE_TOTAL} 字节（${SIZE_TOTAL_MB} MB，含全部分包；上限 30MB）"
 echo "   用微信「扫一扫」扫描该二维码即可在手机上试玩"
 echo "   ⚠️  预览码只有最新一张有效，重跑本脚本会让上一张失效"
 echo "============================================================"

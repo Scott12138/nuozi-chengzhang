@@ -1,0 +1,288 @@
+==> 静态服务器就绪（HTTP 200）
+==> 产物自检通过（含标记「挪字成章」）
+==> 启动无头 Chrome 打开 http://127.0.0.1:8123/index.html
+    窗口 600×1380（外框）· profile /tmp/cocos-cdp-profile-31979
+==> CDP 已连接
+==> 等待游戏加载渲染（9 秒）…
+    视口/画布/引擎可见尺寸： {"inner":[600,1260],"canvas":{"cssW":600,"cssH":1260,"left":0,"top":0,"attrW":600,"attrH":1260},"visible":[720,1512]}
+    ✅ 引擎可见尺寸 720×1512 设计单位 = 372×781 设计px（窗口 600×1260）
+    （点击换算中心：300,630　设计单位→屏幕px 缩放 PS=0.8333）
+    已截图：docs/verify/S17/smoke-regress/00-before.png
+==> 直写存档：标记第 1..1 关已通关（每关 0 星），然后重载页面
+==> 等待游戏加载渲染（9 秒） · unlock 后重载…
+    视口/画布/引擎可见尺寸： {"inner":[600,1260],"canvas":{"cssW":600,"cssH":1260,"left":0,"top":0,"attrW":600,"attrH":1260},"visible":[720,1512]}
+    ✅ 引擎可见尺寸 720×1512 设计单位 = 372×781 设计px（窗口 600×1260）
+    已截图：docs/verify/S17/smoke-regress/01-unlock.png
+==> 等待 2200ms → 截图 docs/verify/S17/smoke-regress/02-wait-2200.png
+==> 点击 设计坐标(0, -534) → 屏幕(300, 1075)
+    已截图：docs/verify/S17/smoke-regress/03-click-d_0,-534.png
+==> 点击 设计坐标(0, 335) → 屏幕(300, 351)
+    已截图：docs/verify/S17/smoke-regress/04-click-d_0,335.png
+==> 点击 设计坐标(255, 131) → 屏幕(513, 521)
+    已截图：docs/verify/S17/smoke-regress/05-click-d_255,131.png
+==> ✅ 页面断言通过：确在「game」页
+    已截图：docs/verify/S17/smoke-regress/06-p_game.png
+==> 等待 3000ms → 截图 docs/verify/S17/smoke-regress/07-wait-3000.png
+==> ✅ 坐标基准自检通过：格(0,0) 游戏(66.7,393.8) vs 工装(66.7,393.3)，差 (0.0,0.4)px
+==> 推箱断言 2 轮（坐标取自游戏打印的 PUSH / PUSHNM）
+    [1]A 推箱合成：拖「弓」(2,5) → (1,5)，被推 前@1,5→0,5
+       ✅ 被推的 1 张全部停在新位置（前@0,5），步数 0→1，已消 0→1
+    [1]B 推箱回弹：拖「午」(4,2) → (4,3)，被推 包@4,3→4,4、火@4,4→4,5
+       ✅ 整段 2 张全部回到原格，步数仍为 1
+    [2]A 推箱合成：拖「木」(0,1) → (0,2)，被推 便@0,2→0,3、佥@0,3→0,4
+       ✅ 被推的 2 张全部停在新位置（便@0,3、佥@0,4），步数 1→2，已消 1→2
+    [2]B 推箱回弹：拖「包」(4,3) → (3,3)，被推 弓@3,3→2,3
+       ✅ 整段 1 张全部回到原格，步数仍为 2
+    小结：通过 4 条，失败 0 条，跳过 0 条
+    已截图：docs/verify/S17/smoke-regress/09-push-push_2.png
+==> 严格回弹断言 1 次（坐标取自游戏打印的 NONMATCH）
+    [1] 回弹测试：拖「铁砧」(3,5) → (3,4)　设计(280,-52) → (168,-52)
+       ✅ 已回弹到原位（节点(280,0) == 目标(280,0)），STATE seq=3 与 步=2 均未变
+    小结：通过 1 次，失败 0 次，跳过 0 次
+    已截图：docs/verify/S17/smoke-regress/10-rebound-rebound.png
+==> 自动拖拽 6 步（坐标取自游戏打印的 SUGGEST，判据=STATE 序号变大）
+    坐标基准自检 ✅ 格(0,0) 游戏(66.7,393.8) vs 工装(66.7,393.3)，差 (0.0,0.4)
+    [1] 拖「斤」(6,5) → (5,5) 设计(280,-388) → (280,-276)
+       状态：[log] [Diag] STATE seq=4 合成 步=3 已消=3/15 剩牌=26
+    [2] 拖「刂」(1,1) → (1,4) 设计(-168,172) → (168,172)
+       状态：[log] [Diag] STATE seq=5 合成 步=4 已消=4/15 剩牌=24
+    [3] 拖「火」(4,4) → (4,5) 设计(168,-164) → (280,-164)
+       状态：[log] [Diag] STATE seq=6 合成 步=5 已消=5/15 剩牌=22
+    [4] 拖「铁砧」(5,4) → (5,5) 设计(168,-276) → (280,-276)
+       状态：[log] [Diag] STATE seq=7 宝牌 步=6 已消=6/15 剩牌=18
+    [5] 拖「竹」(5,2) → (5,5) 设计(-56,-276) → (280,-276)
+       状态：[log] [Diag] STATE seq=8 合成 步=7 已消=7/15 剩牌=16
+    [6] 拖「弓」(3,2) → (3,3) 设计(-56,-52) → (56,-52)
+       状态：[log] [Diag] STATE seq=9 合成 步=8 已消=8/15 剩牌=14
+    小结：状态真的变了 6 步，没变 0 步
+    已截图：docs/verify/S17/smoke-regress/11-drag-drag_6.png
+    性能：峰值 draw call 82 / 平均帧 16.68ms → 约 60 FPS
+
+===== 页面控制台输出 =====
+  [timeEnd] Init Base: 8.82080078125 ms
+  [timeEnd] Init Base: 0.9208984375 ms
+  [timeEnd] Init Infrastructure: 11.678955078125 ms
+  [timeEnd] Init SubSystem: 30.302978515625 ms
+  [log] Cocos Creator v3.8.8
+  [log] Using custom pipeline: Builtin
+  [timeEnd] Init Project: 41.280029296875 ms
+  [timeEnd] LoadScene db://assets/scenes/Main.scene: 18.68798828125 ms
+  [timeEnd] InitScene: 0.126953125 ms
+  [timeEnd] AttachPersist: 0.001220703125 ms
+  [timeEnd] AutoRelease: 0.05810546875 ms
+  [timeEnd] Destroy: 0.08203125 ms
+  [timeEnd] Activate: 2.366943359375 ms
+  [log] Success to load scene: db://assets/scenes/Main.scene
+  [log] [Bootstrap] GameRoot 已挂载到 Canvas
+  [log] [AdService] 广告位自检：非微信环境（web / 本地预览），跳过
+  [log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 boot
+  [log] [GameRoot] 启动完成，可见尺寸 720×1512
+  [log] [AudioService] 音效就绪 13/13
+  [log] [AudioService] BGM 就绪：audio/bgm（35.2s）
+  [log] [AudioService] BGM 起播（35.2s 循环）
+  [log:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+  [log] [AudioService] BGM 首播未生效（多半被 autoplay 拦了）—— 已复位，等下一次触摸重试
+  [log] [PageManager] 进入页面 home
+  [timeEnd] Init Base: 8.408935546875 ms
+  [timeEnd] Init Infrastructure: 8.76611328125 ms
+  [timeEnd] Init SubSystem: 21.5361328125 ms
+  [log] Cocos Creator v3.8.8
+  [log] Using custom pipeline: Builtin
+  [timeEnd] Init Project: 34.091064453125 ms
+  [timeEnd] LoadScene db://assets/scenes/Main.scene: 16.26708984375 ms
+  [timeEnd] InitScene: 0.031005859375 ms
+  [timeEnd] AttachPersist: 0.0009765625 ms
+  [timeEnd] AutoRelease: 0.006103515625 ms
+  [timeEnd] Destroy: 0.026123046875 ms
+  [timeEnd] Activate: 0.7490234375 ms
+  [log] Success to load scene: db://assets/scenes/Main.scene
+  [log] [Bootstrap] GameRoot 已挂载到 Canvas
+  [log] [AdService] 广告位自检：非微信环境（web / 本地预览），跳过
+  [log] [BootPage] NUOZI_BOOT_OK 启动页就绪，可见尺寸 720×1512
+  [log] [PageManager] 进入页面 boot
+  [log] [GameRoot] 启动完成，可见尺寸 720×1512
+  [log] [AudioService] 音效就绪 13/13
+  [log] [AudioService] BGM 就绪：audio/bgm（35.2s）
+  [log] [AudioService] BGM 起播（35.2s 循环）
+  [log:warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+  [log] [AudioService] BGM 首播未生效（多半被 autoplay 拦了）—— 已复位，等下一次触摸重试
+  [log] [PageManager] 进入页面 home
+  [log] [AudioService] BGM 起播（35.2s 循环）
+  [log] [Layout] chap .topbar x=0.0 y=0.0 w=372.0 h=123.5 db=657.7
+  [log] [Layout] chap .btn-back x=16.0 y=55.8 w=32.0 h=32.0 db=693.4
+  [log] [Layout] chap .chap-list x=0.0 y=163.8 w=372.0 h=577.1 db=40.3
+  [log] [Layout] chap .chap[0] x=16.0 y=163.8 w=340.0 h=135.4 db=482.1 r=17
+  [log] [Layout] chap .chap[1] x=16.0 y=311.0 w=340.0 h=135.4 db=334.8 r=17
+  [log] [Layout] chap .chap[2] x=16.0 y=458.3 w=340.0 h=135.4 db=187.5 r=17
+  [log] [Layout] chap .chap[3] x=16.0 y=605.5 w=340.0 h=135.4 db=40.3 r=17
+  [log] [PageManager] 进入页面 chap
+  [log] [Layout] map .topbar x=0.0 y=0.0 w=372.0 h=123.5 db=657.7
+  [log] [Layout] map .btn-back x=16.0 y=55.8 w=32.0 h=32.0 db=693.4
+  [log] [Layout] map .map-info x=0.0 y=123.5 w=372.0 h=31.0 db=626.7
+  [log] [Layout] map .map-wrap x=0.0 y=154.5 w=372.0 h=626.7 db=0.0
+  [log] [Layout] map .map-content x=0.0 y=154.5 w=372.0 h=660.3 db=-33.6
+  [log] [Layout] map .node-row[0] x=0.0 y=160.7 w=372.0 h=68.2 db=552.3
+  [log] [Layout] map .node[0] x=20.2 y=160.7 w=68.2 h=68.2 db=552.3 L1
+  [log] [Layout] map .node-row[1] x=0.0 y=238.7 w=372.0 h=68.2 db=474.3
+  [log] [Layout] map .node[1] x=151.9 y=238.7 w=68.2 h=68.2 db=474.3 L2
+  [log] [Layout] map .node-row[2] x=0.0 y=316.7 w=372.0 h=68.2 db=396.3
+  [log] [Layout] map .node[2] x=283.7 y=316.7 w=68.2 h=68.2 db=396.3 L3
+  [log] [Layout] map .node-row[3] x=0.0 y=394.7 w=372.0 h=68.2 db=318.3
+  [log] [Layout] map .node[3] x=20.2 y=394.7 w=68.2 h=68.2 db=318.3 L4
+  [log] [Layout] map .node-row[4] x=0.0 y=472.8 w=372.0 h=68.2 db=240.3
+  [log] [Layout] map .node[4] x=151.9 y=472.8 w=68.2 h=68.2 db=240.3 L5
+  [log] [Layout] map .node-row[5] x=0.0 y=550.8 w=372.0 h=68.2 db=162.2
+  [log] [Layout] map .node[5] x=283.7 y=550.8 w=68.2 h=68.2 db=162.2 L6
+  [log] [Layout] map .node-row[6] x=0.0 y=628.8 w=372.0 h=68.2 db=84.2
+  [log] [Layout] map .node[6] x=20.2 y=628.8 w=68.2 h=68.2 db=84.2 L7
+  [log] [Layout] map .node-row[7] x=0.0 y=706.8 w=372.0 h=68.2 db=6.2
+  [log] [Layout] map .node[7] x=151.9 y=706.8 w=68.2 h=68.2 db=6.2 L8
+  [log] [PageManager] 进入页面 map
+  [log] [PageManager] 进入页面 game
+  [log] [Layout] game .play-top x=0.0 y=0.0 w=372.0 h=92.0 db=689.2
+  [log] [Layout] game .btn-back x=14.0 y=55.8 w=32.0 h=32.0 db=693.4
+  [log] [Layout] game .play-title x=54.8 y=61.2 w=160.2 h=21.2 db=698.8
+  [log] [Layout] game .timer x=311.4 y=60.7 w=46.6 h=22.2 db=698.3
+  [log] [Layout] game .goal-bar x=0.0 y=92.0 w=372.0 h=74.9 db=614.3
+  [log] [Layout] game .goal-chip[0] x=18.3 y=96.1 w=61.3 h=27.9 db=657.2 杵
+  [log] [Layout] game .goal-chip[1] x=86.8 y=96.1 w=61.3 h=27.9 db=657.2 鞭
+  [log] [Layout] game .goal-chip[2] x=155.3 y=96.1 w=61.3 h=27.9 db=657.2 箭
+  [log] [Layout] game .goal-chip[3] x=223.9 y=96.1 w=61.3 h=27.9 db=657.2 斧
+  [log] [Layout] game .goal-chip[4] x=292.4 y=96.1 w=61.3 h=27.9 db=657.2 弩
+  [log] [Layout] game .goal-chip[0] x=86.8 y=131.2 w=61.3 h=27.9 db=622.1 剑
+  [log] [Layout] game .goal-chip[1] x=155.3 y=131.2 w=61.3 h=27.9 db=622.1 弦
+  [log] [Layout] game .goal-chip[2] x=223.9 y=131.2 w=61.3 h=27.9 db=622.1 炮
+  [log] [Layout] game .tips x=14.0 y=166.9 w=344.1 h=35.7 db=578.7
+  [log] [Layout] game .board-wrap x=0.0 y=206.7 w=372.0 h=422.1 db=152.4
+  [log] [Layout] game #board x=11.9 y=214.7 w=348.2 h=406.1 db=160.4
+  [log] [Layout] game .tile x=15.0 y=217.8 w=52.7 h=52.7 db=510.7 pitch=112 gap=10
+  [log] [Layout] game .made-strip x=14.0 y=628.8 w=344.1 h=62.0 db=90.4
+  [log] [Layout] game .tool-bar x=0.0 y=698.5 w=372.0 h=82.7 db=0.0
+  [log] [Layout] game .tool[0] x=14.0 y=706.3 w=108.2 h=58.9 db=16.0
+  [log] [Layout] game .tool[1] x=131.9 y=706.3 w=108.2 h=58.9 db=16.0
+  [log] [Layout] game .tool[2] x=249.9 y=706.3 w=108.2 h=58.9 db=16.0
+  [log] [Diag] XFORM cell=0,0 screen=66.67,393.75 win=600×1260 scale=0.8333
+  [log] [GamePage] L3 开局就绪：32 张牌，棋盘 6×7，格距 112px / 牌 102px，棋盘 674×786，限时 155s · 种子=seed:8734529
+  [log] [Diag] BOARD cols=6 rows=7 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 革@0,0,radical 木@0,1,radical 便@0,2,part 佥@0,3,radical 奴@1,0,radical 刂@1,1,part 午@1,2,part 奴@1,3,radical 前@1,5,part 革@2,0,radical 前@2,1,part 木@2,2,radical 弓@2,5,part 玄@3,1,part 弓@3,2,radical 弓@3,3,radical 斤@3,4,part 铁砧@3,5,treasure 玄@4,0,part 佥@4,1,radical 午@4,2,part 包@4,3,part 火@4,4,radical 父@5,1,radical 竹@5,2,radical 铁砧@5,4,treasure 父@5,5,radical 竹@6,0,radical 刂@6,1,part 便@6,2,part 弓@6,3,part 斤@6,5,part
+  [log] [Diag] STATE seq=1 开局 步=0 已消=0/15 剩牌=32
+  [log] [Diag] SUGGEST 从=弓@2,5 到=1,5 命中=奴
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] DIRECT 从=午@1,2 到=2,2 命中=木
+  [log] [Diag] NONMATCH 从=火@4,4 到=3,4
+  [log] [Diag] PUSH 从=弓@2,5 到=1,5 推=前@1,5->0,5 命中=奴@1,3
+  [log] [Diag] PUSHNM 从=铁砧@3,5 到=3,4 推=斤@3,4->3,3|弓@3,3->3,2|弓@3,2->3,1|玄@3,1->3,0
+  [log] [Diag] TREASURE 从=铁砧@5,4 到=3,4 命中=铁砧
+  [log] [Toast] 本关有 1 对宝牌「铁砧」
+凑成一对，会额外替你消掉一对字牌
+  [log] [Diag] DRAG 字=弓 格=1,5 节点=(280,224) 期望=(280,224) 角度=0.00
+  [log] [Diag] BOARD cols=6 rows=7 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 革@0,0,radical 木@0,1,radical 便@0,2,part 佥@0,3,radical 前@0,5,part 奴@1,0,radical 刂@1,1,part 午@1,2,part 革@2,0,radical 前@2,1,part 木@2,2,radical 玄@3,1,part 弓@3,2,radical 弓@3,3,radical 斤@3,4,part 铁砧@3,5,treasure 玄@4,0,part 佥@4,1,radical 午@4,2,part 包@4,3,part 火@4,4,radical 父@5,1,radical 竹@5,2,radical 铁砧@5,4,treasure 父@5,5,radical 竹@6,0,radical 刂@6,1,part 便@6,2,part 弓@6,3,part 斤@6,5,part
+  [log] [Diag] STATE seq=2 合成 步=1 已消=1/15 剩牌=30
+  [log] [Diag] SUGGEST 从=火@4,4 到=4,5 命中=包
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] DIRECT 从=午@1,2 到=2,2 命中=木
+  [log] [Diag] NONMATCH 从=斤@3,4 到=4,4
+  [log] [Diag] PUSH 从=木@0,1 到=0,2 推=便@0,2->0,3|佥@0,3->0,4 命中=午@1,2
+  [log] [Diag] PUSHNM 从=午@4,2 到=4,3 推=包@4,3->4,4|火@4,4->4,5
+  [log] [Diag] TREASURE 从=铁砧@5,4 到=3,4 命中=铁砧
+  [log] [Diag] DRAG 字=午 格=4,3 节点=(56,-112) 期望=(56,-112) 角度=0.00
+  [log] [GamePage] 严格回弹：午 格(4,3) → 格(4,2) 节点=(56,-112) 目标=(-56,-112) 落位凑不成字
+  [log] [Toast] 这一步凑不成字
+字牌已滑回原位
+  [log] [GamePage] 回弹到位：午 节点=(-56,-112) 目标=(-56,-112)
+  [log] [Diag] DRAG 字=木 格=0,2 节点=(-56,336) 期望=(-56,336) 角度=0.00
+  [log] [Diag] BOARD cols=6 rows=7 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 革@0,0,radical 便@0,3,part 佥@0,4,radical 前@0,5,part 奴@1,0,radical 刂@1,1,part 革@2,0,radical 前@2,1,part 木@2,2,radical 玄@3,1,part 弓@3,2,radical 弓@3,3,radical 斤@3,4,part 铁砧@3,5,treasure 玄@4,0,part 佥@4,1,radical 午@4,2,part 包@4,3,part 火@4,4,radical 父@5,1,radical 竹@5,2,radical 铁砧@5,4,treasure 父@5,5,radical 竹@6,0,radical 刂@6,1,part 便@6,2,part 弓@6,3,part 斤@6,5,part
+  [log] [Diag] STATE seq=3 合成 步=2 已消=2/15 剩牌=28
+  [log] [Diag] SUGGEST 从=斤@6,5 到=5,5 命中=父
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] DIRECT 从=革@0,0 到=0,3 命中=便
+  [log] [Diag] NONMATCH 从=铁砧@3,5 到=3,4
+  [log] [Diag] PUSH 从=革@2,0 到=2,3 推=前@2,1->2,4|木@2,2->2,5 命中=便@0,3
+  [log] [Diag] PUSHNM 从=包@4,3 到=3,3 推=弓@3,3->2,3
+  [log] [Diag] TREASURE 从=铁砧@5,4 到=3,4 命中=铁砧
+  [log] [Diag] DRAG 字=包 格=3,3 节点=(56,0) 期望=(56,0) 角度=0.00
+  [log] [GamePage] 严格回弹：包 格(3,3) → 格(4,3) 节点=(56,0) 目标=(56,-112) 落位凑不成字
+  [log] [Toast] 这一步凑不成字
+字牌已滑回原位
+  [log] [GamePage] 回弹到位：包 节点=(56,-112) 目标=(56,-112)
+  [log] [Diag] DRAG 字=铁砧 格=3,4 节点=(168,0) 期望=(168,0) 角度=0.00
+  [log] [GamePage] 严格回弹：铁砧 格(3,4) → 格(3,5) 节点=(168,0) 目标=(280,0) 落位凑不成字
+  [log] [GamePage] 回弹到位：铁砧 节点=(280,0) 目标=(280,0)
+  [log] [Diag] DRAG 字=斤 格=5,5 节点=(280,-224) 期望=(280,-224) 角度=0.00
+  [log] [Diag] BOARD cols=6 rows=7 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 革@0,0,radical 便@0,3,part 佥@0,4,radical 前@0,5,part 奴@1,0,radical 刂@1,1,part 革@2,0,radical 前@2,1,part 木@2,2,radical 玄@3,1,part 弓@3,2,radical 弓@3,3,radical 斤@3,4,part 铁砧@3,5,treasure 玄@4,0,part 佥@4,1,radical 午@4,2,part 包@4,3,part 火@4,4,radical 父@5,1,radical 竹@5,2,radical 铁砧@5,4,treasure 竹@6,0,radical 刂@6,1,part 便@6,2,part 弓@6,3,part
+  [log] [Diag] STATE seq=4 合成 步=3 已消=3/15 剩牌=26
+  [log] [Diag] SUGGEST 从=刂@1,1 到=1,4 命中=佥
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] DIRECT 从=革@0,0 到=0,3 命中=便
+  [log] [Diag] NONMATCH 从=奴@1,0 到=1,1
+  [log] [Diag] PUSH 从=革@2,0 到=2,3 推=前@2,1->2,4|木@2,2->2,5 命中=便@0,3
+  [log] [Diag] PUSHNM 从=午@4,2 到=3,2 推=弓@3,2->2,2|木@2,2->1,2
+  [log] [Diag] TREASURE 从=铁砧@3,5 到=5,5 命中=铁砧
+  [log] [Diag] DRAG 字=刂 格=1,2 节点=(-56,224) 期望=(-56,224) 角度=0.00
+  [log] [Diag] DRAG 字=刂 格=1,3 节点=(56,224) 期望=(56,224) 角度=0.00
+  [log] [Diag] DRAG 字=刂 格=1,4 节点=(168,224) 期望=(168,224) 角度=0.00
+  [log] [Diag] BOARD cols=6 rows=7 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 革@0,0,radical 便@0,3,part 前@0,5,part 奴@1,0,radical 革@2,0,radical 前@2,1,part 木@2,2,radical 玄@3,1,part 弓@3,2,radical 弓@3,3,radical 斤@3,4,part 铁砧@3,5,treasure 玄@4,0,part 佥@4,1,radical 午@4,2,part 包@4,3,part 火@4,4,radical 父@5,1,radical 竹@5,2,radical 铁砧@5,4,treasure 竹@6,0,radical 刂@6,1,part 便@6,2,part 弓@6,3,part
+  [log] [Diag] STATE seq=5 合成 步=4 已消=4/15 剩牌=24
+  [log] [Diag] SUGGEST 从=火@4,4 到=4,5 命中=包
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] DIRECT 从=革@0,0 到=0,3 命中=便
+  [log] [Diag] NONMATCH 从=竹@5,2 到=5,1
+  [log] [Diag] PUSH 从=革@2,0 到=2,3 推=前@2,1->2,4|木@2,2->2,5 命中=便@0,3
+  [log] [Diag] PUSHNM 从=午@4,2 到=4,3 推=包@4,3->4,4|火@4,4->4,5
+  [log] [Diag] TREASURE 从=铁砧@3,5 到=5,5 命中=铁砧
+  [log] [Diag] DRAG 字=火 格=4,5 节点=(280,-112) 期望=(280,-112) 角度=0.00
+  [log] [Diag] BOARD cols=6 rows=7 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 革@0,0,radical 便@0,3,part 前@0,5,part 奴@1,0,radical 革@2,0,radical 前@2,1,part 木@2,2,radical 玄@3,1,part 弓@3,2,radical 弓@3,3,radical 斤@3,4,part 铁砧@3,5,treasure 玄@4,0,part 佥@4,1,radical 午@4,2,part 父@5,1,radical 竹@5,2,radical 铁砧@5,4,treasure 竹@6,0,radical 刂@6,1,part 便@6,2,part 弓@6,3,part
+  [log] [Diag] STATE seq=6 合成 步=5 已消=5/15 剩牌=22
+  [log] [Diag] SUGGEST 从=铁砧@5,4 到=5,5 命中=铁砧
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] DIRECT 从=革@0,0 到=0,3 命中=便
+  [log] [Diag] NONMATCH 从=便@6,2 到=5,2
+  [log] [Diag] PUSH 从=玄@4,0 到=4,2 推=佥@4,1->4,3|午@4,2->4,4 命中=弓@3,2
+  [log] [Diag] PUSHNM 从=弓@3,3 到=3,2 推=弓@3,2->3,1|玄@3,1->3,0
+  [log] [Diag] TREASURE 从=铁砧@3,5 到=3,4 命中=铁砧
+  [log] [Diag] DRAG 字=铁砧 格=5,5 节点=(280,-224) 期望=(280,-224) 角度=0.00
+  [log] [Diag] BOARD cols=6 rows=7 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 前@0,5,part 奴@1,0,radical 革@2,0,radical 前@2,1,part 木@2,2,radical 玄@3,1,part 弓@3,2,radical 弓@3,3,radical 斤@3,4,part 玄@4,0,part 佥@4,1,radical 午@4,2,part 父@5,1,radical 竹@5,2,radical 竹@6,0,radical 刂@6,1,part 便@6,2,part 弓@6,3,part
+  [log] [Diag] STATE seq=7 宝牌 步=6 已消=6/15 剩牌=18
+  [log] [Diag] SUGGEST 从=竹@5,2 到=5,5 命中=前
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] DIRECT 从=玄@3,1 到=3,2 命中=弓
+  [log] [Diag] NONMATCH 从=革@2,0 到=2,3
+  [log] [Diag] PUSH 从=玄@4,0 到=4,2 推=佥@4,1->4,3|午@4,2->4,4 命中=弓@3,2
+  [log] [Diag] PUSHNM 从=玄@4,0 到=4,1 推=佥@4,1->4,2|午@4,2->4,3
+  [log] [Diag] TREASURE none
+  [log] [GamePage] 宝牌成对：铁砧 ×2 → 额外消掉 革+便=鞭
+  [log] [Toast] 「铁砧」凑成一对！
+额外消掉「革」+「便」= 鞭
+  [log] [Diag] DRAG 字=竹 格=5,3 节点=(56,-224) 期望=(56,-224) 角度=0.00
+  [log] [Diag] DRAG 字=竹 格=5,4 节点=(168,-224) 期望=(168,-224) 角度=0.00
+  [log] [Diag] DRAG 字=竹 格=5,5 节点=(280,-224) 期望=(280,-224) 角度=0.00
+  [log] [Diag] BOARD cols=6 rows=7 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 奴@1,0,radical 革@2,0,radical 前@2,1,part 木@2,2,radical 玄@3,1,part 弓@3,2,radical 弓@3,3,radical 斤@3,4,part 玄@4,0,part 佥@4,1,radical 午@4,2,part 父@5,1,radical 竹@6,0,radical 刂@6,1,part 便@6,2,part 弓@6,3,part
+  [log] [Diag] STATE seq=8 合成 步=7 已消=7/15 剩牌=16
+  [log] [Diag] SUGGEST 从=弓@3,2 到=3,3 命中=玄
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] DIRECT 从=玄@3,1 到=3,2 命中=弓
+  [log] [Diag] NONMATCH 从=弓@6,3 到=5,3
+  [log] [Diag] PUSH 从=玄@4,0 到=4,2 推=佥@4,1->4,3|午@4,2->4,4 命中=弓@3,2
+  [log] [Diag] PUSHNM 从=弓@3,2 到=2,2 推=木@2,2->1,2
+  [log] [Diag] TREASURE none
+  [log] [Diag] DRAG 字=弓 格=3,3 节点=(56,0) 期望=(56,0) 角度=0.00
+  [log] [Diag] BOARD cols=6 rows=7 pitch=112 gap=10 cell=102 cx=0 cy=-52
+  [log] [Diag] TILES 奴@1,0,radical 革@2,0,radical 前@2,1,part 木@2,2,radical 弓@3,4,radical 斤@3,5,part 玄@4,0,part 佥@4,1,radical 午@4,2,part 父@5,1,radical 竹@6,0,radical 刂@6,1,part 便@6,2,part 弓@6,3,part
+  [log] [Diag] STATE seq=9 合成 步=8 已消=8/15 剩牌=14
+  [log] [Diag] SUGGEST 从=玄@4,0 到=3,0 命中=弓
+  [log] [Diag] REACH direct=1 suggest=1 → 有可挪的解法
+  [log] [Diag] DIRECT 从=木@2,2 到=4,2 命中=午
+  [log] [Diag] NONMATCH 从=木@2,2 到=2,5
+  [log] [Diag] PUSH none
+  [log] [Diag] PUSHNM 从=革@2,0 到=1,0 推=奴@1,0->0,0
+  [log] [Diag] TREASURE none
+
+✅ 冒烟测试完成，全部硬断言通过，产物目录：docs/verify/S17/smoke-regress
